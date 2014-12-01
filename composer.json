@@ -1,0 +1,19 @@
+{
+	"require": {
+		"illuminate/database": "*",
+		"filp/whoops": "*",
+		"devster/ubench": "1.1.*-dev",
+		"nebula/router": "dev-master"
+	},
+	"autoload": {
+		"classmap": [
+			"app/controllers",
+			"app/models",
+			"framework"
+		]
+	},
+	"repositories": [
+		{"type": "composer", "url": "http://pkg.phpcomposer.com/repo/packagist/"},
+		{"packagist": false}
+	]
+}

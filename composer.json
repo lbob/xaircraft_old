@@ -1,19 +1,26 @@
 {
+	"name": "Xaircraft",
+	"description": "PHP Framework for Xaircraft",
+	"type": "framework",
+	"authors": [
+		{
+			"name": "Xaircraft web team",
+			"email": "liubo@xair.cn"
+		}
+	],
+	"minimum-stability": "dev",
 	"require": {
+		"php": ">=5.3.0"
+	},
+	"require-dev": {
 		"illuminate/database": "*",
 		"filp/whoops": "*",
 		"devster/ubench": "1.1.*-dev",
 		"nebula/router": "dev-master"
 	},
 	"autoload": {
-		"classmap": [
-			"app/controllers",
-			"app/models",
-			"framework"
-		]
-	},
-	"repositories": [
-		{"type": "composer", "url": "http://pkg.phpcomposer.com/repo/packagist/"},
-		{"packagist": false}
-	]
+		"psr-4": {
+			"Xaircraft\\": "src/"
+		}
+	}
 }

@@ -39,7 +39,6 @@ class ViewResult extends ActionResult
                 $name[] = $controller;
             if (isset($action))
                 $name[] = $action;
-            var_dump($this->name);
             if (!isset($name) || empty($name))
                 $name[] = self::DEFAULT_VIEW;
 

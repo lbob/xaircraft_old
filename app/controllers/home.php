@@ -9,7 +9,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        return $this->view();
+        return $this->text('tetete');
     }
 }
 

@@ -1,7 +1,6 @@
 <?php
 
 namespace Xaircraft;
-use Whoops\Example\Exception;
 
 
 /**
@@ -9,6 +8,7 @@ use Whoops\Example\Exception;
  *
  * @package Xaircraft
  * @author lbob created at 2014/12/6 11:08
+ * @website https://bitbucket.org/skyweo/xaircraft
  */
 class App extends Container {
 

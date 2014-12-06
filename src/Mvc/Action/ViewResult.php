@@ -28,7 +28,7 @@ class ViewResult extends ActionResult
         $this->name = $viewName;
         // 若为空，则默认调用 Controller 的 Action 为名字的 View 文件。
         if (!isset($this->name) || empty($this->name)) {
-            $app        = Application::getInstance();
+            $app        = App::getInstance();
             $namespace  = $app->req->param('namespace');
             $controller = $app->req->param('controller');
             $action     = $app->req->param('action');

@@ -10,7 +10,7 @@ use Whoops\Example\Exception;
  * @package Xaircraft
  * @author lbob created at 2014/12/6 11:08
  */
-class App {
+class App extends Container {
 
     const ENV_MODE = 'mode';
     const ENV_VIEW_FILE_EXT = 'view_file_ext';
@@ -31,7 +31,11 @@ class App {
     private $isEnded = false;
     private $paths = array();
     /**
-     * @var $routes \Nebula\Router;
+     * @var \Xaircraft\ClassLoader
+     */
+    private $classLoader;
+    /**
+     * @var \Nebula\Router;
      */
     private $router;
     /**
@@ -72,6 +76,7 @@ class App {
     public function run()
     {
         $this->onStart();
+        $this->autoload();
         $this->routing();
         $this->onEnd();
     }
@@ -81,6 +86,18 @@ class App {
         if (array_key_exists($key, $this->paths)) {
             return $this->paths[$key];
         }
+    }
+
+    public static function path($key)
+    {
+        $app = App::getInstance();
+        return $app->getPath($key);
+    }
+
+    private function autoload()
+    {
+        $this->classLoader = new ClassLoader();
+        $this->classLoader->addPath(\Xaircraft\App::path("app").'/models');
     }
 
     private function routing()

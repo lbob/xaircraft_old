@@ -20,6 +20,9 @@ class TextResult extends ActionResult {
     public function execute()
     {
         echo $this->text;
+
+        $app = \Xaircraft\App::getInstance();
+        unset($app['bench']);
     }
 }
 

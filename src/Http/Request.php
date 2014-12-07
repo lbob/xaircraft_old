@@ -41,6 +41,18 @@ class Request {
     {
         return $this->params;
     }
+
+    public function isPost()
+    {
+        return isset($_POST['submit']);
+    }
+
+    public function post($key)
+    {
+        if (isset($key) && isset($_POST[$key])) {
+            return $_POST[$key];
+        }
+    }
 }
 
  

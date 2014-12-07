@@ -11,7 +11,7 @@ use \Xaircraft\App;
 
 $app = App::getInstance();
 $app->bindPaths(require __DIR__.'/paths.php');
-$app->environment[App::HOST] = 'http://localhost:83';
+$app->environment[App::HOST] = 'http://localhost:84';
 
 $app->registerStartHandler(function($app) {
     // Eloquent ORM
@@ -37,8 +37,10 @@ $app->registerEndHandler(function($app) {
     if ($app->environment[App::ENV_MODE] === App::APP_MODE_DEV) {
         // Ubench 性能工具 End
         $bench = $app['bench'];
-        $bench->end();
-        echo '<p style="color:#a0a0a0;text-shadow:1px 1px 0 #FFFFFF;text-align:right;font-size:12px;padding-top:10px;">This page used <strong>' . $bench->getTime() . '</strong>, <strong>' . $bench->getMemoryUsage() . '</strong>.</p>';
+        if (isset($bench)) {
+            $bench->end();
+            echo '<p style="color:#a0a0a0;text-shadow:1px 1px 0 #FFFFFF;text-align:right;font-size:12px;padding-top:10px;">This page used <strong>' . $bench->getTime() . '</strong>, <strong>' . $bench->getMemoryUsage() . '</strong>.</p>';
+        }
     }
 });
 

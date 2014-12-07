@@ -9,7 +9,14 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        $this->data['testHere'] = 'world';
+        if ($this->req->isPost()) {
+            $this->data['testHere'] = $this->req->post('test_name');
+            if ($this->req->post('test_name') === 'hello') {
+                var_dump(\Xaircraft\Helper\Url::link('/'));
+            }
+        } else {
+            $this->data['testHere'] = 'world';
+        }
         return $this->view();
     }
 }

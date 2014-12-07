@@ -2,9 +2,10 @@
 
 namespace Xaircraft\Mvc;
 use Xaircraft\App;
+use Xaircraft\Helper\Html;
 
 
-    /**
+/**
  * Class View
  *
  * @package XAircraft\Mvc
@@ -19,10 +20,18 @@ class View
 
     public $view;
     public $data;
+    /**
+     * @var \Xaircraft\Http\Request
+     */
+    public $req;
+
+    private $html;
 
     public function __construct($view)
     {
         $this->view = $view;
+        $app = App::getInstance();
+        $this->req = $app->req;
     }
 
     public static function make($viewName = null)
@@ -71,6 +80,13 @@ class View
             extract($this->data);
             require $this->view;
         }
+    }
+
+    public function html()
+    {
+        if (!isset($this->html))
+            $this->html = new Html($this);
+        return $this->html;
     }
 }
 

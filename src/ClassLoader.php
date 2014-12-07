@@ -9,7 +9,8 @@ namespace Xaircraft;
  * @package Xaircraft
  * @author lbob created at 2014/12/6 20:17
  */
-class ClassLoader extends Container {
+class ClassLoader extends Container
+{
 
     private $paths = array();
 
@@ -33,7 +34,7 @@ class ClassLoader extends Container {
     {
         if (isset($className) && !isset($this[$className])) {
             $this[$className] = true;
-            $className = strtolower($className);
+            $className        = strtolower($className);
 
             $path = null;
             // Controller
@@ -57,7 +58,7 @@ class ClassLoader extends Container {
     {
         $className = substr($className, 0, strpos($className, "_controller"));
         $className = str_replace('_', DIRECTORY_SEPARATOR, $className);
-        return App::path("app").'/controllers/'.$className.'.php';
+        return App::path("app") . '/controllers/' . $className . '.php';
     }
 
     private function scan($className)
@@ -65,7 +66,7 @@ class ClassLoader extends Container {
         $className = str_replace('_', DIRECTORY_SEPARATOR, $className);
 
         foreach ($this->paths as $path) {
-            $file = $path.'/'.$className.'.php';
+            $file = $path . '/' . $className . '.php';
             if (is_file($file) && is_readable($file)) {
                 return $file;
             }

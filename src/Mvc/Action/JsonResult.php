@@ -33,6 +33,9 @@ class JsonResult extends ActionResult {
             $json = $this->object;
         }
         echo json_encode($json);
+
+        $app = \Xaircraft\App::getInstance();
+        unset($app['bench']);
     }
 }
 

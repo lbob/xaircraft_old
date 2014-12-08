@@ -8,15 +8,15 @@ use Xaircraft\Helper\Html;
 /**
  * Class View
  *
- * @package XAircraft\Mvc
+ * @package Xaircraft\Mvc
  * @author lbob created at 2014/11/20 14:56
  */
 
 
 class View
 {
-    const ENV_VIEW_FILE_EXT = 'php';
-    const VIEW_BASE_PATH = '/app/views/';
+    const ENV_VIEW_FILE_EXT = 'phtml';
+    const VIEW_BASE_PATH = '/views/';
 
     public $view;
     public $data;
@@ -61,7 +61,7 @@ class View
         if (!isset($extension) || $extension === '') {
             $extension = self::ENV_VIEW_FILE_EXT;
         }
-        return \Xaircraft\App::getInstance()->getPath('base')
+        return \Xaircraft\App::getInstance()->getPath('app')
         . self::VIEW_BASE_PATH . $filePath . '.'
         . $extension;
     }
@@ -77,6 +77,7 @@ class View
     public function render()
     {
         if (isset($this->view)) {
+            $this->data['title'] = isset($this->data['title']) ? $this->data['title'] : "Undefined title";
             extract($this->data);
             require $this->view;
         }

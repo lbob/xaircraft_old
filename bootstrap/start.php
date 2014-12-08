@@ -26,17 +26,15 @@ $app->registerStartHandler(function($app) {
         $whoops->register();
 
         // Ubench 性能工具 Start
-        $bench = new Ubench();
-        $bench->start();
-
-        $app['bench'] = $bench;
+        $app->bench = new Ubench();
+        $app->bench->start();
     }
 });
 
 $app->registerEndHandler(function($app) {
     if ($app->environment[App::ENV_MODE] === App::APP_MODE_DEV) {
         // Ubench 性能工具 End
-        $bench = $app['bench'];
+        $bench = $app->bench;
         if (isset($bench)) {
             $bench->end();
             echo '<p style="color:#a0a0a0;text-shadow:1px 1px 0 #FFFFFF;text-align:right;font-size:12px;padding-top:10px;">This page used <strong>' . $bench->getTime() . '</strong>, <strong>' . $bench->getMemoryUsage() . '</strong>.</p>';

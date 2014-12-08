@@ -170,6 +170,19 @@ class App extends Container {
             }
         }
     }
+
+    public function __get($key)
+    {
+        return $this[$key];
+    }
+
+    public function __set($key, $value)
+    {
+        if (isset($key) && is_string($key))
+            $this[$key] = $value;
+        else
+            throw new \InvalidArgumentException("Invalid argument of [$key]");
+    }
 }
 
  

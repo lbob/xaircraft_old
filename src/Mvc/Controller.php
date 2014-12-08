@@ -12,6 +12,7 @@ namespace Xaircraft\Mvc;
 
 use Xaircraft\App;
 use Xaircraft\Mvc\Action\JsonResult;
+use Xaircraft\Mvc\Action\LayoutResult;
 use Xaircraft\Mvc\Action\ObjectResult;
 use Xaircraft\Mvc\Action\StatusResult;
 use Xaircraft\Mvc\Action\TextResult;
@@ -34,6 +35,11 @@ abstract class Controller
      */
     private $app;
 
+    /**
+     * @var \Xaircraft\Mvc\Layout
+     */
+    private $layoutName;
+
     public function __construct()
     {
         $this->app = App::getInstance();
@@ -46,9 +52,15 @@ abstract class Controller
      */
     public function view($viewName = null)
     {
-        $result       = new ViewResult($viewName);
-        $result->data = $this->data;
-        return $result;
+        $viewResult       = new ViewResult($viewName);
+        $viewResult->data = $this->data;
+        if (!isset($this->layoutName)) {
+            return $viewResult;
+        } else {
+            $layoutResult       = new LayoutResult($this->layoutName, $viewResult);
+            $layoutResult->data = $this->data;
+            return $layoutResult;
+        }
     }
 
     /**
@@ -102,7 +114,7 @@ abstract class Controller
     public static function invoke($controller, $action, $namespace = null)
     {
         if (isset($namespace)) {
-            $controller = str_replace('/', '_', $namespace).'_'.$controller;
+            $controller = str_replace('/', '_', $namespace) . '_' . $controller;
         }
 
         $actionResult = self::getActionResult($controller, $action);
@@ -123,6 +135,25 @@ abstract class Controller
         }
         $controller = new $controller();
         return call_user_func(array($controller, $action)); //返回ActionResult
+    }
+
+    protected function layout($layoutName)
+    {
+        $this->layoutName = $layoutName;
+    }
+
+    public function __set($key, $value)
+    {
+        if (isset($key) && is_string($key))
+            $this->data[$key] = $value;
+    }
+
+    public function __get($key)
+    {
+        if (isset($key) && array_key_exists($key, $this->data))
+            return $this->data[$key];
+        else
+            throw new \InvalidArgumentException("Can't find [$key] in data.");
     }
 }
  

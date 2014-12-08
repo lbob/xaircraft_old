@@ -8,7 +8,7 @@ use Xaircraft\Helper\Html;
 /**
  * Class View
  *
- * @package XAircraft\Mvc
+ * @package Xaircraft\Mvc
  * @author lbob created at 2014/11/20 14:56
  */
 

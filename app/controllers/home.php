@@ -17,6 +17,10 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         } else {
             $this->data['testHere'] = 'world';
         }
+        $post = Post::find(1);
+        $post->title;
+        //$this->data['posts'] = Post::all();
+        var_dump($post instanceof ArrayAccess);
         return $this->view();
     }
 }

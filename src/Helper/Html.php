@@ -16,9 +16,13 @@ class Html {
      */
     private $view;
 
-    public function __construct($view = null)
+    private $html = '';
+
+    public function __construct($view = null, $html = null)
     {
         $this->view = $view;
+        if (isset($html))
+            $this->html = $this->html . $html;
     }
 
     public function link($url, $text, $params = null, $id = null, $class = null, $attrs = null)
@@ -36,7 +40,7 @@ class Html {
             }
         }
         $result[] = '>' . $text . '</a>';
-        return implode(' ', $result);
+        return new Html($this->view, $this->html . implode(' ', $result));
     }
 
     public function textBox($name, $value = null, $class = null, $attrs = null)
@@ -57,7 +61,7 @@ class Html {
             }
         }
         $result[] = '/>';
-        return implode(' ', $result);
+        return new Html($this->view, $this->html . implode(' ', $result));
     }
 
     public function submit($name = null)
@@ -69,7 +73,17 @@ class Html {
         else
             $result[] = 'id="submit" name="submit"';
         $result[] = '/>';
-        return implode(' ', $result);
+        return new Html($this->view, $this->html . implode(' ', $result));
+    }
+
+    public function render()
+    {
+        echo $this->html;
+    }
+
+    public function __toString()
+    {
+        return $this->html;
     }
 }
 

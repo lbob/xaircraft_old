@@ -29,8 +29,6 @@ class Layout {
 
     private $layout;
 
-    private $html;
-
     public function __construct($layout, $viewResult)
     {
         $this->layout = $layout;
@@ -99,9 +97,7 @@ class Layout {
 
     public function html()
     {
-        if (!isset($this->html))
-            $this->html = new Html($this);
-        return $this->html;
+        return new Html($this);
     }
 }
 

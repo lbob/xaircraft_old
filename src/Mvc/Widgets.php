@@ -23,8 +23,6 @@ class Widgets {
 
     private $widgets;
 
-    private $html;
-
     public function __construct($widgets)
     {
         $this->widgets = $widgets;
@@ -67,9 +65,7 @@ class Widgets {
 
     public function html()
     {
-        if (!isset($this->html))
-            $this->html = new Html($this);
-        return $this->html;
+        return new Html($this);
     }
 }
 

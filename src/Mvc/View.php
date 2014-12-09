@@ -25,8 +25,6 @@ class View
      */
     public $req;
 
-    private $html;
-
     public function __construct($view)
     {
         $this->view = $view;
@@ -85,9 +83,7 @@ class View
 
     public function html()
     {
-        if (!isset($this->html))
-            $this->html = new Html($this);
-        return $this->html;
+        return new Html($this);
     }
 }
 

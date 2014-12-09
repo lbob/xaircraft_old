@@ -65,6 +65,11 @@ class Layout {
         $viewResult->execute();
     }
 
+    public function renderWidgets($widgetsName)
+    {
+
+    }
+
     private static function getFilePath($layoutName)
     {
         $filePath  = str_replace('.', '/', $layoutName);

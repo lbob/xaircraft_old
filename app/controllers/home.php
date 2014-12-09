@@ -7,9 +7,14 @@
  */
 class home_controller extends \Xaircraft\Mvc\Controller {
 
-    public function index()
+    public function __construct()
     {
         $this->layout('admin');
+    }
+
+    public function index()
+    {
+        //$this->layout('admin');
         if ($this->req->isPost()) {
             $this->testHere = $this->req->post('test_name');
             if ($this->req->post('test_name') === 'hello') {

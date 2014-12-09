@@ -21,7 +21,7 @@ use Xaircraft\Mvc\Action\ViewResult;
 abstract class Controller
 {
     /**
-     * @var $app \XAircraft\Http\Request;
+     * @var $req \XAircraft\Http\Request;
      */
     protected $req;
 
@@ -31,19 +31,13 @@ abstract class Controller
     protected $data = array();
 
     /**
-     * @var $app \Xaircraft\App;
-     */
-    private $app;
-
-    /**
      * @var \Xaircraft\Mvc\Layout
      */
     private $layoutName;
 
     public function __construct()
     {
-        $this->app = App::getInstance();
-        $this->req = $this->app->req;
+
     }
 
     /**
@@ -109,7 +103,6 @@ abstract class Controller
     /**
      * @param $controller string
      * @param $action string
-     * @param $app \Xaircraft\App
      */
     public static function invoke($controller, $action, $namespace = null)
     {
@@ -133,7 +126,8 @@ abstract class Controller
         if (!method_exists($controller, $action)) {
             throw new \InvalidArgumentException("Can't find action [$action] in [$controller].");
         }
-        $controller = new $controller();
+        $controller      = new $controller();
+        $controller->req = App::getInstance()->req;
         return call_user_func(array($controller, $action)); //返回ActionResult
     }
 

@@ -37,13 +37,13 @@ class View
     public static function make($viewName = null)
     {
         if (!$viewName) {
-            throw new \InvalidArgumentException("视图名称不能为空！");
+            throw new \InvalidArgumentException("Invalid view name.");
         } else {
             $viewFilePath = self::getFilePath($viewName);
             if (is_file($viewFilePath) && is_readable($viewFilePath)) {
                 return new View($viewFilePath);
             } else {
-                throw new \UnexpectedValueException("视图文件不存在：$viewFilePath");
+                throw new \UnexpectedValueException("Can't find view file [$viewFilePath]");
             }
         }
     }

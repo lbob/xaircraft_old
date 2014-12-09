@@ -2,11 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="zh-cn">
     <title><?php echo $title ?></title>
     <body>
+    <?php $this->renderWidgets('header'); ?>
     <?php $this->renderBody(); ?>
     <?php $this->renderPage('home.index'); ?>
     <?php $this->renderPage('home.index'); ?>
     <?php $this->renderPage('home.index'); ?>
     <?php $this->renderPage('home.index'); ?>
-    <?php $this->renderWidgets('home.index'); ?>
+    <?php $this->renderWidgets('bottom'); ?>
     </body>
 </html>

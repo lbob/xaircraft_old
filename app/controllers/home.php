@@ -9,7 +9,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function __construct()
     {
-        //$this->layout('admin');
+        $this->layout('admin');
     }
 
     public function index()
@@ -17,6 +17,12 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         //$this->layout('admin');
         $this->testHere = 'world';
         return $this->view();
+    }
+
+    public function hello()
+    {
+        $home = new home_controller();
+        $home->index()->execute();
     }
 }
 

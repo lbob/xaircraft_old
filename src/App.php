@@ -15,6 +15,7 @@ class App extends Container {
     const ENV_MODE = 'mode';
     const ENV_VIEW_FILE_EXT = 'view_file_ext';
     const ENV_DEFAULT_TOKEN = 'default_token';
+    const ENV_SESSION_PROVIDER = 'session_provider';
     const APP_MODE_DEV = 'dev';
     const APP_MODE_PUB = 'pub';
     const HOST = 'host';
@@ -60,6 +61,7 @@ class App extends Container {
                 'action'     => 'index'
             ),
             self::ENV_VIEW_FILE_EXT => '',
+            self::ENV_SESSION_PROVIDER => 'file',
             self::HOST              => ''
         );
     }

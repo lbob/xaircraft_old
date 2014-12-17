@@ -14,13 +14,10 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        session_start();
-        if (isset($_SESSION['test'])) {
-            $_SESSION['test'] = $_SESSION['test'] + 1;
-        } else {
-            $_SESSION['test'] = 0;
-        }
+        \Xaircraft\Session::put('test', \Xaircraft\Session::get('test', 0) + 1);
 
+        $test = \Xaircraft\Session::get('test', 0);
+        var_dump($test);
 
         //$this->layout('admin');
         $this->testHere = 'world';

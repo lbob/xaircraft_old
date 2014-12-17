@@ -14,16 +14,30 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
+        session_start();
+        if (isset($_SESSION['test'])) {
+            $_SESSION['test'] = $_SESSION['test'] + 1;
+        } else {
+            $_SESSION['test'] = 0;
+        }
+
+
         //$this->layout('admin');
         $this->testHere = 'world';
         return $this->view();
+    }
+
+    public function test()
+    {
+        $test = $_SESSION['test'];
+        $this->text($test);
     }
 
     public function hello()
     {
         $home = new home_controller();
         $home->index()->execute();
+        \Xaircraft\Helper\Url::redirect('/');
     }
 }
 
- 

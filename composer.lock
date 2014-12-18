@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "ab3e4146c5c296dabbd1634be4f944a2",
+    "hash": "11b81267b8ffb7d2de50cbfa94839c3d",
     "packages": [],
     "packages-dev": [
         {
@@ -116,12 +117,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
-                "reference": "867aa9c08e707a71987946afd23b2bc9ee8b2e5c"
+                "reference": "09599c54028d12982ef2b2d4d1e64cb396592b85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/container/zipball/867aa9c08e707a71987946afd23b2bc9ee8b2e5c",
-                "reference": "867aa9c08e707a71987946afd23b2bc9ee8b2e5c",
+                "url": "https://api.github.com/repos/illuminate/container/zipball/09599c54028d12982ef2b2d4d1e64cb396592b85",
+                "reference": "09599c54028d12982ef2b2d4d1e64cb396592b85",
                 "shasum": ""
             },
             "require": {
@@ -150,7 +151,7 @@
                 }
             ],
             "description": "The Illuminate Container package.",
-            "time": "2014-11-26 22:59:49"
+            "time": "2014-12-17 21:01:33"
         },
         {
             "name": "illuminate/contracts",
@@ -158,12 +159,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "62b754375fab82e8be25c618aaae1ab2915bb119"
+                "reference": "9451131e2c7f4c8319814de2e3e7e24aab268ea4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/62b754375fab82e8be25c618aaae1ab2915bb119",
-                "reference": "62b754375fab82e8be25c618aaae1ab2915bb119",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/9451131e2c7f4c8319814de2e3e7e24aab268ea4",
+                "reference": "9451131e2c7f4c8319814de2e3e7e24aab268ea4",
                 "shasum": ""
             },
             "require": {
@@ -191,7 +192,7 @@
                 }
             ],
             "description": "The Illuminate Contracts package.",
-            "time": "2014-12-04 19:25:03"
+            "time": "2014-12-17 18:08:11"
         },
         {
             "name": "illuminate/database",
@@ -199,12 +200,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/database.git",
-                "reference": "c45bb0aad220df9a057bc5a1674ea0cc99a2f8f1"
+                "reference": "db9e1b2a5a4ae134ad24bd04640046b12d0b22a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/database/zipball/c45bb0aad220df9a057bc5a1674ea0cc99a2f8f1",
-                "reference": "c45bb0aad220df9a057bc5a1674ea0cc99a2f8f1",
+                "url": "https://api.github.com/repos/illuminate/database/zipball/db9e1b2a5a4ae134ad24bd04640046b12d0b22a5",
+                "reference": "db9e1b2a5a4ae134ad24bd04640046b12d0b22a5",
                 "shasum": ""
             },
             "require": {
@@ -246,7 +247,7 @@
                 "orm",
                 "sql"
             ],
-            "time": "2014-12-05 02:35:27"
+            "time": "2014-12-18 05:03:00"
         },
         {
             "name": "illuminate/support",
@@ -254,21 +255,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "bd4ff56cded2d63dfebe9c2ae18bb59d82bc563e"
+                "reference": "9c9f645d703ac0e2e573328269d617abe4117a6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/bd4ff56cded2d63dfebe9c2ae18bb59d82bc563e",
-                "reference": "bd4ff56cded2d63dfebe9c2ae18bb59d82bc563e",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/9c9f645d703ac0e2e573328269d617abe4117a6e",
+                "reference": "9c9f645d703ac0e2e573328269d617abe4117a6e",
                 "shasum": ""
             },
             "require": {
                 "illuminate/contracts": "5.0.*",
+                "patchwork/utf8": "~1.1",
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "jeremeamia/superclosure": "~1.0.1",
-                "patchwork/utf8": "~1.1"
+                "jeremeamia/superclosure": "~1.0.1"
             },
             "type": "library",
             "extra": {
@@ -295,7 +296,7 @@
                 }
             ],
             "description": "The Illuminate Support package.",
-            "time": "2014-12-05 05:03:58"
+            "time": "2014-12-18 04:26:14"
         },
         {
             "name": "nebula/router",
@@ -303,12 +304,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/lbob/router.git",
-                "reference": "b424952482d9cfc75b8088470e1842983aa7c3f0"
+                "reference": "6e7b181c76f41befb8012dc8dc9cfde2777714dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lbob/router/zipball/b424952482d9cfc75b8088470e1842983aa7c3f0",
-                "reference": "b424952482d9cfc75b8088470e1842983aa7c3f0",
+                "url": "https://api.github.com/repos/lbob/router/zipball/6e7b181c76f41befb8012dc8dc9cfde2777714dd",
+                "reference": "6e7b181c76f41befb8012dc8dc9cfde2777714dd",
                 "shasum": ""
             },
             "require": {
@@ -334,7 +335,7 @@
                 }
             ],
             "description": "A PHP URL Router",
-            "time": "2014-12-07 12:34:12"
+            "time": "2014-12-18 14:22:05"
         },
         {
             "name": "nesbot/carbon",
@@ -381,6 +382,62 @@
                 "time"
             ],
             "time": "2014-09-26 02:52:02"
+        },
+        {
+            "name": "patchwork/utf8",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tchwork/utf8.git",
+                "reference": "3024ee72d0ce7fc4bf87421f2954f956d3ad2ee5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tchwork/utf8/zipball/3024ee72d0ce7fc4bf87421f2954f956d3ad2ee5",
+                "reference": "3024ee72d0ce7fc4bf87421f2954f956d3ad2ee5",
+                "shasum": ""
+            },
+            "require": {
+                "lib-pcre": ">=7.3",
+                "php": ">=5.3.0"
+            },
+            "suggest": {
+                "ext-iconv": "Use iconv for best performance",
+                "ext-intl": "Use Intl for best performance",
+                "ext-mbstring": "Use Mbstring for best performance"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Patchwork": "class/",
+                    "Normalizer": "class/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "(Apache-2.0 or GPL-2.0)"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                }
+            ],
+            "description": "Portable and performant UTF-8, Unicode and Grapheme Clusters for PHP",
+            "homepage": "https://github.com/tchwork/utf8",
+            "keywords": [
+                "grapheme",
+                "i18n",
+                "unicode",
+                "utf-8",
+                "utf8"
+            ],
+            "time": "2014-11-10 16:16:54"
         }
     ],
     "aliases": [],
@@ -389,6 +446,8 @@
         "devster/ubench": 20,
         "nebula/router": 20
     },
+    "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.0"
     },

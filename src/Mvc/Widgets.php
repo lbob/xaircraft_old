@@ -63,6 +63,16 @@ class Widgets {
         }
     }
 
+    public function renderWidgets($widgetsName)
+    {
+        /**
+         * @var $widgets Widgets
+         */
+        $widgets = Widgets::make($widgetsName);
+        $widgets->data = $this->data;
+        $widgets->render();
+    }
+
     public function html()
     {
         return new Html($this);

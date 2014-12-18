@@ -1,10 +1,9 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
-        "This file is @generated automatically"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "11b81267b8ffb7d2de50cbfa94839c3d",
+    "hash": "ab3e4146c5c296dabbd1634be4f944a2",
     "packages": [],
     "packages-dev": [
         {
@@ -390,7 +389,6 @@
         "devster/ubench": 20,
         "nebula/router": 20
     },
-    "prefer-stable": false,
     "platform": {
         "php": ">=5.3.0"
     },

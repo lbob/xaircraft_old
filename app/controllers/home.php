@@ -17,10 +17,24 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         \Xaircraft\Session::put('test', \Xaircraft\Session::get('test', 0) + 1);
 
         $test = \Xaircraft\Session::get('test', 0);
-        var_dump($test);
 
         //$this->layout('admin');
-        $this->testHere = 'world';
+        $this->testHere = 'world__' . $test;
+
+        $db = new \Xaircraft\Database\PdoDatabase();
+        $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null);
+        $db->transaction(function(\Xaircraft\Database\Database $db) {
+            $result = $db->select('SELECT * FROM aec_post');
+            $result2 = $db->update("UPDATE aec_post SET title = 'test' WHERE id = ?", array(1));
+            $db->delete("DELETE FROM aec_post WHERE id = ?", array(1));
+            foreach ($result as $row) {
+                echo $row['title'];
+            }
+            throw new \Exception("test");
+        });
+
+        $log = $db->getQueryLog();
+        var_dump($log);
         return $this->view();
     }
 

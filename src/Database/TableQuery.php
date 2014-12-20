@@ -69,14 +69,17 @@ class TableQuery {
         }
         $query[] = 'FROM ' . $this->tableName;
         if ($this->isPaged) {
-            $query = $this->parsePageQuery($query);
-            return $this->driver->select($query, $this->params);
+            $pageResult = $this->parsePageQuery($query);
+            $queryResult = $this->driver->select($pageResult['query'], $this->params);
+            return array(
+                'recordCount' => $pageResult['recordCount'],
+                'pageCount' => $pageResult['pageCount'],
+                'data' => $queryResult
+            );
         }
-        if (isset($this->wheres) && count($this->wheres) > 0) {
-            $query[] = 'WHERE';
-            foreach ($this->wheres as $item) {
-                $query[] = implode(' ', $item);
-            }
+        $wheres = $this->parseWheres();
+        if (isset($wheres)) {
+            $query[] = $wheres;
         }
         if (!$this->isPaged && $this->isLimited) {
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
@@ -93,14 +96,28 @@ class TableQuery {
 
         //取得分页结果的primaryKey值集合
         $query[] = 'SELECT';
+        $query[] = 'COUNT(' . $this->primaryKey . ') AS TotalCount';
+        $query[] = 'FROM';
+        $query[] = $this->tableName;
+        $wheres = $this->parseWheres();
+        if (isset($wheres)) {
+            $query[] = $wheres;
+        }
+        $query = implode(' ', $query);
+        $recordCount = 0;
+        $recordCountResult = $this->driver->select($query, $this->params);
+        foreach ($recordCountResult as $row) {
+            $recordCount = $row['TotalCount'];
+        }
+        $pageCount = $recordCount % $this->pageSize == 0 ? $recordCount / $this->pageSize : intval($recordCount / $this->pageSize + 1);
+        $this->pageIndex = $this->pageIndex > $pageCount ? $pageCount : $this->pageIndex;
+        $query = array();
+        $query[] = 'SELECT';
         $query[] = $this->primaryKey;
         $query[] = 'FROM';
         $query[] = $this->tableName;
-        if (isset($this->wheres) && count($this->wheres) > 0) {
-            $query[] = 'WHERE';
-            foreach ($this->wheres as $item) {
-                $query[] = implode(' ', $item);
-            }
+        if (isset($wheres)) {
+            $query[] = $wheres;
         }
         $limitStartIndex = ($this->pageIndex - 1) * $this->pageSize;
         $limitTakeLength = $this->pageSize;
@@ -114,8 +131,23 @@ class TableQuery {
         }
         $preQuery[] = implode(',', $primaryKeyValueArray) . ')';
         $preQuery = implode(' ', $preQuery);
-        var_dump($preQuery);
-        return $preQuery;
+        return array(
+            'query' => $preQuery,
+            'recordCount' => $recordCount,
+            'pageCount' => $pageCount
+        );
+    }
+
+    private function parseWheres()
+    {
+        if (isset($this->wheres) && count($this->wheres) > 0) {
+            $query[] = 'WHERE';
+            foreach ($this->wheres as $item) {
+                $query[] = implode(' ', $item);
+            }
+            return implode(' ', $query);
+        }
+        return null;
     }
 
     /**
@@ -149,6 +181,58 @@ class TableQuery {
         if ($argsLen === 3) {
             $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $args[0] . ' ' . $args[1] . ' ? ');
             $this->params[] = $args[2];
+        }
+
+        return $this;
+    }
+
+    public function whereBetween($columnName, array $ranges)
+    {
+        if (count($ranges) === 2) {
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', '(' . $columnName . ' BETWEEN ? AND ?)');
+            $this->params = array_merge($this->params, $ranges);
+        }
+
+        return $this;
+    }
+
+    public function whereNotBetween($columnName, array $ranges)
+    {
+        if (count($ranges) === 2) {
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', '(' . $columnName . ' < ? OR ' . $columnName . ' > ?)');
+            $this->params = array_merge($this->params, $ranges);
+        }
+
+        return $this;
+    }
+
+    public function whereIn($columnName, array $ranges)
+    {
+        if (isset($ranges) && count($ranges) > 0) {
+            $where = $columnName . ' IN (';
+            $values = array();
+            foreach ($ranges as $item) {
+                $values[] = "?";
+            }
+            $where = $where . implode(',', $values) . ')';
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $where);
+            $this->params = array_merge($this->params, $ranges);
+        }
+
+        return $this;
+    }
+
+    public function whereNotIn($columnName, array $ranges)
+    {
+        if (isset($ranges) && count($ranges) > 0) {
+            $where = $columnName . ' NOT IN (';
+            $values = array();
+            foreach ($ranges as $item) {
+                $values[] = "?";
+            }
+            $where = $where . implode(',', $values) . ')';
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $where);
+            $this->params = array_merge($this->params, $ranges);
         }
 
         return $this;

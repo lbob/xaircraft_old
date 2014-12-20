@@ -42,8 +42,8 @@ class home_controller extends \Xaircraft\Mvc\Controller {
     {
         $db = new \Xaircraft\Database\PdoDatabase();
         $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null, 'aec_');
-        $query  = $db->table('post');
-        $result = $query->where('id', '>', 7)->orWhere('status', 'valid')->select()->execute();
+        $query  = $db->table('post', 'id');
+        $result = $query->where('id', '>', 7)->where('status', 'valid')->page(8, 2)->execute();
         var_dump($result);
         var_dump($query);
 

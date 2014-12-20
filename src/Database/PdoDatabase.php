@@ -255,12 +255,12 @@ class PdoDatabase implements Database {
      * @param String $tableName 数据表名称
      * @return \Xaircraft\Database\TableQuery
      */
-    public function table($tableName)
+    public function table($tableName, $primaryKey = null)
     {
         if (isset($tableName)) {
             if (isset($this->prefix))
                 $tableName = $this->prefix . $tableName;
-            return new TableQuery($this, $tableName);
+            return new TableQuery($this, $tableName, $primaryKey);
         }
     }
 }

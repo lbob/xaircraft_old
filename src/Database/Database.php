@@ -119,7 +119,7 @@ interface Database {
      * @param String $tableName 数据表名称
      * @return \Xaircraft\Database\TableQuery
      */
-    public function table($tableName);
+    public function table($tableName, $primaryKey = null);
 }
 
  

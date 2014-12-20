@@ -90,7 +90,7 @@ interface Database {
      * @param $options
      * @return mixed
      */
-    public function connection($dsn, $username, $password, $options);
+    public function connection($dsn, $username, $password, $options, $prefix = null);
 
     /**
      * 关闭现有连接
@@ -106,7 +106,7 @@ interface Database {
      * @param $options
      * @return mixed
      */
-    public function reconnect($dsn, $username, $password, $options);
+    public function reconnect($dsn, $username, $password, $options, $prefix = null);
 
     /**
      * 获得数据库驱动对象

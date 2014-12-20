@@ -9,91 +9,196 @@ namespace Xaircraft\Database;
  * @package Xaircraft\Database
  * @author lbob created at 2014/12/19 10:05
  */
-interface TableQuery {
+class TableQuery {
+
+    const QUERY_SELECT = 'select';
+    const QUERY_INSERT = 'insert';
+    const QUERY_UPDATE = 'update';
+    const QUERY_DELETE = 'delete';
+    const QUERY_TRUNCATE = 'truncate';
+
+    /**
+     * @var Database
+     */
+    private $driver;
+    private $tableName;
+    private $wheres = array();
+    private $params = array();
+    private $queryType;
+    private $isFirst = false;
+    private $selectFields = array();
+
+    public function __construct(Database $driver, $tableName)
+    {
+        if (!isset($driver))
+            throw new \InvalidArgumentException("Invalid database driver.");
+
+        if (!isset($tableName))
+            throw new \InvalidArgumentException("Invalid table name.");
+
+        $this->driver = $driver;
+        $this->tableName = $tableName;
+    }
 
     /**
      * 执行并返回查询结果
      * @return mixed 返回查询结果
      */
-    public function execute();
+    public function execute()
+    {
+        switch ($this->queryType) {
+            case self::QUERY_SELECT:
+                $query = $this->parseSelect();
+        }
+        if (isset($query)) {
+            var_dump($query);
+        }
+    }
+
+    private function parseSelect()
+    {
+        $query[] = 'SELECT';
+        if ($this->isFirst)
+            $query[] = 'TOP 1';
+        if (isset($this->selectFields) && count($this->selectFields)) {
+            $query[] = implode(',', $this->selectFields);
+        } else {
+            $query[] = '*';
+        }
+        $query[] = 'FROM ' . $this->tableName;
+        if (isset($this->wheres) && count($this->wheres) > 0) {
+            $query[] = 'WHERE';
+            $query[] = implode(' AND ', $this->wheres);
+        }
+        return implode(' ', $query);
+    }
 
     /**
      * 设置查询条件
-     * @param $conditions String 查询条件
-     * @return mixed TableQuery
+     * @return TableQuery
      */
-    public function where($conditions);
+    public function where()
+    {
+        $args = func_get_args();
+        $argsLen = func_num_args();
+        if ($argsLen === 2) {
+            $this->wheres[] = $args[0] . ' = ? ';
+            $this->params[] = $args[1];
+        }
+        if ($argsLen === 3) {
+            $this->wheres[] = $args[0] . $args[1] . ' ? ';
+            $this->params[] = $args[2];
+        }
+
+        return $this;
+    }
 
     /**
      * 设置获得查询结果的第一条记录
-     * @return mixed TableQuery
+     * @return TableQuery
      */
-    public function first();
+    public function first()
+    {
+        $this->queryType = self::QUERY_SELECT;
+        $this->isFirst = true;
+
+        return $this;
+    }
     /**
      * 设置获得查询结果的第一条记录的指定列的值
      * @param $columnName String 列名称
      * @return mixed TableQuery
      */
-    public function pluck($columnName);
+    public function pluck($columnName)
+    {
+
+    }
 
     /**
      * 设置去除重复记录
      * @return mixed TableQuery
      */
-    public function distinct();
+    public function distinct()
+    {
+
+    }
 
     /**
      * 设置返回的记录的列（可传入多个列名称）
      * @return mixed TableQuery
      */
-    public function select();
+    public function select()
+    {
+
+    }
 
     /**
      * 设置新增数据的查询
      * @param array $params 新增的字段/值数组
      * @return mixed TableQuery
      */
-    public function insert(array $params);
+    public function insert(array $params)
+    {
+
+    }
 
     /**
      * 设置新增数据并返回自增ID的查询
      * @param array $params 新增的字段/值数组
      * @return mixed TableQuery
      */
-    public function insertGetId(array $params);
+    public function insertGetId(array $params)
+    {
+
+    }
 
     /**
      * 设置更新查询
      * @param array $params
      * @return mixed TableQuery
      */
-    public function update(array $params);
+    public function update(array $params)
+    {
+
+    }
 
     /**
-     * 设置删除表中所有数据查询
+     * 设置执行删除操作
      * @return mixed TableQuery
      */
-    public function delete();
+    public function delete()
+    {
+
+    }
 
     /**
      * 设置清空数据表的查询
      * @return mixed TableQuery
      */
-    public function truncate();
+    public function truncate()
+    {
+
+    }
 
     /**
      * 设置查询跳过的记录条数
      * @param $count int 跳过的记录条数
      * @return mixed TableQuery
      */
-    public function skip($count);
+    public function skip($count)
+    {
+
+    }
 
     /**
      * 设置返回的记录条数
      * @param $count int 返回的记录条数
      * @return mixed TableQuery
      */
-    public function take($count);
+    public function take($count)
+    {
+
+    }
 
     /**
      * 设置连接查询
@@ -101,7 +206,10 @@ interface TableQuery {
      * @param $conditions String 连接条件
      * @return mixed TableQuery
      */
-    public function join($tableName, $conditions);
+    public function join($tableName, $conditions)
+    {
+
+    }
 
     /**
      * 设置左连接查询
@@ -109,41 +217,59 @@ interface TableQuery {
      * @param $conditions String 左连接条件
      * @return mixed TableQuery
      */
-    public function leftJoin($tableName, $conditions);
+    public function leftJoin($tableName, $conditions)
+    {
+
+    }
 
     /**
      * 设置返回查询的记录条数
      * @return mixed TableQuery
      */
-    public function count();
+    public function count()
+    {
+
+    }
 
     /**
      * 设置查询某列的最大值
      * @param $columnName String 列名称
      * @return mixed TableQuery
      */
-    public function max($columnName);
+    public function max($columnName)
+    {
+
+    }
 
     /**
      * 设置查询某列的最小值
      * @param $columnName String 列名称
      * @return mixed TableQuery
      */
-    public function min($columnName);
+    public function min($columnName)
+    {
+
+    }
 
     /**
      * 设置查询某列的平均值
      * @param $columnName String 列名称
      * @return mixed TableQuery
      */
-    public function avg($columnName);
+    public function avg($columnName)
+    {
+
+    }
 
     /**
      * 设置查询某列的值的总和
      * @param $columnName String 列名称
      * @return mixed TableQuery
      */
-    public function sum($columnName);
+    public function sum($columnName)
+    {
+
+    }
 }
 
  

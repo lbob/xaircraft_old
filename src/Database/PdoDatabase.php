@@ -34,6 +34,8 @@ class PdoDatabase implements Database {
      */
     private $isLog = true;
 
+    private $prefix;
+
     /**
      * @return \PDO
      */
@@ -209,10 +211,11 @@ class PdoDatabase implements Database {
      * @param $options
      * @return mixed
      */
-    public function connection($dsn, $username, $password, $options)
+    public function connection($dsn, $username, $password, $options, $prefix = null)
     {
         if (isset($dsn)) {
             $this->dbh = new \PDO($dsn, $username, $password, $options);
+            $this->prefix = $prefix;
         }
     }
 
@@ -233,9 +236,9 @@ class PdoDatabase implements Database {
      * @param $options
      * @return mixed
      */
-    public function reconnect($dsn, $username, $password, $options)
+    public function reconnect($dsn, $username, $password, $options, $prefix = null)
     {
-        $this->connection($dsn, $username, $password, $options);
+        $this->connection($dsn, $username, $password, $options, $prefix);
     }
 
     /**
@@ -254,7 +257,11 @@ class PdoDatabase implements Database {
      */
     public function table($tableName)
     {
-        // TODO: Implement table() method.
+        if (isset($tableName)) {
+            if (isset($this->prefix))
+                $tableName = $this->prefix . $tableName;
+            return new TableQuery($this, $tableName);
+        }
     }
 }
 

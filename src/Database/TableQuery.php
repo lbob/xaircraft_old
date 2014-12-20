@@ -48,19 +48,14 @@ class TableQuery {
     {
         switch ($this->queryType) {
             case self::QUERY_SELECT:
-                $query = $this->parseSelect();
-        }
-        if (isset($query)) {
-            var_dump($query);
+                return $this->parseSelect();
         }
     }
 
     private function parseSelect()
     {
         $query[] = 'SELECT';
-        if ($this->isFirst)
-            $query[] = 'TOP 1';
-        if (isset($this->selectFields) && count($this->selectFields)) {
+        if (isset($this->selectFields) && count($this->selectFields) > 0) {
             $query[] = implode(',', $this->selectFields);
         } else {
             $query[] = '*';
@@ -68,9 +63,15 @@ class TableQuery {
         $query[] = 'FROM ' . $this->tableName;
         if (isset($this->wheres) && count($this->wheres) > 0) {
             $query[] = 'WHERE';
-            $query[] = implode(' AND ', $this->wheres);
+            foreach ($this->wheres as $item) {
+                $query[] = implode(' ', $item);
+            }
         }
-        return implode(' ', $query);
+        if ($this->isFirst)
+            $query[] = 'LIMIT 1';
+        $query = implode(' ', $query);
+        var_dump($query);
+        return $this->driver->select($query, $this->params);
     }
 
     /**
@@ -82,11 +83,27 @@ class TableQuery {
         $args = func_get_args();
         $argsLen = func_num_args();
         if ($argsLen === 2) {
-            $this->wheres[] = $args[0] . ' = ? ';
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $args[0] . ' = ? ');
             $this->params[] = $args[1];
         }
         if ($argsLen === 3) {
-            $this->wheres[] = $args[0] . $args[1] . ' ? ';
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $args[0] . ' ' . $args[1] . ' ? ');
+            $this->params[] = $args[2];
+        }
+
+        return $this;
+    }
+
+    public function orWhere()
+    {
+        $args = func_get_args();
+        $argsLen = func_num_args();
+        if ($argsLen === 2) {
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $args[0] . ' = ? ');
+            $this->params[] = $args[1];
+        }
+        if ($argsLen === 3) {
+            $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $args[0] . ' ' . $args[1] . ' ? ');
             $this->params[] = $args[2];
         }
 
@@ -129,7 +146,11 @@ class TableQuery {
      */
     public function select()
     {
-
+        $this->queryType = self::QUERY_SELECT;
+        if (func_num_args() > 0) {
+            $this->selectFields = func_get_args();
+        }
+        return $this;
     }
 
     /**

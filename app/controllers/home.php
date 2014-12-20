@@ -24,7 +24,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $db = new \Xaircraft\Database\PdoDatabase();
         $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null);
         $db->transaction(function(\Xaircraft\Database\Database $db) {
-            $result = $db->select('SELECT * FROM aec_post');
+            $result = $db->select('SELECT title,content FROM aec_post');
             $result2 = $db->update("UPDATE aec_post SET title = 'test' WHERE id = ?", array(1));
             $db->delete("DELETE FROM aec_post WHERE id = ?", array(1));
             foreach ($result as $row) {
@@ -42,8 +42,9 @@ class home_controller extends \Xaircraft\Mvc\Controller {
     {
         $db = new \Xaircraft\Database\PdoDatabase();
         $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null, 'aec_');
-        $query = $db->table('post');
-        $query->where('id', 1)->first()->execute();
+        $query  = $db->table('post');
+        $result = $query->where('id', '>', 7)->orWhere('status', 'valid')->select()->execute();
+        var_dump($result);
         var_dump($query);
 
         $this->text($query);

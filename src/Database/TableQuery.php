@@ -33,6 +33,7 @@ class TableQuery {
     private $isPaged = false;
     private $pageIndex = 0;
     private $pageSize = 0;
+    private $orders = array();
 
     public function __construct(Database $driver, $tableName, $primaryKey = null)
     {
@@ -81,6 +82,9 @@ class TableQuery {
         if (isset($wheres)) {
             $query[] = $wheres;
         }
+        if (isset($this->orders) && count($this->orders) > 0) {
+            $query[] = 'ORDER BY ' . implode(',', $this->orders);
+        }
         if (!$this->isPaged && $this->isLimited) {
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
         }
@@ -119,6 +123,9 @@ class TableQuery {
         if (isset($wheres)) {
             $query[] = $wheres;
         }
+        if (isset($this->orders) && count($this->orders) > 0) {
+            $query[] = 'ORDER BY ' . implode(',', $this->orders);
+        }
         $limitStartIndex = ($this->pageIndex - 1) * $this->pageSize;
         $limitTakeLength = $this->pageSize;
         $query[] = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
@@ -130,6 +137,9 @@ class TableQuery {
             $primaryKeyValueArray[] = $row[$this->primaryKey];
         }
         $preQuery[] = implode(',', $primaryKeyValueArray) . ')';
+        if (isset($this->orders) && count($this->orders) > 0) {
+            $preQuery[] = 'ORDER BY ' . implode(',', $this->orders);
+        }
         $preQuery = implode(' ', $preQuery);
         return array(
             'query' => $preQuery,
@@ -238,6 +248,18 @@ class TableQuery {
         return $this;
     }
 
+    public function orderBy($columnName, $order)
+    {
+        if (!isset($columnName))
+            throw new \InvalidArgumentException("Invalid column name.");
+        if (!isset($order) || !(strtolower($order) === 'desc' || strtolower($order) === 'asc'))
+            throw new \InvalidArgumentException("Invalid order type.");
+
+        $this->orders[] = $columnName . ' ' . $order;
+
+        return $this;
+    }
+
     /**
      * 设置获得查询结果的第一条记录
      * @return TableQuery
@@ -273,7 +295,7 @@ class TableQuery {
 
     /**
      * 设置返回的记录的列（可传入多个列名称）
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function select()
     {

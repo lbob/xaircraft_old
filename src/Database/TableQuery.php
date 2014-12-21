@@ -34,6 +34,8 @@ class TableQuery {
     private $pageIndex = 0;
     private $pageSize = 0;
     private $orders = array();
+    private $group;
+    private $havings = array();
 
     public function __construct(Database $driver, $tableName, $primaryKey = null)
     {
@@ -82,6 +84,9 @@ class TableQuery {
         if (isset($wheres)) {
             $query[] = $wheres;
         }
+        if (isset($this->group)) {
+            $query[] = 'GROUP BY ' . $this->group;
+        }
         if (isset($this->orders) && count($this->orders) > 0) {
             $query[] = 'ORDER BY ' . implode(',', $this->orders);
         }
@@ -107,6 +112,9 @@ class TableQuery {
         if (isset($wheres)) {
             $query[] = $wheres;
         }
+        if (isset($this->group)) {
+            $query[] = 'GROUP BY ' . $this->group;
+        }
         $query = implode(' ', $query);
         $recordCount = 0;
         $recordCountResult = $this->driver->select($query, $this->params);
@@ -123,6 +131,9 @@ class TableQuery {
         if (isset($wheres)) {
             $query[] = $wheres;
         }
+        if (isset($this->group)) {
+            $query[] = 'GROUP BY ' . $this->group;
+        }
         if (isset($this->orders) && count($this->orders) > 0) {
             $query[] = 'ORDER BY ' . implode(',', $this->orders);
         }
@@ -137,6 +148,9 @@ class TableQuery {
             $primaryKeyValueArray[] = $row[$this->primaryKey];
         }
         $preQuery[] = implode(',', $primaryKeyValueArray) . ')';
+        if (isset($this->group)) {
+            $preQuery[] = 'GROUP BY ' . $this->group;
+        }
         if (isset($this->orders) && count($this->orders) > 0) {
             $preQuery[] = 'ORDER BY ' . implode(',', $this->orders);
         }
@@ -258,6 +272,22 @@ class TableQuery {
         $this->orders[] = $columnName . ' ' . $order;
 
         return $this;
+    }
+
+    public function groupBy()
+    {
+        $argsLen = func_num_args();
+        if ($argsLen === 0)
+            throw new \InvalidArgumentException("Invalid group by columns.");
+
+        $this->group = implode(',', func_get_args());
+
+        return $this;
+    }
+
+    public function having()
+    {
+
     }
 
     /**

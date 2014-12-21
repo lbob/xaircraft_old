@@ -43,7 +43,13 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $db = new \Xaircraft\Database\PdoDatabase();
         $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null, 'aec_');
         $query  = $db->table('post', 'id');
-        $result = $query->where('id', '>', 0)->whereNotIn('id', array(4, 6))->select('title', 'id')->orderBy('title', 'ASC')->orderBy('id', 'DESC')->page(2, 2)->execute();
+        $result = $query->where('id', '>', 0)
+                        ->whereNotIn('id', array(4, 6))
+                        ->groupBy('post_category_id')
+                        ->orderBy('title', 'ASC')
+                        ->orderBy('id', 'DESC')
+                        ->select('post_category_id')->execute();
+                        //->page(2, 2)->execute();
         var_dump($result);
         var_dump($query);
 

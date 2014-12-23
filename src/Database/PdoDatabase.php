@@ -17,10 +17,10 @@ class PdoDatabase implements Database {
      */
     private $dbh;
 
-    private $patternSelectStatement = '#select[ a-zA-Z][ \*\_a-zA-Z0-9\,\(\)]+[ ]from#i';
+    private $patternSelectStatement = '#select[ a-zA-Z][ \*\_a-zA-Z0-9\,\(\)\.]+[ ]from#i';
     private $patternInsertStatement = '#insert[ ]+into#i';
     private $patternDeleteStatement = '#delete[ ]+from#i';
-    private $patternUpdateStatement = '#update[ a-zA-Z][ \*\_a-zA-Z0-9\[\]\,]+[ ]set#i';
+    private $patternUpdateStatement = '#update[ a-zA-Z][ \*\_a-zA-Z0-9\[\]\,\.]+[ ]set#i';
 
     private $errorState = false;
 
@@ -258,9 +258,7 @@ class PdoDatabase implements Database {
     public function table($tableName, $primaryKey = null)
     {
         if (isset($tableName)) {
-            if (isset($this->prefix))
-                $tableName = $this->prefix . $tableName;
-            return new TableQuery($this, $tableName, $primaryKey);
+            return new TableQuery($this, $tableName, $this->prefix, $primaryKey);
         }
     }
 }

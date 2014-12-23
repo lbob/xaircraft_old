@@ -9,7 +9,8 @@ namespace Xaircraft\Database;
  * @package Xaircraft\Database
  * @author lbob created at 2014/12/19 10:05
  */
-class TableQuery {
+class TableQuery
+{
 
     const QUERY_SELECT = 'select';
     const QUERY_INSERT = 'insert';
@@ -22,9 +23,11 @@ class TableQuery {
      */
     private $driver;
     private $primaryKey;
+    private $prefix;
     private $tableName;
+    private $logicTableName;
     private $wheres = array();
-    private $params = array();
+    private $whereParams = array();
     private $queryType;
     private $selectFields = array();
     private $isLimited = false;
@@ -36,8 +39,10 @@ class TableQuery {
     private $orders = array();
     private $group;
     private $havings = array();
+    private $joins = array();
+    private $joinParams = array();
 
-    public function __construct(Database $driver, $tableName, $primaryKey = null)
+    public function __construct(Database $driver, $tableName, $prefix, $primaryKey = null)
     {
         if (!isset($driver))
             throw new \InvalidArgumentException("Invalid database driver.");
@@ -45,9 +50,13 @@ class TableQuery {
         if (!isset($tableName))
             throw new \InvalidArgumentException("Invalid table name.");
 
-        $this->driver = $driver;
-        $this->tableName = $tableName;
-        $this->primaryKey = $primaryKey;
+        $this->driver         = $driver;
+        $this->logicTableName = $tableName;
+        $this->primaryKey     = $primaryKey;
+        $this->prefix         = $prefix;
+
+        if (isset($this->prefix)) $this->tableName = $this->prefix . $tableName;
+        else $this->tableName = $tableName;
     }
 
     /**
@@ -62,6 +71,11 @@ class TableQuery {
         }
     }
 
+    private function getParams()
+    {
+        return array_merge($this->joinParams, $this->whereParams);
+    }
+
     private function parseSelectQuery()
     {
         $query[] = 'SELECT';
@@ -71,13 +85,18 @@ class TableQuery {
             $query[] = '*';
         }
         $query[] = 'FROM ' . $this->tableName;
+        if (isset($this->joins) && count($this->joins) > 0) {
+            foreach ($this->joins as $item) {
+                $query[] = $item;
+            }
+        }
         if ($this->isPaged) {
-            $pageResult = $this->parsePageQuery($query);
-            $queryResult = $this->driver->select($pageResult['query'], $this->params);
+            $pageResult  = $this->parsePageQuery($query);
+            $queryResult = $this->driver->select($pageResult['query'], $this->joinParams);
             return array(
                 'recordCount' => $pageResult['recordCount'],
-                'pageCount' => $pageResult['pageCount'],
-                'data' => $queryResult
+                'pageCount'   => $pageResult['pageCount'],
+                'data'        => $queryResult
             );
         }
         $wheres = $this->parseWheres();
@@ -87,6 +106,10 @@ class TableQuery {
         if (isset($this->group)) {
             $query[] = 'GROUP BY ' . $this->group;
         }
+        $havings = $this->parseHavings();
+        if (isset($havings)) {
+            $query[] = $havings;
+        }
         if (isset($this->orders) && count($this->orders) > 0) {
             $query[] = 'ORDER BY ' . implode(',', $this->orders);
         }
@@ -94,8 +117,7 @@ class TableQuery {
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
         }
         $query = implode(' ', $query);
-        var_dump($query);
-        return $this->driver->select($query, $this->params);
+        return $this->driver->select($query, $this->getParams());
     }
 
     private function parsePageQuery($preQuery)
@@ -103,11 +125,20 @@ class TableQuery {
         if (!isset($this->primaryKey))
             throw new \InvalidArgumentException("Page query must include primaryKey.");
 
+        $primaryKey = $this->primaryKey;
+        if (isset($this->joins) && count($this->joins) > 0)
+            $primaryKey = $this->tableName . '.' . $this->primaryKey;
+
         //取得分页结果的primaryKey值集合
         $query[] = 'SELECT';
-        $query[] = 'COUNT(' . $this->primaryKey . ') AS TotalCount';
+        $query[] = 'COUNT(' . $primaryKey . ') AS TotalCount';
         $query[] = 'FROM';
         $query[] = $this->tableName;
+        if (isset($this->joins) && count($this->joins) > 0) {
+            foreach ($this->joins as $item) {
+                $query[] = $item;
+            }
+        }
         $wheres = $this->parseWheres();
         if (isset($wheres)) {
             $query[] = $wheres;
@@ -115,37 +146,50 @@ class TableQuery {
         if (isset($this->group)) {
             $query[] = 'GROUP BY ' . $this->group;
         }
-        $query = implode(' ', $query);
-        $recordCount = 0;
-        $recordCountResult = $this->driver->select($query, $this->params);
+        $havings = $this->parseHavings();
+        if (isset($havings)) {
+            $query[] = $havings;
+        }
+        $query             = implode(' ', $query);
+        $recordCount       = 0;
+        $recordCountResult = $this->driver->select($query, $this->getParams());
         foreach ($recordCountResult as $row) {
             $recordCount = $row['TotalCount'];
         }
-        $pageCount = $recordCount % $this->pageSize == 0 ? $recordCount / $this->pageSize : intval($recordCount / $this->pageSize + 1);
+        $pageCount       = $recordCount % $this->pageSize == 0 ? $recordCount / $this->pageSize
+            : intval($recordCount / $this->pageSize + 1);
         $this->pageIndex = $this->pageIndex > $pageCount ? $pageCount : $this->pageIndex;
-        $query = array();
-        $query[] = 'SELECT';
-        $query[] = $this->primaryKey;
-        $query[] = 'FROM';
-        $query[] = $this->tableName;
+        $query           = array();
+        $query[]         = 'SELECT';
+        $query[]         = $primaryKey . ' AS ' . str_replace('.', '_', $primaryKey);
+        $query[]         = 'FROM';
+        $query[]         = $this->tableName;
+        if (isset($this->joins) && count($this->joins) > 0) {
+            foreach ($this->joins as $item) {
+                $query[] = $item;
+            }
+        }
         if (isset($wheres)) {
             $query[] = $wheres;
         }
         if (isset($this->group)) {
             $query[] = 'GROUP BY ' . $this->group;
         }
+        if (isset($havings)) {
+            $query[] = $havings;
+        }
         if (isset($this->orders) && count($this->orders) > 0) {
             $query[] = 'ORDER BY ' . implode(',', $this->orders);
         }
-        $limitStartIndex = ($this->pageIndex - 1) * $this->pageSize;
-        $limitTakeLength = $this->pageSize;
-        $query[] = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
-        $query = implode(' ', $query);
-        $primaryKeyValues = $this->driver->select($query, $this->params);
-        $preQuery[] = 'WHERE ' . $this->primaryKey . ' IN (';
+        $limitStartIndex      = ($this->pageIndex - 1) * $this->pageSize;
+        $limitTakeLength      = $this->pageSize;
+        $query[]              = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
+        $query                = implode(' ', $query);
+        $primaryKeyValues     = $this->driver->select($query, $this->getParams());
+        $preQuery[]           = 'WHERE ' . $primaryKey . ' IN (';
         $primaryKeyValueArray = array();
         foreach ($primaryKeyValues as $row) {
-            $primaryKeyValueArray[] = $row[$this->primaryKey];
+            $primaryKeyValueArray[] = $row[str_replace('.', '_', $primaryKey)];
         }
         $preQuery[] = implode(',', $primaryKeyValueArray) . ')';
         if (isset($this->group)) {
@@ -156,9 +200,9 @@ class TableQuery {
         }
         $preQuery = implode(' ', $preQuery);
         return array(
-            'query' => $preQuery,
+            'query'       => $preQuery,
             'recordCount' => $recordCount,
-            'pageCount' => $pageCount
+            'pageCount'   => $pageCount
         );
     }
 
@@ -174,21 +218,53 @@ class TableQuery {
         return null;
     }
 
+    private function parseHavings()
+    {
+        if (isset($this->havings) && count($this->havings)) {
+            $query[] = 'HAVING (';
+            foreach ($this->havings as $item) {
+                $query[] = implode(' ', $item);
+            }
+            return implode(' ', $query) . ')';
+        }
+        return null;
+    }
+
     /**
      * 设置查询条件
      * @return TableQuery
      */
     public function where()
     {
-        $args = func_get_args();
+        $args    = func_get_args();
         $argsLen = func_num_args();
-        if ($argsLen === 2) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $args[0] . ' = ? ');
-            $this->params[] = $args[1];
-        }
-        if ($argsLen === 3) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $args[0] . ' ' . $args[1] . ' ? ');
-            $this->params[] = $args[2];
+
+        if ($argsLen === 1) {
+            $handler = $args[0];
+            if (is_callable($handler)) {
+                $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+                call_user_func($handler, $whereQuery);
+                $this->wheres[] = array(
+                    count($this->wheres) > 0 ? 'AND' : '',
+                    $whereQuery->getQuery()
+                );
+                $params = $whereQuery->getParams();
+                if (isset($params))
+                    $this->whereParams = array_merge($this->whereParams, $params);
+            }
+        } else {
+            $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+            if ($argsLen === 2) {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
+                $this->whereParams[] = $args[1];
+            }
+            if ($argsLen === 3) {
+                $this->wheres[] = array(
+                    count($this->wheres) > 0 ? 'AND' : '',
+                    $columnName . ' ' . $args[1] . ' ? '
+                );
+                $this->whereParams[] = $args[2];
+            }
         }
 
         return $this;
@@ -196,15 +272,36 @@ class TableQuery {
 
     public function orWhere()
     {
-        $args = func_get_args();
+        $args    = func_get_args();
         $argsLen = func_num_args();
-        if ($argsLen === 2) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $args[0] . ' = ? ');
-            $this->params[] = $args[1];
-        }
-        if ($argsLen === 3) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $args[0] . ' ' . $args[1] . ' ? ');
-            $this->params[] = $args[2];
+
+        if ($argsLen === 1) {
+            $handler = $args[0];
+            if (is_callable($handler)) {
+                $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+                call_user_func($handler, $whereQuery);
+                $this->wheres[] = array(
+                    count($this->wheres) > 0 ? 'OR' : '',
+                    $whereQuery->getQuery()
+                );
+                $params = $whereQuery->getParams();
+                if (isset($params))
+                    $this->whereParams = array_merge($this->whereParams, $params);
+            }
+        } else {
+            $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0]
+                : $this->prefix . $args[0];
+            if ($argsLen === 2) {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
+                $this->whereParams[] = $args[1];
+            }
+            if ($argsLen === 3) {
+                $this->wheres[] = array(
+                    count($this->wheres) > 0 ? 'OR' : '',
+                    $columnName . ' ' . $args[1] . ' ? '
+                );
+                $this->whereParams[] = $args[2];
+            }
         }
 
         return $this;
@@ -213,8 +310,10 @@ class TableQuery {
     public function whereBetween($columnName, array $ranges)
     {
         if (count($ranges) === 2) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', '(' . $columnName . ' BETWEEN ? AND ?)');
-            $this->params = array_merge($this->params, $ranges);
+            $columnName        = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
+                : $this->prefix . $columnName;
+            $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', '(' . $columnName . ' BETWEEN ? AND ?)');
+            $this->whereParams = array_merge($this->whereParams, $ranges);
         }
 
         return $this;
@@ -223,8 +322,13 @@ class TableQuery {
     public function whereNotBetween($columnName, array $ranges)
     {
         if (count($ranges) === 2) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', '(' . $columnName . ' < ? OR ' . $columnName . ' > ?)');
-            $this->params = array_merge($this->params, $ranges);
+            $columnName        = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
+                : $this->prefix . $columnName;
+            $this->wheres[] = array(
+                count($this->wheres) > 0 ? 'AND' : '',
+                '(' . $columnName . ' < ? OR ' . $columnName . ' > ?)'
+            );
+            $this->whereParams   = array_merge($this->whereParams, $ranges);
         }
 
         return $this;
@@ -233,14 +337,16 @@ class TableQuery {
     public function whereIn($columnName, array $ranges)
     {
         if (isset($ranges) && count($ranges) > 0) {
-            $where = $columnName . ' IN (';
+            $columnName        = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
+                : $this->prefix . $columnName;
+            $where  = $columnName . ' IN (';
             $values = array();
             foreach ($ranges as $item) {
                 $values[] = "?";
             }
-            $where = $where . implode(',', $values) . ')';
+            $where          = $where . implode(',', $values) . ')';
             $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $where);
-            $this->params = array_merge($this->params, $ranges);
+            $this->whereParams   = array_merge($this->whereParams, $ranges);
         }
 
         return $this;
@@ -249,14 +355,16 @@ class TableQuery {
     public function whereNotIn($columnName, array $ranges)
     {
         if (isset($ranges) && count($ranges) > 0) {
-            $where = $columnName . ' NOT IN (';
-            $values = array();
+            $columnName = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
+                : $this->prefix . $columnName;
+            $where      = $columnName . ' NOT IN (';
+            $values     = array();
             foreach ($ranges as $item) {
                 $values[] = "?";
             }
-            $where = $where . implode(',', $values) . ')';
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $where);
-            $this->params = array_merge($this->params, $ranges);
+            $where             = $where . implode(',', $values) . ')';
+            $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
+            $this->whereParams = array_merge($this->whereParams, $ranges);
         }
 
         return $this;
@@ -269,6 +377,8 @@ class TableQuery {
         if (!isset($order) || !(strtolower($order) === 'desc' || strtolower($order) === 'asc'))
             throw new \InvalidArgumentException("Invalid order type.");
 
+        $columnName     = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
+            : $this->prefix . $columnName;
         $this->orders[] = $columnName . ' ' . $order;
 
         return $this;
@@ -280,14 +390,38 @@ class TableQuery {
         if ($argsLen === 0)
             throw new \InvalidArgumentException("Invalid group by columns.");
 
-        $this->group = implode(',', func_get_args());
+        foreach (func_get_args() as $item) {
+            $columnName = stripos($item, '.') === false ? $this->tableName . '.' . $item
+                : $this->prefix . $item;
+            $columns[]  = $columnName;
+        }
+
+        $this->group = implode(',', $columns);
 
         return $this;
     }
 
     public function having()
     {
+        $args    = func_get_args();
+        $argsLen = func_num_args();
+        $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+        if ($argsLen === 2) {
+            $this->havings[] = array(
+                count($this->havings) > 0 ? 'AND' : '',
+                $columnName . ' = ? '
+            );
+            $this->whereParams[]  = $args[1];
+        }
+        if ($argsLen === 3) {
+            $this->havings[] = array(
+                count($this->havings) > 0 ? 'AND' : '',
+                $columnName . ' ' . $args[1] . ' ? '
+            );
+            $this->whereParams[]  = $args[2];
+        }
 
+        return $this;
     }
 
     /**
@@ -296,8 +430,8 @@ class TableQuery {
      */
     public function first()
     {
-        $this->queryType = self::QUERY_SELECT;
-        $this->isLimited = true;
+        $this->queryType       = self::QUERY_SELECT;
+        $this->isLimited       = true;
         $this->limitStartIndex = 0;
         $this->limitTakeLength = 1;
 
@@ -331,7 +465,10 @@ class TableQuery {
     {
         $this->queryType = self::QUERY_SELECT;
         if (func_num_args() > 0) {
-            $this->selectFields = func_get_args();
+            foreach (func_get_args() as $item) {
+                $columnName = stripos($item, '.') === false ? $this->tableName . '.' . $item : $this->prefix . $item;
+                $this->selectFields[] = $columnName;
+            }
         }
         return $this;
     }
@@ -391,8 +528,8 @@ class TableQuery {
      */
     public function skip($count)
     {
-        $this->queryType = self::QUERY_SELECT;
-        $this->isLimited = true;
+        $this->queryType       = self::QUERY_SELECT;
+        $this->isLimited       = true;
         $this->limitStartIndex = $count;
 
         return $this;
@@ -405,8 +542,8 @@ class TableQuery {
      */
     public function take($count)
     {
-        $this->queryType = self::QUERY_SELECT;
-        $this->isLimited = true;
+        $this->queryType       = self::QUERY_SELECT;
+        $this->isLimited       = true;
         $this->limitTakeLength = $count;
 
         return $this;
@@ -417,9 +554,9 @@ class TableQuery {
         $pageIndex = $pageIndex <= 0 ? 1 : $pageIndex;
 
         $this->queryType = self::QUERY_SELECT;
-        $this->isPaged = true;
+        $this->isPaged   = true;
         $this->pageIndex = $pageIndex;
-        $this->pageSize = $pageSize;
+        $this->pageSize  = $pageSize;
 
         return $this;
     }
@@ -427,12 +564,38 @@ class TableQuery {
     /**
      * 设置连接查询
      * @param $tableName String 连接的表名称
-     * @param $conditions String 连接条件
-     * @return mixed TableQuery
+     * @return TableQuery
      */
-    public function join($tableName, $conditions)
+    public function join($tableName)
     {
+        if (!isset($tableName))
+            throw new \InvalidArgumentException("Invalid table name");
 
+        $args    = func_get_args();
+        $argsLen = func_num_args();
+
+        $joinQuery = new JoinQuery($tableName, $this->prefix);
+
+        if ($argsLen === 2) {
+            $handler = $args[1];
+            if (isset($handler) && is_callable($handler)) {
+                call_user_func($handler, $joinQuery);
+            }
+        }
+        if ($argsLen === 3) {
+            $joinQuery->on($args[1], $args[2]);
+        }
+
+        if ($argsLen === 4) {
+            $joinQuery->on($args[1], $args[2], $args[3]);
+        }
+
+        $params        = $joinQuery->getParams();
+        $this->joins[] = $joinQuery->getQuery();
+        if (isset($params) && count($params) > 0)
+            $this->joinParams = $params;
+
+        return $this;
     }
 
     /**

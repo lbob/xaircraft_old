@@ -35,6 +35,8 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
         $log = $db->getQueryLog();
         var_dump($log);
+        $params = $this->req->params();
+        var_dump($params);
         return $this->view();
     }
 
@@ -44,12 +46,15 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null, 'aec_');
         $query  = $db->table('post', 'id');
         $result = $query->where('id', '>', 0)
-                        ->whereNotIn('id', array(4, 6))
-                        ->groupBy('post_category_id')
-                        ->orderBy('title', 'ASC')
-                        ->orderBy('id', 'DESC')
-                        ->select('post_category_id')->execute();
-                        //->page(2, 2)->execute();
+                        ->orWhere(function($query) {
+                            $query->where('id', 1);
+                        })
+                        ->join('post_category', function($join) {
+                            $join->on('post.post_category_id', 'post_category.id');
+                            $join->where('post_category.status', '>', 0);
+                        })
+                        ->page(2, 3)
+                        ->select('post.*')->execute();
         var_dump($result);
         var_dump($query);
 

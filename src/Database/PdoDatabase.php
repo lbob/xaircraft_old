@@ -243,11 +243,20 @@ class PdoDatabase implements Database {
 
     /**
      * 获得数据库驱动对象
-     * @return object 返回数据库驱动对象
+     * @return \PDO 返回数据库驱动对象
      */
     public function getDbDriver()
     {
         return $this->getDriverInstance();
+    }
+
+    /**
+     * @param null $name
+     * @return mixed
+     */
+    public function lastInsertId($name = null)
+    {
+        return $this->getDriverInstance()->lastInsertId($name);
     }
 
     /**

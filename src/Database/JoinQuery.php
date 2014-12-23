@@ -114,7 +114,7 @@ class JoinQuery {
 
     public function getQuery()
     {
-        $query[] = $this->isLeftJoin ? 'LEFT JOIN ' : 'JOIN ' . $this->tableName;
+        $query[] = ($this->isLeftJoin ? 'LEFT JOIN ' : 'JOIN ') . $this->tableName;
         if ((isset($this->ons) && count($this->ons) > 0) || (isset($this->wheres) && count($this->wheres) > 0)) {
             $query[] = 'ON (';
             if (isset($this->ons) && count($this->ons) > 0) {

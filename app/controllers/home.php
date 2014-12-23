@@ -45,16 +45,29 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $db = new \Xaircraft\Database\PdoDatabase();
         $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null, 'aec_');
         $query  = $db->table('post', 'id');
+
+        //select
         $result = $query->where('id', '>', 0)
                         ->orWhere(function($query) {
                             $query->where('id', 1);
                         })
-                        ->join('post_category', function($join) {
-                            $join->on('post.post_category_id', 'post_category.id');
-                            $join->where('post_category.status', '>', 0);
-                        })
-                        ->page(2, 3)
-                        ->select('post.*')->execute();
+                        //->orderBy('id', 'DESC')
+                        ->page(1, 1)
+                        ->select()->execute();
+        var_dump($result);
+
+        //insert
+        $result = $query->insertGetId(array(
+            'title' => '测试插入记录'
+        ))->execute();
+        var_dump($result);
+
+        //update
+        $query  = $db->table('post', 'id');
+        $result = $query->where('id', 1)->update(array(
+            'title' => '测试更新语句'
+        ))->execute();
+
         var_dump($result);
         var_dump($query);
 

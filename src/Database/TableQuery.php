@@ -41,6 +41,10 @@ class TableQuery
     private $havings = array();
     private $joins = array();
     private $joinParams = array();
+    private $countColumnName;
+    private $inserts;
+    private $isInsertGetId = false;
+    private $updates;
 
     public function __construct(Database $driver, $tableName, $prefix, $primaryKey = null)
     {
@@ -68,6 +72,10 @@ class TableQuery
         switch ($this->queryType) {
             case self::QUERY_SELECT:
                 return $this->parseSelectQuery();
+            case self::QUERY_INSERT:
+                return $this->parseInsertQuery();
+            case self::QUERY_UPDATE:
+                return $this->parseUpdateQuery();
         }
     }
 
@@ -79,11 +87,16 @@ class TableQuery
     private function parseSelectQuery()
     {
         $query[] = 'SELECT';
-        if (isset($this->selectFields) && count($this->selectFields) > 0) {
-            $query[] = implode(',', $this->selectFields);
+        if (isset($this->countColumnName)) {
+            $query[] = $this->countColumnName;
         } else {
-            $query[] = '*';
+            if (isset($this->selectFields) && count($this->selectFields) > 0) {
+                $query[] = implode(',', $this->selectFields);
+            } else {
+                $query[] = '*';
+            }
         }
+
         $query[] = 'FROM ' . $this->tableName;
         if (isset($this->joins) && count($this->joins) > 0) {
             foreach ($this->joins as $item) {
@@ -248,18 +261,19 @@ class TableQuery
                     count($this->wheres) > 0 ? 'AND' : '',
                     $whereQuery->getQuery()
                 );
-                $params = $whereQuery->getParams();
+                $params         = $whereQuery->getParams();
                 if (isset($params))
                     $this->whereParams = array_merge($this->whereParams, $params);
             }
         } else {
-            $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+            $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0]
+                : $this->prefix . $args[0];
             if ($argsLen === 2) {
-                $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
+                $this->wheres[]      = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
                 $this->whereParams[] = $args[1];
             }
             if ($argsLen === 3) {
-                $this->wheres[] = array(
+                $this->wheres[]      = array(
                     count($this->wheres) > 0 ? 'AND' : '',
                     $columnName . ' ' . $args[1] . ' ? '
                 );
@@ -284,7 +298,7 @@ class TableQuery
                     count($this->wheres) > 0 ? 'OR' : '',
                     $whereQuery->getQuery()
                 );
-                $params = $whereQuery->getParams();
+                $params         = $whereQuery->getParams();
                 if (isset($params))
                     $this->whereParams = array_merge($this->whereParams, $params);
             }
@@ -292,11 +306,11 @@ class TableQuery
             $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0]
                 : $this->prefix . $args[0];
             if ($argsLen === 2) {
-                $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
+                $this->wheres[]      = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
                 $this->whereParams[] = $args[1];
             }
             if ($argsLen === 3) {
-                $this->wheres[] = array(
+                $this->wheres[]      = array(
                     count($this->wheres) > 0 ? 'OR' : '',
                     $columnName . ' ' . $args[1] . ' ? '
                 );
@@ -324,11 +338,11 @@ class TableQuery
         if (count($ranges) === 2) {
             $columnName        = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
                 : $this->prefix . $columnName;
-            $this->wheres[] = array(
+            $this->wheres[]    = array(
                 count($this->wheres) > 0 ? 'AND' : '',
                 '(' . $columnName . ' < ? OR ' . $columnName . ' > ?)'
             );
-            $this->whereParams   = array_merge($this->whereParams, $ranges);
+            $this->whereParams = array_merge($this->whereParams, $ranges);
         }
 
         return $this;
@@ -337,16 +351,16 @@ class TableQuery
     public function whereIn($columnName, array $ranges)
     {
         if (isset($ranges) && count($ranges) > 0) {
-            $columnName        = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
+            $columnName = stripos($columnName, '.') === false ? $this->tableName . '.' . $columnName
                 : $this->prefix . $columnName;
-            $where  = $columnName . ' IN (';
-            $values = array();
+            $where      = $columnName . ' IN (';
+            $values     = array();
             foreach ($ranges as $item) {
                 $values[] = "?";
             }
-            $where          = $where . implode(',', $values) . ')';
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $where);
-            $this->whereParams   = array_merge($this->whereParams, $ranges);
+            $where             = $where . implode(',', $values) . ')';
+            $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
+            $this->whereParams = array_merge($this->whereParams, $ranges);
         }
 
         return $this;
@@ -403,22 +417,22 @@ class TableQuery
 
     public function having()
     {
-        $args    = func_get_args();
-        $argsLen = func_num_args();
+        $args       = func_get_args();
+        $argsLen    = func_num_args();
         $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
         if ($argsLen === 2) {
-            $this->havings[] = array(
+            $this->havings[]     = array(
                 count($this->havings) > 0 ? 'AND' : '',
                 $columnName . ' = ? '
             );
-            $this->whereParams[]  = $args[1];
+            $this->whereParams[] = $args[1];
         }
         if ($argsLen === 3) {
-            $this->havings[] = array(
+            $this->havings[]     = array(
                 count($this->havings) > 0 ? 'AND' : '',
                 $columnName . ' ' . $args[1] . ' ? '
             );
-            $this->whereParams[]  = $args[2];
+            $this->whereParams[] = $args[2];
         }
 
         return $this;
@@ -466,7 +480,8 @@ class TableQuery
         $this->queryType = self::QUERY_SELECT;
         if (func_num_args() > 0) {
             foreach (func_get_args() as $item) {
-                $columnName = stripos($item, '.') === false ? $this->tableName . '.' . $item : $this->prefix . $item;
+                $columnName           = stripos($item, '.') === false ? $this->tableName . '.' . $item
+                    : $this->prefix . $item;
                 $this->selectFields[] = $columnName;
             }
         }
@@ -476,36 +491,51 @@ class TableQuery
     /**
      * 设置新增数据的查询
      * @param array $params 新增的字段/值数组
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function insert(array $params)
     {
+        if (!isset($params) || empty($params))
+            throw new \InvalidArgumentException("Invalid insert params.");
 
+        $this->queryType = self::QUERY_INSERT;
+        $this->inserts = $params;
+
+        return $this;
     }
 
     /**
      * 设置新增数据并返回自增ID的查询
      * @param array $params 新增的字段/值数组
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function insertGetId(array $params)
     {
+        $this->insert($params);
+        $this->isInsertGetId = true;
 
+        return $this;
     }
 
     /**
      * 设置更新查询
      * @param array $params
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function update(array $params)
     {
+        if (!isset($params) || empty($params))
+            throw new \InvalidArgumentException("Invalid update params.");
 
+        $this->queryType = self::QUERY_UPDATE;
+        $this->updates = $params;
+
+        return $this;
     }
 
     /**
      * 设置执行删除操作
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function delete()
     {
@@ -514,7 +544,7 @@ class TableQuery
 
     /**
      * 设置清空数据表的查询
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function truncate()
     {
@@ -601,12 +631,38 @@ class TableQuery
     /**
      * 设置左连接查询
      * @param $tableName String 左连接的表名称
-     * @param $conditions String 左连接条件
-     * @return mixed TableQuery
+     * @return TableQuery
      */
-    public function leftJoin($tableName, $conditions)
+    public function leftJoin($tableName)
     {
+        if (!isset($tableName))
+            throw new \InvalidArgumentException("Invalid table name");
 
+        $args    = func_get_args();
+        $argsLen = func_num_args();
+
+        $joinQuery = new JoinQuery($tableName, $this->prefix, true);
+
+        if ($argsLen === 2) {
+            $handler = $args[1];
+            if (isset($handler) && is_callable($handler)) {
+                call_user_func($handler, $joinQuery);
+            }
+        }
+        if ($argsLen === 3) {
+            $joinQuery->on($args[1], $args[2]);
+        }
+
+        if ($argsLen === 4) {
+            $joinQuery->on($args[1], $args[2], $args[3]);
+        }
+
+        $params        = $joinQuery->getParams();
+        $this->joins[] = $joinQuery->getQuery();
+        if (isset($params) && count($params) > 0)
+            $this->joinParams = $params;
+
+        return $this;
     }
 
     /**
@@ -615,7 +671,17 @@ class TableQuery
      */
     public function count()
     {
+        $this->queryType = self::QUERY_SELECT;
+        $column          = '*';
+        if (isset($this->primaryKey)) {
+            $column = $this->primaryKey;
+        }
+        if (func_num_args() > 0) {
+            $column = func_get_args(0);
+        }
 
+        $this->countColumnName = 'COUNT(' . $column . ')';
+        return $this;
     }
 
     /**
@@ -656,6 +722,50 @@ class TableQuery
     public function sum($columnName)
     {
 
+    }
+
+    private function parseInsertQuery()
+    {
+        if (isset($this->inserts) && !empty($this->inserts)) {
+            $query[] = 'INSERT INTO ' . $this->tableName;
+            $query[] = '(' . implode(',', array_keys($this->inserts)) . ')';
+            $query[] = 'VALUES';
+            $query[] = '(';
+            $paramsLen = count($this->inserts);
+            $values = array();
+            for ($i = 0; $i < $paramsLen; $i++) {
+                $values[] = '?';
+            }
+            $query[] = implode(',', $values) . ')';
+            $params = array_values($this->inserts);
+            $query = implode(' ', $query);
+            $isSuccess = $this->driver->insert($query, $params);
+            if ($isSuccess && $this->isInsertGetId) {
+                return $this->driver->getDbDriver()->lastInsertId();
+            }
+            return $isSuccess;
+        }
+        return false;
+    }
+
+    private function parseUpdateQuery()
+    {
+        if (isset($this->updates) && !empty($this->updates)) {
+            $query[] = 'UPDATE ' . $this->tableName;
+            $query[] = 'SET';
+            $columns = array();
+            foreach ($this->updates as $key => $value) {
+                $columns[] = $key . ' = ?';
+            }
+            $query[] = implode(',', $columns);
+            $wheres = $this->parseWheres();
+            if (isset($wheres))
+                $query[] = $wheres;
+            $params = array_values($this->updates);
+            $query = implode(' ', $query);
+            return $this->driver->update($query, array_merge($params, $this->whereParams));
+        }
+        return false;
     }
 }
 

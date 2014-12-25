@@ -39,13 +39,13 @@ class JoinQuery {
     {
         $args = func_get_args();
         $argsLen = func_num_args();
-        $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+        $columnName = $args[0];
         if ($argsLen === 2) {
-            $joinTableColumnName = stripos($args[1], '.') === false ? $args[1] : $this->prefix . $args[1];
+            $joinTableColumnName = $args[1];
             $this->ons[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ' . $joinTableColumnName);
         }
         if ($argsLen === 3) {
-            $joinTableColumnName = stripos($args[2], '.') === false ? $args[2] : $this->prefix . $args[2];
+            $joinTableColumnName = $args[2];
             $this->ons[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ' . $joinTableColumnName);
         }
 
@@ -59,13 +59,13 @@ class JoinQuery {
     {
         $args = func_get_args();
         $argsLen = func_num_args();
-        $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+        $columnName = $args[0];
         if ($argsLen === 2) {
-            $joinTableColumnName = stripos($args[1], '.') === false ? $args[1] : $this->prefix . $args[1];
+            $joinTableColumnName = $args[1];
             $this->ons[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ' . $joinTableColumnName);
         }
         if ($argsLen === 3) {
-            $joinTableColumnName = stripos($args[2], '.') === false ? $args[2] : $this->prefix . $args[2];
+            $joinTableColumnName = $args[2];
             $this->ons[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ' . $joinTableColumnName);
         }
 
@@ -79,7 +79,7 @@ class JoinQuery {
     {
         $args = func_get_args();
         $argsLen = func_num_args();
-        $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+        $columnName = $args[0];
         if ($argsLen === 2) {
             $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
             $this->params[] = $args[1];
@@ -99,7 +99,7 @@ class JoinQuery {
     {
         $args = func_get_args();
         $argsLen = func_num_args();
-        $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+        $columnName = $args[0];
         if ($argsLen === 2) {
             $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
             $this->params[] = $args[1];

@@ -37,7 +37,7 @@ class WhereQuery {
     {
         $args = func_get_args();
         $argsLen = func_num_args();
-        $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+        $columnName = $args[0];
         if ($argsLen === 2) {
             $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
             $this->params[] = $args[1];
@@ -57,7 +57,7 @@ class WhereQuery {
     {
         $args = func_get_args();
         $argsLen = func_num_args();
-        $columnName = stripos($args[0], '.') === false ? $this->tableName . '.' . $args[0] : $this->prefix . $args[0];
+        $columnName = $args[0];
         if ($argsLen === 2) {
             $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
             $this->params[] = $args[1];

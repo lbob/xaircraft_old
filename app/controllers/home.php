@@ -47,13 +47,46 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $query  = $db->table('post', 'id');
 
         //select
-        $result = $query->where('id', '>', 0)
-                        ->orWhere(function($query) {
-                            $query->where('id', 1);
+        $result = $query->where('aec_post.id', '<>', 58)
+                        ->join('post_category', function($join) {
+                            $join->on('aec_post_category.id', '=', 'aec_post.post_category_id');
+                            $join->where('aec_post_category.status', '>', 0);
                         })
-                        //->orderBy('id', 'DESC')
-                        ->page(1, 1)
-                        ->select()->execute();
+                        ->orderBy('aec_post.id', 'DESC')
+                        ->page(14, 2)
+                        ->select('aec_post.id')->execute();
+        var_dump($result);
+
+        //insert
+//        $result = $query->insertGetId(array(
+//            'title' => '测试插入记录'
+//        ))->execute();
+//        var_dump($result);
+
+        //update
+        $query  = $db->table('post', 'id');
+        $result = $query->where('id', 1)->update(array(
+            'title' => '测试更新语句'
+        ))->execute();
+
+        var_dump($result);
+        var_dump($db->getQueryLog());
+
+        $this->text($query);
+    }
+
+    public function test2()
+    {
+        $query = \Xaircraft\DB::table('post', 'id');
+        //select
+        $result = $query->where('aec_post.id', '<>', 58)
+            ->join('post_category', function($join) {
+                $join->on('aec_post_category.id', '=', 'aec_post.post_category_id');
+                $join->where('aec_post_category.status', '>', 0);
+            })
+            ->orderBy('aec_post.id', 'DESC')
+            ->page(14, 2)
+            ->select('aec_post.id')->execute();
         var_dump($result);
 
         //insert
@@ -63,13 +96,13 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         var_dump($result);
 
         //update
-        $query  = $db->table('post', 'id');
+        $query  = \Xaircraft\DB::table('post', 'id');
         $result = $query->where('id', 1)->update(array(
             'title' => '测试更新语句'
         ))->execute();
 
         var_dump($result);
-        var_dump($query);
+        var_dump(\Xaircraft\DB::getQueryLog());
 
         $this->text($query);
     }

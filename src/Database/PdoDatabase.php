@@ -2,6 +2,7 @@
 
 namespace Xaircraft\Database;
 use Whoops\Example\Exception;
+use Xaircraft\ERM\Entity;
 
 
 /**
@@ -135,7 +136,7 @@ class PdoDatabase implements Database {
     {
         if (is_string($query)) {
             $this->log($query);
-            return $this->getDriverInstance()->exec($query);
+            return $this->getDriverInstance()->query($query);
         }
         return $this->errorState;
     }
@@ -269,6 +270,18 @@ class PdoDatabase implements Database {
         if (isset($tableName)) {
             return new TableQuery($this, $tableName, $this->prefix, $primaryKey);
         }
+
+        return null;
+    }
+
+    /**
+     * @param $query
+     * @param null $primaryKey
+     * @return \Xaircraft\ERM\Entity
+     */
+    public function entity($query, $primaryKey = null)
+    {
+        return new Entity($query, $primaryKey);
     }
 }
 

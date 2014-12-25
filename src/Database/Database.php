@@ -126,6 +126,13 @@ interface Database {
      * @return \Xaircraft\Database\TableQuery
      */
     public function table($tableName, $primaryKey = null);
+
+    /**
+     * @param $query
+     * @param null $primaryKey
+     * @return \Xaircraft\ERM\Entity
+     */
+    public function entity($query, $primaryKey = null);
 }
 
  

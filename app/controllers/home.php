@@ -77,31 +77,23 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function test2()
     {
-        $query = \Xaircraft\DB::table('post', 'id');
-        //select
-        $result = $query->where('aec_post.id', '<>', 58)
-            ->join('post_category', function($join) {
-                $join->on('aec_post_category.id', '=', 'aec_post.post_category_id');
-                $join->where('aec_post_category.status', '>', 0);
-            })
-            ->orderBy('aec_post.id', 'DESC')
-            ->page(14, 2)
-            ->select('aec_post.id')->execute();
-        var_dump($result);
+        $query = \Xaircraft\DB::table('post')->where('id', 3)->first();
+        $entity = \Xaircraft\DB::entity($query);
 
-        //insert
-        $result = $query->insertGetId(array(
-            'title' => '测试插入记录'
-        ))->execute();
-        var_dump($result);
+        //$entity->title = '测试一下entitys';
+        //$result = $entity->save();
+        //var_dump($result);
 
-        //update
-        $query  = \Xaircraft\DB::table('post', 'id');
-        $result = $query->where('id', 1)->update(array(
-            'title' => '测试更新语句'
-        ))->execute();
 
-        var_dump($result);
+        //新增实体
+        $entity = \Xaircraft\DB::entity('post', 'id');
+        $entity->title = '测试新增实体对象';
+        $entity->post_category_id = 1;
+        $result = $entity->save();
+
+        //var_dump($result);
+        //var_dump($entity);
+
         var_dump(\Xaircraft\DB::getQueryLog());
 
         $this->text($query);

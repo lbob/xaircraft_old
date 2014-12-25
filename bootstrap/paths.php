@@ -9,5 +9,7 @@ return array(
     'config'    => __DIR__.'/../app/config',
     'filter'    => __DIR__.'/../app/config/filter',
     'vendor'    => __DIR__.'/../vendor',
-    'routes'    => __DIR__.'/../app/config/routes.php'
+    'routes'    => __DIR__.'/../app/config/routes.php',
+    'cache'     => __DIR__.'/../app/cache',
+    'tableMeta' => __DIR__.'/../app/cache/tableMeta/'
 );

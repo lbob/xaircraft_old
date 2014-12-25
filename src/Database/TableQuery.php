@@ -18,13 +18,14 @@ class TableQuery
     const QUERY_DELETE = 'delete';
     const QUERY_TRUNCATE = 'truncate';
 
+    public $tableName;
+    public $primaryKey;
+
     /**
      * @var Database
      */
     private $driver;
-    private $primaryKey;
     private $prefix;
-    private $tableName;
     private $logicTableName;
     private $wheres = array();
     private $whereParams = array();
@@ -46,6 +47,11 @@ class TableQuery
     private $isInsertGetId = false;
     private $updates;
 
+    /**
+     * @var TableMeta
+     */
+    private $meta;
+
     public function __construct(Database $driver, $tableName, $prefix, $primaryKey = null)
     {
         if (!isset($driver))
@@ -61,6 +67,9 @@ class TableQuery
 
         if (isset($this->prefix)) $this->tableName = $this->prefix . $tableName;
         else $this->tableName = $tableName;
+
+        $this->meta = TableMeta::load($this->tableName);
+        var_dump($this->meta);
     }
 
     /**

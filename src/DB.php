@@ -246,6 +246,16 @@ class DB {
     {
         return self::getInstance()->provider->table($tableName, $primaryKey);
     }
+
+    /**
+     * @param $query
+     * @param null $primaryKey
+     * @return \Xaircraft\ERM\Entity
+     */
+    public static function entity($query, $primaryKey = null)
+    {
+        return self::getInstance()->provider->entity($query, $primaryKey);
+    }
 }
 
  

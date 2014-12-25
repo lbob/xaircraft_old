@@ -242,19 +242,18 @@ class DB {
      * @param String $tableName 数据表名称
      * @return \Xaircraft\Database\TableQuery
      */
-    public static function table($tableName, $primaryKey = null)
+    public static function table($tableName)
     {
-        return self::getInstance()->provider->table($tableName, $primaryKey);
+        return self::getInstance()->provider->table($tableName);
     }
 
     /**
      * @param $query
-     * @param null $primaryKey
      * @return \Xaircraft\ERM\Entity
      */
-    public static function entity($query, $primaryKey = null)
+    public static function entity($query)
     {
-        return self::getInstance()->provider->entity($query, $primaryKey);
+        return self::getInstance()->provider->entity($query);
     }
 }
 

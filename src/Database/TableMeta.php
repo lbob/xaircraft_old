@@ -26,7 +26,7 @@ class TableMeta {
     private $keys = array();
     private $defaults = array();
     private $extras = array();
-    private $privileges = array();
+    //private $privileges = array();
     private $comments = array();
 
     private $isLoad = false;
@@ -54,12 +54,21 @@ class TableMeta {
         }
     }
 
+    /**
+     * @param $tableName
+     * @return TableMeta
+     */
     public static function load($tableName)
     {
         if (!isset(self::$instances[$tableName])) {
             self::$instances[$tableName] = new TableMeta($tableName);
         }
         return self::$instances[$tableName];
+    }
+
+    public function getTypes()
+    {
+        return $this->types;
     }
 
     private function loadFromDatabase()
@@ -74,7 +83,7 @@ class TableMeta {
             $this->keys[$field] = $row['Key'];
             $this->defaults[$field] = $row['Default'];
             $this->extras[$field] = $row['Extra'];
-            $this->privileges[$field] = $row['Privileges'];
+            //$this->privileges[$field] = $row['Privileges'];
             $this->comments[$field] = $row['Comment'];
 
             if ($row['Key'] === 'PRI') {
@@ -100,7 +109,7 @@ class TableMeta {
             $this->keys = $meta->keys;
             $this->defaults = $meta->defaults;
             $this->extras = $meta->extras;
-            $this->privileges = $meta->privileges;
+            //$this->privileges = $meta->privileges;
             $this->comments = $meta->comments;
             $this->primaryKey = $meta->primaryKey;
             $this->autoIncrementColumn = $meta->autoIncrementColumn;

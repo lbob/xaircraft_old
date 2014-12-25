@@ -52,7 +52,7 @@ class TableQuery
      */
     private $meta;
 
-    public function __construct(Database $driver, $tableName, $prefix, $primaryKey = null)
+    public function __construct(Database $driver, $tableName, $prefix)
     {
         if (!isset($driver))
             throw new \InvalidArgumentException("Invalid database driver.");
@@ -62,14 +62,15 @@ class TableQuery
 
         $this->driver         = $driver;
         $this->logicTableName = $tableName;
-        $this->primaryKey     = $primaryKey;
         $this->prefix         = $prefix;
 
         if (isset($this->prefix)) $this->tableName = $this->prefix . $tableName;
         else $this->tableName = $tableName;
 
         $this->meta = TableMeta::load($this->tableName);
-        var_dump($this->meta);
+        if (isset($this->meta)) {
+            $this->primaryKey = isset($this->meta->primaryKey[0]) ? $this->meta->primaryKey[0] : null;
+        }
     }
 
     /**
@@ -742,6 +743,13 @@ class TableQuery
         return $this;
     }
 
+    /**
+     * @return TableMeta
+     */
+    public function getTableMeta()
+    {
+        return $this->meta;
+    }
 }
 
  

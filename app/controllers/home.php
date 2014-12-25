@@ -44,7 +44,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
     {
         $db = new \Xaircraft\Database\PdoDatabase();
         $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null, 'aec_');
-        $query  = $db->table('post', 'id');
+        $query  = $db->table('post');
 
         //select
         $result = $query->where('aec_post.id', '<>', 58)
@@ -52,9 +52,9 @@ class home_controller extends \Xaircraft\Mvc\Controller {
                             $join->on('aec_post_category.id', '=', 'aec_post.post_category_id');
                             $join->where('aec_post_category.status', '>', 0);
                         })
-                        ->orderBy('aec_post.id', 'DESC')
-                        ->page(14, 2)
-                        ->select('aec_post.id')->execute();
+                        ->orderBy('aec_post.id', 'ASC')
+                        ->page(5, 20)
+                        ->select('aec_post.id', 'aec_post.title', 'aec_post_category.name')->execute();
         var_dump($result);
 
         //insert
@@ -64,7 +64,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 //        var_dump($result);
 
         //update
-        $query  = $db->table('post', 'id');
+        $query  = $db->table('post');
         $result = $query->where('id', 1)->update(array(
             'title' => '测试更新语句'
         ))->execute();
@@ -72,7 +72,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         var_dump($result);
         var_dump($db->getQueryLog());
 
-        $this->text($query);
+        return $this->text($query);
     }
 
     public function test2()
@@ -80,23 +80,25 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $query = \Xaircraft\DB::table('post')->where('id', 3)->first();
         $entity = \Xaircraft\DB::entity($query);
 
-        //$entity->title = '测试一下entitys';
-        //$result = $entity->save();
-        //var_dump($result);
+        $entity->title = 'sdfsdfsd';
+        $entity->author = 'liubo';
+        $entity->keyword = '测试,ERM';
+        $result = $entity->save();
+        //var_dump($entity);
 
 
         //新增实体
-        $entity = \Xaircraft\DB::entity('post', 'id');
-        $entity->title = '测试新增实体对象';
-        $entity->post_category_id = 1;
-        $result = $entity->save();
+//        $entity = \Xaircraft\DB::entity('post');
+//        $entity->title = '测试新增实体对象';
+//        $entity->post_category_id = 1;
+//        $result = $entity->save();
 
-        //var_dump($result);
+        //var_dump($entity);
         //var_dump($entity);
 
         var_dump(\Xaircraft\DB::getQueryLog());
 
-        $this->text($query);
+        return $this->json($entity->getData());
     }
 
     public function hello()

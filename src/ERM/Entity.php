@@ -2,6 +2,7 @@
 
 namespace Xaircraft\ERM;
 use Xaircraft\Container;
+use Xaircraft\Database\TableMeta;
 use Xaircraft\Database\TableQuery;
 use Xaircraft\DB;
 
@@ -12,9 +13,7 @@ use Xaircraft\DB;
  * @package Xaircraft\ERM
  * @author lbob created at 2014/12/25 11:07
  */
-class Entity {
-
-    private $primaryKey;
+class Entity extends Container {
 
     private $tableName;
     /**
@@ -32,17 +31,11 @@ class Entity {
         $arg = func_get_arg(0);
         if (is_string($arg)) {
             $this->tableName = $arg;
-            if (func_num_args() === 2) {
-                $primaryKey = func_get_arg(1);
-                if (isset($primaryKey))
-                    $this->primaryKey = $primaryKey;
-            }
             $this->query = DB::table($this->tableName);
         }
         if ($arg instanceof TableQuery) {
             $this->query = $arg;
             $this->tableName = $this->query->tableName;
-            $this->primaryKey = $this->query->primaryKey;
             $this->initFromQuery();
         }
     }
@@ -54,27 +47,46 @@ class Entity {
             if (isset($result) && is_array($result) && !empty($result)) {
                 $row = $result[0];
                 foreach ($row as $key => $value) {
-                    if (is_string($key))
-                        $this->columns[$key] = $value;
+                    if (is_string($key)) {
+                        $this->columns[$key] = $this->loadPrototypeFromMeta($key, $value);
+                    }
                 }
             }
         }
     }
 
+    private function loadPrototypeFromMeta($columnName, $columnValue)
+    {
+        $types = $this->query->getTableMeta()->getTypes();
+        if (stripos($types[$columnName], 'int') !== false)
+            return intval($columnValue);
+        else
+            return $columnValue;
+    }
+
     public function save()
     {
-        if (isset($this->columns[$this->primaryKey])) {
-            $key = $this->columns[$this->primaryKey];
-            unset($this->columns[$this->primaryKey]);
-            $result = $this->query->update($this->columns)->execute();
-            $this->columns[$this->primaryKey] = $key;
-        } else {
-            $result = $this->query->insertGetId($this->columns)->execute();
-            if ($result !== false)
-                $this->columns[$this->primaryKey] = $result;
-        }
+        $meta = $this->query->getTableMeta();
+        if (isset($meta)) {
+            $primaryKey = isset($meta->primaryKey[0]) ? $meta->primaryKey[0] : null;
+            if (isset($this->columns[$primaryKey])) {
+                $key = $this->columns[$primaryKey];
+                unset($this->columns[$primaryKey]);
+                $result = $this->query->update($this->columns)->execute();
+                $this->columns[$primaryKey] = $key;
+            } else {
+                $result = $this->query->insertGetId($this->columns)->execute();
+                if ($result !== false)
+                    $this->columns[$primaryKey] = $this->loadPrototypeFromMeta($primaryKey, $result);
+            }
 
-        return $result;
+            return $result;
+        }
+    }
+
+    public function getData()
+    {
+        return $this->columns;
     }
 
     public function __get($key)

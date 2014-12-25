@@ -125,14 +125,16 @@ interface Database {
      * @param String $tableName 数据表名称
      * @return \Xaircraft\Database\TableQuery
      */
-    public function table($tableName, $primaryKey = null);
+    public function table($tableName);
 
     /**
      * @param $query
-     * @param null $primaryKey
      * @return \Xaircraft\ERM\Entity
      */
-    public function entity($query, $primaryKey = null);
+    public function entity($query);
+
+
+    public function remeber($seconds);
 }
 
  

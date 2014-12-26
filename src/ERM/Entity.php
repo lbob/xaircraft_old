@@ -2,7 +2,7 @@
 
 namespace Xaircraft\ERM;
 use Xaircraft\Container;
-use Xaircraft\Database\TableMeta;
+use Xaircraft\Database\TableSchema;
 use Xaircraft\Database\TableQuery;
 use Xaircraft\DB;
 
@@ -13,15 +13,16 @@ use Xaircraft\DB;
  * @package Xaircraft\ERM
  * @author lbob created at 2014/12/25 11:07
  */
-class Entity extends Container {
+class Entity {
 
     private $tableName;
     /**
      * @var TableQuery
      */
     private $query;
-
     private $columns = array();
+    private $assigments = array();
+    private $shadows = array();
 
     public function __construct()
     {
@@ -51,33 +52,41 @@ class Entity extends Container {
                         $this->columns[$key] = $this->loadPrototypeFromMeta($key, $value);
                     }
                 }
+                $this->shadows = $this->columns;
             }
         }
     }
 
     private function loadPrototypeFromMeta($columnName, $columnValue)
     {
-        $types = $this->query->getTableMeta()->getTypes();
-        if (stripos($types[$columnName], 'int') !== false)
-            return intval($columnValue);
-        else
-            return $columnValue;
+        return $this->query->getTableSchema()->phpTypecast($columnName, $columnValue);
     }
 
     public function save()
     {
-        $meta = $this->query->getTableMeta();
+        $meta = $this->query->getTableSchema();
         if (isset($meta)) {
-            $primaryKey = isset($meta->primaryKey[0]) ? $meta->primaryKey[0] : null;
-            if (isset($this->columns[$primaryKey])) {
-                $key = $this->columns[$primaryKey];
-                unset($this->columns[$primaryKey]);
-                $result = $this->query->update($this->columns)->execute();
-                $this->columns[$primaryKey] = $key;
+            $autoIncrementColumn = $meta->autoIncrementColumn;
+            if (isset($this->columns[$autoIncrementColumn])) {
+                $key = $this->columns[$autoIncrementColumn];
+                $updateColumns = $this->columns;
+                unset($updateColumns[$autoIncrementColumn]);
+                foreach ($updateColumns as $key => $value) {
+                    if (!isset($this->assigments[$key]) || !$this->assigments[$key])
+                        unset($updateColumns[$key]);
+                    if (array_key_exists($key, $this->shadows) && $this->shadows[$key] == $value)
+                        unset($updateColumns[$key]);
+                }
+                if (isset($updateColumns) && !empty($updateColumns)) {
+                    $meta->valid($updateColumns);
+                    $result = $this->query->update($updateColumns)->execute();
+                }
+                else $result = true;
             } else {
+                $meta->valid($this->columns);
                 $result = $this->query->insertGetId($this->columns)->execute();
                 if ($result !== false)
-                    $this->columns[$primaryKey] = $this->loadPrototypeFromMeta($primaryKey, $result);
+                    $this->columns[$autoIncrementColumn] = $this->loadPrototypeFromMeta($autoIncrementColumn, $result);
             }
 
             return $result;
@@ -96,8 +105,10 @@ class Entity extends Container {
 
     public function __set($key, $value)
     {
-        if (isset($key) && is_string($key))
+        if (isset($key) && is_string($key)) {
             $this->columns[$key] = $value;
+            $this->assigments[$key] = true;
+        }
         else
             throw new \InvalidArgumentException("Invalid argument of [$key]");
     }

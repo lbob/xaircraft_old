@@ -132,9 +132,6 @@ interface Database {
      * @return \Xaircraft\ERM\Entity
      */
     public function entity($query);
-
-
-    public function remeber($seconds);
 }
 
  

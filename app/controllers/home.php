@@ -77,15 +77,14 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function test2()
     {
-        $query = \Xaircraft\DB::table('post')->where('id', 3)->first();
+        $query = \Xaircraft\DB::table('post')->where('id', 101)->first();
         $entity = \Xaircraft\DB::entity($query);
 
         $entity->title = 'sdfsdfsd';
-        $entity->author = 'liubo';
-        $entity->keyword = '测试,ERM';
+        $entity->author = 'liub';
+        $entity->keyword = '测试';
+        $entity->content = null;
         $result = $entity->save();
-        //var_dump($entity);
-
 
         //新增实体
 //        $entity = \Xaircraft\DB::entity('post');
@@ -94,11 +93,11 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 //        $result = $entity->save();
 
         //var_dump($entity);
-        //var_dump($entity);
+        var_dump($entity->getData());
 
         var_dump(\Xaircraft\DB::getQueryLog());
 
-        return $this->json($entity->getData());
+        //return $this->json($entity->getData());
     }
 
     public function hello()

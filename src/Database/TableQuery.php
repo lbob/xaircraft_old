@@ -48,7 +48,7 @@ class TableQuery
     private $updates;
 
     /**
-     * @var TableMeta
+     * @var TableSchema
      */
     private $meta;
 
@@ -67,7 +67,7 @@ class TableQuery
         if (isset($this->prefix)) $this->tableName = $this->prefix . $tableName;
         else $this->tableName = $tableName;
 
-        $this->meta = TableMeta::load($this->tableName);
+        $this->meta = TableSchema::load($this->tableName);
         if (isset($this->meta)) {
             $this->primaryKey = isset($this->meta->primaryKey[0]) ? $this->meta->primaryKey[0] : null;
         }
@@ -744,9 +744,9 @@ class TableQuery
     }
 
     /**
-     * @return TableMeta
+     * @return TableSchema
      */
-    public function getTableMeta()
+    public function getTableSchema()
     {
         return $this->meta;
     }

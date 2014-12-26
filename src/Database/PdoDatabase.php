@@ -37,6 +37,8 @@ class PdoDatabase implements Database {
 
     private $prefix;
 
+    private $isRollback = false;
+
     /**
      * @return \PDO
      */
@@ -148,14 +150,12 @@ class PdoDatabase implements Database {
      */
     public function transaction(callable $handler)
     {
-        $dbh = $this->getDriverInstance();
-
-        $dbh->beginTransaction();
+        $this->beginTransaction();
         try {
             call_user_func($handler, $this);
-            $dbh->commit();
+            $this->commit();
         } catch (\Exception $ex) {
-            $dbh->rollBack();
+            $this->rollBack();
         }
     }
 
@@ -165,6 +165,7 @@ class PdoDatabase implements Database {
      */
     public function beginTransaction()
     {
+        $this->isRollback = false;
         $this->getDriverInstance()->beginTransaction();
     }
 
@@ -174,7 +175,10 @@ class PdoDatabase implements Database {
      */
     public function rollback()
     {
-        $this->getDriverInstance()->rollBack();
+        if (!$this->isRollback) {
+            $this->getDriverInstance()->rollBack();
+            $this->isRollback = true;
+        }
     }
 
     /**
@@ -281,6 +285,11 @@ class PdoDatabase implements Database {
     public function entity($query)
     {
         return new Entity($query);
+    }
+
+    function __destruct()
+    {
+        $this->disconnect();
     }
 }
 

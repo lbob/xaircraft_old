@@ -14,10 +14,6 @@ $app->bindPaths(require __DIR__.'/paths.php');
 $app->environment[App::HOST] = 'http://localhost:81';
 
 $app->registerStartHandler(function($app) {
-    // Eloquent ORM
-    $capsule = new Illuminate\Database\Capsule\Manager();
-    $capsule->addConnection(require $app->getPath('config') . '/database.php');
-    $capsule->bootEloquent();
 
     if ($app->environment[App::ENV_MODE] === App::APP_MODE_DEV) {
         // whoops 错误提示

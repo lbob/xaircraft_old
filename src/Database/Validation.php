@@ -9,7 +9,8 @@ namespace Xaircraft\Database;
  * @package Xaircraft\Database
  * @author lbob created at 2014/12/26 16:50
  */
-class Validation {
+class Validation
+{
 
     private static $patternEnum = "#\'([^\']+)\'#i";
     private static $patternExpression = "#\<\!\-\-([A-Z]+)\:(.+?)\-\-\>#i";
@@ -25,7 +26,7 @@ class Validation {
     public function __construct($columnName, $type, $isNullable, $enumDefine, $comment)
     {
         $this->columnName = $columnName;
-        $this->type = $type;
+        $this->type       = $type;
         $this->isNullable = $isNullable;
         if (isset($enumDefine))
             $this->parseEnums($enumDefine);
@@ -47,7 +48,10 @@ class Validation {
             if (isset($this->ranges)) {
                 $strLen = strlen($value);
                 if ($strLen > $this->ranges['max'] || $strLen < $this->ranges['min'])
-                    return array(false, "string length is out of range : [" . $this->ranges['min'] . "] - [" . $this->ranges['max'] . "]");
+                    return array(
+                        false,
+                        "string length is out of range : [" . $this->ranges['min'] . "] - [" . $this->ranges['max'] . "]"
+                    );
             }
             if (isset($this->pattern)) {
                 if (!preg_match("#" . $this->pattern . "#i", $value))

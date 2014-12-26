@@ -82,15 +82,16 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
         $entity->title = 'sdfsdfsd';
         $entity->author = 'liub';
-        $entity->keyword = '测试';
-        $entity->content = null;
+        //$entity->keyword = 'skywesdfsdfsdfsdfsdfsdf';
+        //$entity->content = null;
         $result = $entity->save();
 
         //新增实体
-//        $entity = \Xaircraft\DB::entity('post');
-//        $entity->title = '测试新增实体对象';
-//        $entity->post_category_id = 1;
-//        $result = $entity->save();
+        $entity = \Xaircraft\DB::entity('post');
+        $entity->title = '测试新增实体对象';
+        $entity->post_category_id = 1;
+        $entity->content = null;
+        $result = $entity->save();
 
         //var_dump($entity);
         var_dump($entity->getData());

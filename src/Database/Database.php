@@ -46,6 +46,13 @@ interface Database {
     public function statement($query, array $params = null);
 
     /**
+     * @param $query
+     * @param array $params
+     * @return mixed
+     */
+    public function query($query, array $params = null);
+
+    /**
      * 执行一个事务过程，在$handler中抛出异常则将自动执行回滚
      * @param callable $handler
      * @return mixed

@@ -97,7 +97,7 @@ class TableSchema
 
     private function loadFromDatabase()
     {
-        $columns = DB::statement('SHOW FULL COLUMNS FROM ' . $this->tableName);
+        $columns = DB::query('SHOW FULL COLUMNS FROM ' . $this->tableName);
         foreach ($columns as $row) {
             $field                     = $row['Field'];
             $this->fields[]            = $field;
@@ -292,6 +292,17 @@ class TableSchema
         if (isset($columns)) {
             foreach ($columns as $key => $value) {
                 $this->validColumn($key, $value);
+            }
+            $nullValidColumns = $this->nulls;
+            if (isset($this->autoIncrementColumn)) {
+                unset($nullValidColumns[$this->autoIncrementColumn]);
+            }
+            foreach ($nullValidColumns as $key => $value) {
+                if ($value === 'NO') {
+                    if (!array_key_exists($key, $columns)) {
+                        throw new \Exception("[$this->tableName].[$key] : can't be null.");
+                    }
+                }
             }
         }
     }

@@ -18,8 +18,10 @@ class home_controller extends \Xaircraft\Mvc\Controller {
     {
         $this->testHere = 'sfs';
 
-        $query = DB::table('user')->first();
-        var_dump($query);
+        $user = DB::entity('user');
+        $user->name = 'test';
+        var_dump($user->save());
+//        DB::table('user')->truncate()->execute();
 
         return $this->view();
     }

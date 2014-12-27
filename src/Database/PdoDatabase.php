@@ -138,6 +138,20 @@ class PdoDatabase implements Database {
     {
         if (is_string($query)) {
             $this->log($query);
+            return $this->getDriverInstance()->exec($query);
+        }
+        return $this->errorState;
+    }
+
+    /**
+     * @param $query
+     * @param array $params
+     * @return mixed
+     */
+    public function query($query, array $params = null)
+    {
+        if (is_string($query)) {
+            $this->log($query);
             return $this->getDriverInstance()->query($query);
         }
         return $this->errorState;

@@ -59,6 +59,8 @@ class Entity {
 
     private function loadPrototypeFromMeta($columnName, $columnValue)
     {
+        var_dump($columnName);
+
         return $this->query->getTableSchema()->phpTypecast($columnName, $columnValue);
     }
 
@@ -83,10 +85,14 @@ class Entity {
                 }
                 else $result = true;
             } else {
-                $meta->valid($this->columns);
-                $result = $this->query->insertGetId($this->columns)->execute();
-                if ($result !== false)
-                    $this->columns[$autoIncrementColumn] = $this->loadPrototypeFromMeta($autoIncrementColumn, $result);
+                if (isset($this->columns) && !empty($this->columns)) {
+                    $meta->valid($this->columns);
+                    $result = $this->query->insertGetId($this->columns)->execute();
+                    if ($result !== false && isset($autoIncrementColumn))
+                        $this->columns[$autoIncrementColumn] = $this->loadPrototypeFromMeta($autoIncrementColumn, $result);
+                } else {
+                    $result = false;
+                }
             }
 
             return $result;

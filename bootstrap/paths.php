@@ -11,5 +11,5 @@ return array(
     'vendor'    => __DIR__.'/../vendor',
     'routes'    => __DIR__.'/../app/config/routes.php',
     'cache'     => __DIR__.'/../app/cache',
-    'tableMeta' => __DIR__.'/../app/cache/tableMeta/'
+    'schema'    => __DIR__.'/../app/cache/schema/'
 );

@@ -1,5 +1,7 @@
 <?php
 
+use Xaircraft\DB;
+
 /**
  * Class home_controller
  *
@@ -14,98 +16,12 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        \Xaircraft\Session::put('test', \Xaircraft\Session::get('test', 0) + 1);
+        $this->testHere = 'sfs';
 
-        $test = \Xaircraft\Session::get('test', 0);
+        $query = DB::table('user')->first();
+        var_dump($query);
 
-        //$this->layout('admin');
-        $this->testHere = 'world__' . $test;
-
-        $db = new \Xaircraft\Database\PdoDatabase();
-        $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null);
-        $db->transaction(function(\Xaircraft\Database\Database $db) {
-            $result = $db->select('SELECT title,content FROM aec_post');
-            $result2 = $db->update("UPDATE aec_post SET title = 'test' WHERE id = ?", array(1));
-            $db->delete("DELETE FROM aec_post WHERE id = ?", array(1));
-            foreach ($result as $row) {
-                echo $row['title'];
-            }
-            throw new \Exception("test");
-        });
-
-        $log = $db->getQueryLog();
-        var_dump($log);
-        $params = $this->req->params();
-        var_dump($params);
         return $this->view();
-    }
-
-    public function test()
-    {
-        $db = new \Xaircraft\Database\PdoDatabase();
-        $db->connection('mysql:dbname=aec_xph;host=localhost;charset=utf8;collation=utf8_general_ci', 'root', '', null, 'aec_');
-        $query  = $db->table('post');
-
-        //select
-        $result = $query->where('aec_post.id', '<>', 58)
-                        ->join('post_category', function($join) {
-                            $join->on('aec_post_category.id', '=', 'aec_post.post_category_id');
-                            $join->where('aec_post_category.status', '>', 0);
-                        })
-                        ->orderBy('aec_post.id', 'ASC')
-                        ->page(5, 20)
-                        ->select('aec_post.id', 'aec_post.title', 'aec_post_category.name')->execute();
-        var_dump($result);
-
-        //insert
-//        $result = $query->insertGetId(array(
-//            'title' => '测试插入记录'
-//        ))->execute();
-//        var_dump($result);
-
-        //update
-        $query  = $db->table('post');
-        $result = $query->where('id', 1)->update(array(
-            'title' => '测试更新语句'
-        ))->execute();
-
-        var_dump($result);
-        var_dump($db->getQueryLog());
-
-        return $this->text($query);
-    }
-
-    public function test2()
-    {
-        $query = \Xaircraft\DB::table('post')->where('id', 101)->first();
-        $entity = \Xaircraft\DB::entity($query);
-
-        $entity->title = 'sdfsdfsd';
-        $entity->author = 'liub';
-        //$entity->keyword = 'skywesdfsdfsdfsdfsdfsdf';
-        //$entity->content = null;
-        $result = $entity->save();
-
-        //新增实体
-        $entity = \Xaircraft\DB::entity('post');
-        $entity->title = '测试新增实体对象';
-        $entity->post_category_id = 1;
-        $entity->content = null;
-        $result = $entity->save();
-
-        //var_dump($entity);
-        var_dump($entity->getData());
-
-        var_dump(\Xaircraft\DB::getQueryLog());
-
-        //return $this->json($entity->getData());
-    }
-
-    public function hello()
-    {
-        $home = new home_controller();
-        $home->index()->execute();
-        \Xaircraft\Helper\Url::redirect('/');
     }
 }
 

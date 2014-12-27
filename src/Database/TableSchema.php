@@ -64,7 +64,7 @@ class TableSchema
 
         $this->tableName = $tableName;
 
-        $this->source = App::getInstance()->getPath('tableMeta') . '/' . $this->tableName . '.dat';
+        $this->source = App::getInstance()->getPath('schema') . '/' . $this->tableName . '.dat';
 
         if (!$this->isLoad) {
             $this->isLoad = true;
@@ -155,7 +155,7 @@ class TableSchema
     {
         $dir = dirname($this->source);
         if (!file_exists($dir)) {
-            mkdir($dir);
+            \Xaircraft\Common\IO::makeDir($dir);
         }
         $handler = fopen($this->source, 'w+');
         fwrite($handler, serialize($this));

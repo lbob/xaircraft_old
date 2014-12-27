@@ -13,7 +13,6 @@
 		"php": ">=5.3.0"
 	},
 	"require-dev": {
-		"illuminate/database": "*",
 		"filp/whoops": "*",
 		"devster/ubench": "1.1.*-dev",
 		"nebula/router": "dev-master"

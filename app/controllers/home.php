@@ -19,7 +19,9 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $this->testHere = 'sfs';
 
         $user = DB::entity('user');
-        $user->name = 'test';
+        $user->name = '超级管理员';
+        $user->no = 'admin';
+        
         var_dump($user->save());
 //        DB::table('user')->truncate()->execute();
 

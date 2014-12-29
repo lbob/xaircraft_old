@@ -19,6 +19,7 @@ class TableQuery
     const QUERY_TRUNCATE = 'truncate';
 
     public $tableName;
+    public $logicTableName;
     public $primaryKey;
 
     /**
@@ -26,7 +27,6 @@ class TableQuery
      */
     private $driver;
     private $prefix;
-    private $logicTableName;
     private $wheres = array();
     private $whereParams = array();
     private $queryType;

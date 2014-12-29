@@ -15,6 +15,7 @@ use Xaircraft\DB;
  */
 class Entity {
 
+    public $logicTableName;
     private $tableName;
     /**
      * @var TableQuery
@@ -23,6 +24,7 @@ class Entity {
     private $columns = array();
     private $assigments = array();
     private $shadows = array();
+    private $isExist = false;
 
     public function __construct()
     {
@@ -32,11 +34,13 @@ class Entity {
         $arg = func_get_arg(0);
         if (is_string($arg)) {
             $this->tableName = $arg;
+            $this->logicTableName = $arg;
             $this->query = DB::table($this->tableName);
         }
         if ($arg instanceof TableQuery) {
             $this->query = $arg;
             $this->tableName = $this->query->tableName;
+            $this->logicTableName = $this->query->logicTableName;
             $this->initFromQuery();
         }
     }
@@ -53,24 +57,32 @@ class Entity {
                     }
                 }
                 $this->shadows = $this->columns;
+                $this->isExist = true;
+            } else {
+                $this->isExist = false;
             }
         }
     }
 
     private function loadPrototypeFromMeta($columnName, $columnValue)
     {
-        var_dump($columnName);
-
         return $this->query->getTableSchema()->phpTypecast($columnName, $columnValue);
     }
 
-    public function save()
+    public function save($posts = null)
     {
         $meta = $this->query->getTableSchema();
         if (isset($meta)) {
             $autoIncrementColumn = $meta->autoIncrementColumn;
+            if (isset($posts)) {
+                $columns = \Xaircraft\Common\Util::fast_array_key_filter($posts, $this->logicTableName . '_');
+                foreach ($columns as $key => $value) {
+                    $key = str_replace($this->logicTableName . '_', '', $key);
+                    $this->columns[$key] = $value;
+                    $this->assigments[$key] = true;
+                }
+            }
             if (isset($this->columns[$autoIncrementColumn])) {
-                $key = $this->columns[$autoIncrementColumn];
                 $updateColumns = $this->columns;
                 unset($updateColumns[$autoIncrementColumn]);
                 foreach ($updateColumns as $key => $value) {
@@ -88,8 +100,9 @@ class Entity {
                 if (isset($this->columns) && !empty($this->columns)) {
                     $meta->valid($this->columns);
                     $result = $this->query->insertGetId($this->columns)->execute();
-                    if ($result !== false && isset($autoIncrementColumn))
+                    if ($result !== false && isset($autoIncrementColumn)) {
                         $this->columns[$autoIncrementColumn] = $this->loadPrototypeFromMeta($autoIncrementColumn, $result);
+                    }
                 } else {
                     $result = false;
                 }
@@ -102,6 +115,16 @@ class Entity {
     public function getData()
     {
         return $this->columns;
+    }
+
+    public function isExist()
+    {
+        return $this->isExist;
+    }
+
+    public function getFormColumnName($columnName)
+    {
+        return $this->logicTableName . '_' . $columnName;
     }
 
     public function __get($key)

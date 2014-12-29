@@ -265,13 +265,13 @@ class TableSchema
         switch ($phpType) {
             case 'resource':
             case 'string':
-                return is_resource($columnValue) ? $columnValue : (string) $columnValue;
+                return is_resource($columnValue) ? $columnValue : (string)$columnValue;
             case 'integer':
                 return $columnValue + 0;
             case 'boolean':
-                return (bool) $columnValue;
+                return (bool)$columnValue;
             case 'double':
-                return (double) $columnValue;
+                return (double)$columnValue;
         }
         return $columnValue;
     }

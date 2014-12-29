@@ -11,7 +11,7 @@ use \Xaircraft\App;
 
 $app = App::getInstance();
 $app->bindPaths(require __DIR__.'/paths.php');
-$app->environment[App::HOST] = 'http://localhost:81';
+$app->environment[App::HOST] = 'http://localhost:84';
 
 $app->registerStartHandler(function($app) {
 

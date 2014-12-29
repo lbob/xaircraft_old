@@ -53,6 +53,11 @@ class Request {
             return $_POST[$key];
         }
     }
+
+    public function posts()
+    {
+        return $_POST;
+    }
 }
 
  

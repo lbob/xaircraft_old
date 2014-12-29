@@ -29,6 +29,7 @@ class App extends Container {
 
     private $startHandlers = array();
     private $endHandlers = array();
+    private $errorHandlers = array();
     private $isStarted = false;
     private $isEnded = false;
     private $paths = array();
@@ -79,10 +80,18 @@ class App extends Container {
 
     public function run()
     {
-        $this->onStart();
-        $this->autoload();
-        $this->routing();
-        $this->onEnd();
+        try {
+            $this->onStart();
+            $this->autoload();
+            $this->routing();
+            $this->onEnd();
+        } catch (\Exception $ex) {
+            if ($this->environment[self::ENV_MODE] === self::APP_MODE_DEV) {
+                throw $ex;
+            } else {
+                $this->onError($ex);
+            }
+        }
     }
 
     public function getPath($key)
@@ -149,6 +158,13 @@ class App extends Container {
         }
     }
 
+    public function registerErrorHandler($handler)
+    {
+        if (isset($handler) && is_callable($handler)) {
+            $this->errorHandlers[] = $handler;
+        }
+    }
+
     private function onStart()
     {
         if ($this->isStarted) {
@@ -171,6 +187,15 @@ class App extends Container {
         if (isset($this->endHandlers)) {
             foreach ($this->endHandlers as $handler) {
                 $handler($this);
+            }
+        }
+    }
+
+    private function onError($ex)
+    {
+        if (isset($this->errorHandlers)) {
+            foreach ($this->errorHandlers as $handler) {
+                $handler($this, $ex);
             }
         }
     }

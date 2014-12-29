@@ -25,6 +25,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
     public function edit()
     {
         Log::info('post/edit', 'test edit log.');
+        throw new \InvalidArgumentException("test exception.");
         $query = DB::table('post')->where('id', $this->req->param('id'))->first();
         $post = DB::entity($query);
         $this->post = $post;

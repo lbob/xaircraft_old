@@ -12,7 +12,7 @@ use \Xaircraft\App;
 $app = App::getInstance();
 $app->bindPaths(require __DIR__.'/paths.php');
 $app->environment[App::HOST] = 'http://localhost:84';
-$app->environment[App::ENV_MODE] = App::APP_MODE_PUB;
+$app->environment[App::ENV_MODE] = App::APP_MODE_DEV;
 
 $app->registerStartHandler(function($app) {
     if ($app->environment[App::ENV_MODE] === App::APP_MODE_DEV) {

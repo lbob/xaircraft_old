@@ -86,7 +86,7 @@ class App extends Container {
             $this->routing();
             $this->onEnd();
         } catch (\Exception $ex) {
-            if ($this->environment[self::ENV_MODE] === self::APP_MODE_DEV) {
+            if ((!isset($this->errorHandlers) || empty($this->errorHandlers)) || $this->environment[self::ENV_MODE] === self::APP_MODE_DEV) {
                 throw $ex;
             } else {
                 $this->onError($ex);

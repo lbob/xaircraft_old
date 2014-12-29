@@ -47,6 +47,16 @@ class Request {
         return isset($_POST['submit']);
     }
 
+    public function isXMLHttpRequest()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    public function isPJAX()
+    {
+        return isset($_SERVER['HTTP_X_PJAX']) && strtolower($_SERVER['HTTP_X_PJAX']) === 'true';
+    }
+
     public function post($key)
     {
         if (isset($key) && isset($_POST[$key])) {

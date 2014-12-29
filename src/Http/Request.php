@@ -54,9 +54,19 @@ class Request {
         }
     }
 
-    public function posts()
+    public function posts($prefix = null)
     {
-        return $_POST;
+        if (isset($prefix) && is_string($prefix)) {
+            $posts = array();
+            $items = \Xaircraft\Common\Util::fast_array_key_filter($_POST, $prefix . '_');
+            foreach ($items as $key => $value) {
+                $key = str_replace($prefix . '_', '', $key);
+                $posts[$key] = $value;
+            }
+            return $posts;
+        } else {
+            return $_POST;
+        }
     }
 }
 

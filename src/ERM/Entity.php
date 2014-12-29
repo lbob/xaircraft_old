@@ -75,9 +75,7 @@ class Entity {
         if (isset($meta)) {
             $autoIncrementColumn = $meta->autoIncrementColumn;
             if (isset($posts)) {
-                $columns = \Xaircraft\Common\Util::fast_array_key_filter($posts, $this->logicTableName . '_');
-                foreach ($columns as $key => $value) {
-                    $key = str_replace($this->logicTableName . '_', '', $key);
+                foreach ($posts as $key => $value) {
                     $this->columns[$key] = $value;
                     $this->assigments[$key] = true;
                 }
@@ -93,12 +91,23 @@ class Entity {
                 }
                 if (isset($updateColumns) && !empty($updateColumns)) {
                     $meta->valid($updateColumns);
+                    if (array_search('update_at', $meta->getFields()) !== false) {
+                        $updateColumns['update_at'] = time();
+                    }
                     $result = $this->query->update($updateColumns)->execute();
                 }
                 else $result = true;
             } else {
                 if (isset($this->columns) && !empty($this->columns)) {
                     $meta->valid($this->columns);
+                    if (array_search('create_at', $meta->getFields()) !== false) {
+                        $this->columns['create_at'] = time();
+                        $this->assigments['create_at'] = true;
+                    }
+                    if (array_search('update_at', $meta->getFields()) !== false) {
+                        $this->columns['update_at'] = time();
+                        $this->assigments['update_at'] = true;
+                    }
                     $result = $this->query->insertGetId($this->columns)->execute();
                     if ($result !== false && isset($autoIncrementColumn)) {
                         $this->columns[$autoIncrementColumn] = $this->loadPrototypeFromMeta($autoIncrementColumn, $result);

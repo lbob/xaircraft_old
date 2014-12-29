@@ -306,6 +306,11 @@ class TableSchema
             }
         }
     }
+
+    public function getFields()
+    {
+        return $this->fields;
+    }
 }
 
  

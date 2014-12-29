@@ -12,9 +12,9 @@ use \Xaircraft\App;
 $app = App::getInstance();
 $app->bindPaths(require __DIR__.'/paths.php');
 $app->environment[App::HOST] = 'http://localhost:84';
+$app->environment[App::ENV_MODE] = App::APP_MODE_DEV;
 
 $app->registerStartHandler(function($app) {
-
     if ($app->environment[App::ENV_MODE] === App::APP_MODE_DEV) {
         // whoops 错误提示
         $whoops = new \Whoops\Run;
@@ -24,6 +24,8 @@ $app->registerStartHandler(function($app) {
         // Ubench 性能工具 Start
         $app->bench = new Ubench();
         $app->bench->start();
+    } else {
+        \Xaircraft\DB::disableQueryLog();
     }
 });
 

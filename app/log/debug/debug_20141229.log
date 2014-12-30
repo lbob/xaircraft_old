@@ -1,3 +1,0 @@
-[2014-12-29 16:33:22] post/edit.DEBUG: test edit log. {"query":["[14198420020.27353600] SELECT * FROM x_post WHERE  id = ?  LIMIT 0, 1","[14198420020.27753700] UPDATE x_post SET content = ?,update_at = ? WHERE  id = ? "],"url":"/post/edit/14?dfdf=ere"} []
-[2014-12-29 16:34:48] post/edit.DEBUG: test edit log. {"query":["[14198420880.72159100] SELECT * FROM x_post WHERE  id = ?  LIMIT 0, 1"],"url":"/post/edit/14"} []
-[2014-12-29 16:34:50] post/edit.DEBUG: test edit log. {"query":["[14198420900.68304800] SELECT * FROM x_post WHERE  id = ?  LIMIT 0, 1"],"url":"/post/edit/14"} []

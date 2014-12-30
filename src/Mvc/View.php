@@ -141,7 +141,7 @@ class View
 
     public function registerJs($js)
     {
-        echo '<script type="text/javascript">' . $js . '</script>';
+        echo '<script type="text/javascript">jQuery(document).ready(function(){' . $js . '});</script>';
     }
 }
 

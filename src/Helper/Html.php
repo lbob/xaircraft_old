@@ -35,8 +35,11 @@ class Html {
         if (isset($class))
             $result[] = 'class="' . $class . '"';
         if (isset($attrs) && is_array($attrs)) {
-            foreach ($attrs as $key => $value) {
-                $result[] = $key . '="' . $value . '"';
+            foreach ($attrs as $key => $attrValue) {
+                if (is_string($key))
+                    $result[] = $key . '="' . $attrValue . '"';
+                else
+                    $result[] = $attrValue;
             }
         }
         $result[] = '>' . $text . '</a>';
@@ -51,7 +54,10 @@ class Html {
                 if (is_array($args)) {
                     $options = $args;
                     foreach ($options as $key => $value) {
-                        $result[] = $key . '="' . $value . '"';
+                        if (is_string($key))
+                            $result[] = $key . '="' . $value . '"';
+                        else
+                            $result[] = $value;
                     }
                     $result[] = '>';
                 } else if (is_string($args)) {
@@ -84,7 +90,10 @@ class Html {
             $result[] = 'class="' . $class . '"';
         if (isset($attrs) && is_array($attrs)) {
             foreach ($attrs as $key => $attrValue) {
-                $result[] = $key . '="' . $attrValue . '"';
+                if (is_string($key))
+                    $result[] = $key . '="' . $attrValue . '"';
+                else
+                    $result[] = $attrValue;
             }
         }
         $result[] = '/>';
@@ -99,7 +108,10 @@ class Html {
             $result[] = 'class="' . $class . '"';
         if (isset($attrs) && is_array($attrs)) {
             foreach ($attrs as $key => $attrValue) {
-                $result[] = $key . '="' . $attrValue . '"';
+                if (is_string($key))
+                    $result[] = $key . '="' . $attrValue . '"';
+                else
+                    $result[] = $attrValue;
             }
         }
         if (isset($value))
@@ -110,7 +122,7 @@ class Html {
         return new Html($this->view, $this->html . implode(' ', $result));
     }
 
-    public function formStart($name, $action, array $params, $method = 'post', $enctype = null)
+    public function formStart($name, $action, array $params, $method = 'post', $enctype = null, array $options = null)
     {
         $result[] = '<form';
         $result[] = 'id="' . $name . '" name="' . $name . '"';
@@ -118,6 +130,14 @@ class Html {
         $result[] = 'method="' . $method . '"';
         if (isset($enctype))
             $result[] = 'enctype="' . $enctype . '"';
+        if (isset($options) && is_array($options)) {
+            foreach ($options as $key => $attrValue) {
+                if (is_string($key))
+                    $result[] = $key . '="' . $attrValue . '"';
+                else
+                    $result[] = $attrValue;
+            }
+        }
         $result[] = '>';
         return new Html($this->view, $this->html . implode(' ', $result));
     }
@@ -127,11 +147,11 @@ class Html {
         return new Html($this->view, $this->html . '</form>');
     }
 
-    public function form(Entity $entity, $params = null)
+    public function form(Entity $entity, $params = null, array $options = null)
     {
         $controller = $this->view->req->param('controller');
         $action = $this->view->req->param('action');
-        $result[] = $this->formStart($entity->logicTableName, $controller . '/' . $action, $this->view->req->params(), 'post', null) . '';
+        $result[] = $this->formStart($entity->logicTableName, $controller . '/' . $action, $this->view->req->params(), 'post', null, $options) . '';
         if (isset($params)) {
             if (isset($params['show'])) {
                 $showColumns = $params['show'];

@@ -1,8 +1,10 @@
-<?php $this->html()->form($post, array(
-    'show' => array(
-        'title' => array('textbox', '标题：'),
-        'author' => array('textbox', '作者：'),
-        'keyword' => array('textbox', '关键字：'),
-        'content' => array('textarea', '内容：', array('attrs' => array('cols' => 40, 'rows' => 10)))
-    )
-))->render(); ?>
+<?php $this->beginPjax('pjaxContainer', null); ?>
+    <?php $this->html()->form($post, array(
+        'show' => array(
+            'title' => array('textbox', '标题：'),
+            'author' => array('textbox', '作者：'),
+            'keyword' => array('textbox', '关键字：'),
+            'content' => array('textarea', '内容：', array('attrs' => array('cols' => 40, 'rows' => 10)))
+        )
+    ), array('data-pjax'))->render(); ?>
+<?php $this->endPjax('pjaxContainer'); ?>

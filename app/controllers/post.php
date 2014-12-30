@@ -36,7 +36,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         if ($this->req->isPost()) {
             if ($post->save($this->req->posts('post'))) {
                 Log::debug('post/edit', 'test edit log.', array('query' => DB::getQueryLog()));
-                \Xaircraft\Helper\Url::redirect('/post/edit/', array('id' => $post->id));
+                //\Xaircraft\Helper\Url::redirect('/post/edit/', array('id' => $post->id));
             }
         }
         return $this->view();

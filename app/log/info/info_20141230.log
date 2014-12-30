@@ -1,0 +1,8 @@
+[2014-12-30 11:47:06] post/edit.INFO: test edit log. {"url":"/post/edit"} []
+[2014-12-30 11:47:19] post/edit.INFO: test edit log. {"url":"/post/edit"} []
+[2014-12-30 11:54:36] post/edit.INFO: test edit log. {"url":"/post/edit/"} []
+[2014-12-30 11:56:15] post/edit.INFO: test edit log. {"url":"/post/edit/"} []
+[2014-12-30 12:02:17] post/edit.INFO: test edit log. {"url":"/post/edit/?_pjax=%23pjaxContainer"} []
+[2014-12-30 12:02:18] post/edit.INFO: test edit log. {"url":"/post/edit/"} []
+[2014-12-30 12:02:30] post/edit.INFO: test edit log. {"url":"/post/edit/?_pjax=%23pjaxContainer"} []
+[2014-12-30 12:02:30] post/edit.INFO: test edit log. {"url":"/post/edit/"} []

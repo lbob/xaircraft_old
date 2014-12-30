@@ -32,7 +32,7 @@ class PjaxContainer {
     {
         $this->options['id'] = $id;
 
-        if ($this->view->req->isPJAX()) {
+        if ($this->isPJAX()) {
             $this->view->response->clear();
             if (isset($this->view->data['title'])) {
                 echo $this->view->html()->beginTag('title', $this->view->data['title'])->endTag('title');
@@ -44,7 +44,7 @@ class PjaxContainer {
 
     public function end()
     {
-        if (!$this->view->req->isPJAX()) {
+        if (!$this->isPJAX()) {
             echo $this->view->html()->endTag('div');
             $this->registerClientScript();
 
@@ -69,6 +69,11 @@ class PjaxContainer {
         $js = "jQuery(document).pjax($linkSelector, \"#$id\", $options);";
         $js .= "\njQuery(document).on('submit', $formSelector, function (event) {jQuery.pjax.submit(event, '#$id', $options);});";
         $this->view->registerJs($js);
+    }
+
+    private function isPJAX()
+    {
+        return $this->view->req->isPJAX() && $this->options['id'] === $this->view->req->requestPjaxContainerID();
     }
 }
 

@@ -58,6 +58,14 @@ class Request {
         return ((isset($_SERVER['HTTP_X_PJAX']) && strtolower($_SERVER['HTTP_X_PJAX']) === 'true') || isset($pjax));
     }
 
+    public function requestPjaxContainerID()
+    {
+        if ($this->isPJAX()) {
+            $id = $this->param('_pjax');
+            return str_replace('#', '', $id);
+        }
+    }
+
     public function post($key)
     {
         if (isset($key) && isset($_POST[$key])) {

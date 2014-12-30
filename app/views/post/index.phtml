@@ -5,6 +5,13 @@
 ?>
 
 <?php $this->beginPjax('pjaxContainer'); ?>
-<h1><?php echo $title ?></h1>
-<?php $this->html()->link('/post/index/' . ($this->req->param('id') == '12' ? '11' : '12'), '链接' . ($this->req->param('id') == '12' ? 'B' : 'A'))->render(); ?>
+    <h1><?php echo $title ?></h1>
+    <?php $this->html()->link('/post/index/' . ($this->req->param('id') == '12' ? '11' : '12'), '1链接' . ($this->req->param('id') == '12' ? 'B' : 'A'))->render(); ?>
+    <p>当前时间：<?php echo time(); ?></p>
 <?php $this->endPjax('pjaxContainer'); ?>
+
+<?php $this->beginPjax('pjaxContainer2'); ?>
+    <h1><?php echo $title ?></h1>
+    <?php $this->html()->link('/post/index/' . ($this->req->param('id') == '12' ? '11' : '12'), 'PJAX链接区块测试' . ($this->req->param('id') == '12' ? 'B' : 'A'))->render(); ?>
+    <p>当前时间2：<?php echo time(); ?></p>
+<?php $this->endPjax('pjaxContainer2'); ?>

@@ -10,6 +10,11 @@ use Xaircraft\Log;
  */
 class post_controller extends \Xaircraft\Mvc\Controller {
 
+    public function __construct()
+    {
+        $this->layout('admin');
+    }
+
     public function index()
     {
         $query = DB::table('post')->where('id', $this->req->param('id'))->first();

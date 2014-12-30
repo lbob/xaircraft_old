@@ -27,5 +27,11 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
         return $this->view();
     }
+
+    public function hello()
+    {
+
+        return $this->view();
+    }
 }
 

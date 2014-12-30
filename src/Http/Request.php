@@ -54,7 +54,8 @@ class Request {
 
     public function isPJAX()
     {
-        return isset($_SERVER['HTTP_X_PJAX']) && strtolower($_SERVER['HTTP_X_PJAX']) === 'true';
+        $pjax = $this->param('_pjax');
+        return ((isset($_SERVER['HTTP_X_PJAX']) && strtolower($_SERVER['HTTP_X_PJAX']) === 'true') || isset($pjax));
     }
 
     public function post($key)

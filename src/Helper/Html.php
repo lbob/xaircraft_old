@@ -43,6 +43,34 @@ class Html {
         return new Html($this->view, $this->html . implode(' ', $result));
     }
 
+    public function beginTag($tagName, $args = null)
+    {
+        if (isset($tagName)) {
+            $result[] = '<' . $tagName;
+            if (isset($args)) {
+                if (is_array($args)) {
+                    $options = $args;
+                    foreach ($options as $key => $value) {
+                        $result[] = $key . '="' . $value . '"';
+                    }
+                    $result[] = '>';
+                } else if (is_string($args)) {
+                    $result[] = '>' . $args;
+                }
+            }
+            return new Html($this->view, $this->html . implode(' ', $result));
+        }
+        return $this;
+    }
+
+    public function endTag($tagName)
+    {
+        if (isset($tagName)) {
+            return new Html($this->view, $this->html . '</' . $tagName . '>');
+        }
+        return $this;
+    }
+
     public function textBox($name, $value = null, $class = null, $attrs = null)
     {
         $result[] = '<input';

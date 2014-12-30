@@ -29,6 +29,10 @@ class Widgets {
         $this->req = App::getInstance()->req;
     }
 
+    /**
+     * @param $widgetsName
+     * @return Widgets
+     */
     public static function make($widgetsName)
     {
         if (!$widgetsName) {

@@ -30,7 +30,7 @@ $app->registerStartHandler(function($app) {
 });
 
 $app->registerEndHandler(function($app) {
-    if ($app->environment[App::ENV_MODE] === App::APP_MODE_DEV) {
+    if ($app->environment[App::ENV_MODE] === App::APP_MODE_DEV && !$app->req->isPJAX()) {
         // Ubench 性能工具 End
         $bench = $app->bench;
         if (isset($bench)) {

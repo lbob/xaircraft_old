@@ -24,12 +24,22 @@ class View
      * @var \Xaircraft\Http\Request
      */
     public $req;
+    /**
+     * @var \Xaircraft\Http\Response
+     */
+    public $response;
+
+    /**
+     * @var array
+     */
+    private $pjaxContainers;
 
     public function __construct($view)
     {
         $this->view = $view;
         $app = App::getInstance();
         $this->req = $app->req;
+        $this->response = $app->response;
     }
 
     public static function make($viewName = null)
@@ -81,9 +91,49 @@ class View
         }
     }
 
+    public function renderWidgets($widgetsName)
+    {
+        /**
+         * @var $widgets Widgets
+         */
+        $widgets = Widgets::make($widgetsName);
+        $widgets->data = $this->data;
+        $widgets->render();
+    }
+
     public function html()
     {
         return new Html($this);
+    }
+
+    public function beginPjax($id)
+    {
+        if (!isset($this->pjaxContainers)) {
+            $this->pjaxContainers = array();
+        }
+        if (isset($id)) {
+            if (!isset($this->pjaxContainers[$id])) {
+                $pjaxContainer = new PjaxContainer($this);
+                $this->pjaxContainers[$id] = $pjaxContainer;
+            } else {
+                $pjaxContainer = $this->pjaxContainers[$id];
+            }
+            $pjaxContainer->begin($id);
+        }
+    }
+
+    public function endPjax($id)
+    {
+        if (isset($id)) {
+            if (isset($this->pjaxContainers[$id])) {
+                $this->pjaxContainers[$id]->end();
+            }
+        }
+    }
+
+    public function registerJs($js)
+    {
+        echo '<script type="text/javascript">' . $js . '</script>';
     }
 }
 

@@ -4,4 +4,13 @@
  * User: lbob
  * Date: 2014/12/9
  * Time: 17:36
- */ 
+ */
+$this->response->clear();
+echo 'text';
+//ob_clean();
+echo 'test2';
+$content = ob_get_clean();
+echo $content . 'dddd';
+//ob_flush();
+exit;
+//ob_clean();

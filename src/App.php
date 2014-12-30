@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft;
+use Xaircraft\Http\Response;
 
 
 /**
@@ -25,6 +26,7 @@ class App extends Container {
      * @var $req Http\Request;
      */
     public $req;
+    public $response;
     public $environment = array();
 
     private $startHandlers = array();
@@ -120,6 +122,7 @@ class App extends Container {
 
         $this->router->registerMatchedHandler(function ($params) {
             $this->req = Http\Request::getInstance($params);
+            $this->response = new Response();
         });
 
         $this->router->registerDefaultMatchedHandler(function ($params) {
@@ -163,6 +166,12 @@ class App extends Container {
         if (isset($handler) && is_callable($handler)) {
             $this->errorHandlers[] = $handler;
         }
+    }
+
+    public function end()
+    {
+        $this->onEnd();
+        exit;
     }
 
     private function onStart()

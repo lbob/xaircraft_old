@@ -67,7 +67,7 @@ class PjaxContainer {
         $linkSelector = json_encode($this->linkSelector !== null ? $this->linkSelector : '#' . $id . ' a');
         $formSelector = json_encode($this->formSelector !== null ? $this->formSelector : '#' . $id . ' form[data-pjax]');
         $js = "jQuery(document).pjax($linkSelector, \"#$id\", $options);";
-        $js .= "\njQuery(document).on('submit', $formSelector, function (event) {alert('ddd');jQuery.pjax.submit(event, '#$id', $options);});";
+        $js .= "\njQuery(document).on('submit', $formSelector, function (event) {jQuery.pjax.submit(event, '#$id', $options);});";
         $this->view->registerJs($js);
     }
 

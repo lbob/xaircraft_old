@@ -106,7 +106,7 @@ class View
         return new Html($this);
     }
 
-    public function beginPjax($id)
+    public function beginPjax($id, $linkSelector = null, $formSelector = null, $scrollTo = null, array $options = null)
     {
         if (!isset($this->pjaxContainers)) {
             $this->pjaxContainers = array();
@@ -114,11 +114,19 @@ class View
         if (isset($id)) {
             if (!isset($this->pjaxContainers[$id])) {
                 $pjaxContainer = new PjaxContainer($this);
-                $this->pjaxContainers[$id] = $pjaxContainer;
             } else {
                 $pjaxContainer = $this->pjaxContainers[$id];
             }
+            if (isset($linkSelector))
+                $pjaxContainer->linkSelector = $linkSelector;
+            if (isset($formSelector))
+                $pjaxContainer->formSelector = $formSelector;
+            if (isset($scrollTo))
+                $pjaxContainer->scrollTo = $scrollTo;
+            if (isset($options))
+                $pjaxContainer->clientOptions = $options;
             $pjaxContainer->begin($id);
+            $this->pjaxContainers[$id] = $pjaxContainer;
         }
     }
 

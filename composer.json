@@ -17,7 +17,9 @@
 		"devster/ubench": "1.1.*-dev",
 		"nebula/router": "dev-master",
 		"monolog/monolog": "1.11.*",
-		"nesbot/Carbon": "*"
+		"nesbot/Carbon": "*",
+		"predis/predis": "*"
+
 	},
 	"autoload": {
 		"psr-4": {

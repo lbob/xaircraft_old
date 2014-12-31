@@ -3,6 +3,7 @@
 use Xaircraft\DB;
 use Xaircraft\Log;
 use Xaircraft\Session;
+use Xaircraft\Helper\Url;
 
 /**
  * Class post_controller
@@ -34,7 +35,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $this->post = $post;
         if ($this->req->isPost()) {
             if ($post->save($this->req->posts('post'))) {
-                \Xaircraft\Helper\Url::redirect('/post/edit/', array('id' => $post->id));
+                Url::redirect('/post/edit/', array('id' => $post->id));
             }
         }
         return $this->view();

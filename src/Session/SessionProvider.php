@@ -20,6 +20,9 @@ interface SessionProvider
     public function forget($key);
     public function flush();
     public function regenerate();
+    public function flash($key, $value);
+    public function reflash($key);
+    public function remeber($key);
 }
 
  

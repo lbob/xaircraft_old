@@ -2,6 +2,7 @@
 
 use Xaircraft\DB;
 use Xaircraft\Log;
+use Xaircraft\Session;
 
 /**
  * Class post_controller
@@ -28,13 +29,11 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function edit()
     {
-        Log::info('post/edit', 'test edit log.');
         $query = DB::table('post')->where('id', $this->req->param('id'))->first();
         $post = DB::entity($query);
         $this->post = $post;
         if ($this->req->isPost()) {
             if ($post->save($this->req->posts('post'))) {
-                Log::debug('post/edit', 'test edit log.', array('query' => DB::getQueryLog()));
                 \Xaircraft\Helper\Url::redirect('/post/edit/', array('id' => $post->id));
             }
         }
@@ -47,6 +46,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $post = DB::entity($query);
         if ($post->isExist()) {
             $this->title = $post->title;
+            $this->post = $post;
             return $this->view();
         } else {
             return $this->view('post.notfound');

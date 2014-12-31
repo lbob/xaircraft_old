@@ -225,6 +225,7 @@ class Html {
     public function showList(array $list, array $options)
     {
         $columns = array();
+        $tailHandler = null;
 
         if (isset($options) && !empty($options)) {
             if (isset($options['show'])) {
@@ -241,6 +242,9 @@ class Html {
                         }
                     }
                 }
+            }
+            if (isset($options['tail']) && is_callable($options['tail'])) {
+                $tailHandler = $options['tail'];
             }
         }
 
@@ -273,6 +277,9 @@ class Html {
                         }
                     }
                     $result[] = '<td>' . $tdContent . '</td>';
+                }
+                if (isset($tailHandler)) {
+                    $result[] = '<td>' . call_user_func_array($tailHandler, array($item, $this)) . '</td>';
                 }
                 $result[] = '</tr>';
             }

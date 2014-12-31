@@ -87,6 +87,21 @@ class Session
     {
         return self::getInstance()->provider->regenerate();
     }
+
+    public static function flash($key, $value)
+    {
+        return self::getInstance()->provider->flash($key, $value);
+    }
+
+    public static function reflash($key)
+    {
+        return self::getInstance()->provider->reflash($key);
+    }
+
+    public static function remeber($key)
+    {
+        return self::getInstance()->provider->remeber($key);
+    }
 }
 
  

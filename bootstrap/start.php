@@ -38,6 +38,7 @@ $app->registerEndHandler(function($app) {
             echo '<p style="color:#a0a0a0;text-shadow:1px 1px 0 #FFFFFF;text-align:right;font-size:12px;padding-top:10px;">This page used <strong>' . $bench->getTime() . '</strong>, <strong>' . $bench->getMemoryUsage() . '</strong>.</p>';
         }
     }
+    \Xaircraft\Log::debug('app_end', 'sql query', \Xaircraft\DB::getQueryLog());
 });
 
 $app->registerErrorHandler(function($app, \Exception $ex) {

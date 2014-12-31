@@ -1,4 +1,6 @@
-<?php $this->html()->form($post, array(
+<?php
+$this->html()->link('post/', '返回列表')->render();
+$this->html()->form($post, array(
     'show' => array(
         'title' => array('textbox', '标题：'),
         'author' => array('textbox', '作者：'),

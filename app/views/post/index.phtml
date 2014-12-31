@@ -7,7 +7,7 @@
  * @var $this \Xaircraft\Mvc\View
  */
 
-$this->beginPjax('pjaxContainer');
+$this->beginPjax('post_list');
 $this->html()->showList($posts, array(
     'show' => array(
         'id'            => 'ID',
@@ -17,6 +17,9 @@ $this->html()->showList($posts, array(
         'content'       => '内容',
         'update_at'     => '更新时间',
         'create_at'     => '创建时间'
-    )
+    ),
+    'tail' => function($row, $html) {
+        return $html->linkTag('post/edit/' . $row['id'], '编辑') . ' | ' . $html->linkTag('post/show/' . $row['id'], '查看');
+    }
 ))->page($pageIndex, $pageCount, $recordCount)->render();
-$this->endPjax('pjaxContainer');
+$this->endPjax('post_list');

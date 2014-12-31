@@ -55,7 +55,7 @@ class PdoDatabase implements Database {
     {
         if ($this->isLog) {
             $time = explode(' ', microtime());
-            $time = $time[1] . $time[0];
+            $time = (float)$time[1] + (float)$time[0];
             $this->statements[] = '[' . $time . '] ' . $statement;
         }
     }

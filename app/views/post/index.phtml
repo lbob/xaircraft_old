@@ -1,22 +1,22 @@
 <?php
 /**
+ * Created by PhpStorm.
+ * User: lbob
+ * Date: 2014/12/31
+ * Time: 10:04
  * @var $this \Xaircraft\Mvc\View
  */
-?>
 
-<div id="menu">
-    <?php $this->html()->link('/post/index/11', '文章1', null, 'post1')->render(); ?>
-    <?php $this->html()->link('/post/index/12', '文章2', null, 'post2')->render(); ?>
-</div>
-
-<?php $this->beginPjax('pjaxContainer'); ?>
-    <h1><?php echo $title ?></h1>
-    <?php $this->html()->link('/post/index/' . ($this->req->param('id') == '12' ? '11' : '12'), '1链接' . ($this->req->param('id') == '12' ? 'B' : 'A'))->render(); ?>
-    <p>当前时间：<?php echo time(); ?></p>
-<?php $this->endPjax('pjaxContainer'); ?>
-
-<?php $this->beginPjax('pjaxContainer2'); ?>
-    <h1><?php echo $title ?></h1>
-    <?php $this->html()->link('/post/index/' . ($this->req->param('id') == '12' ? '11' : '12'), 'PJAX链接区块测试' . ($this->req->param('id') == '12' ? 'B' : 'A'))->render(); ?>
-    <p>当前时间2：<?php echo time(); ?></p>
-<?php $this->endPjax('pjaxContainer2'); ?>
+$this->beginPjax('pjaxContainer');
+$this->html()->showList($posts, array(
+    'show' => array(
+        'id'            => 'ID',
+        'title'         => '标题',
+        'author'        => '作者',
+        'keyword'       => '关键字',
+        'content'       => '内容',
+        'update_at'     => '更新时间',
+        'create_at'     => '创建时间'
+    )
+))->page($pageIndex, $pageCount, $recordCount)->render();
+$this->endPjax('pjaxContainer');

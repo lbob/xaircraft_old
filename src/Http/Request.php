@@ -73,6 +73,12 @@ class Request {
         }
     }
 
+    public function url()
+    {
+        $namespace = $this->param('namespace');
+        return (isset($namespace) ? $namespace . '/' : '') . $this->param('controller') . '/' . $this->param('action');
+    }
+
     public function posts($prefix = null)
     {
         if (isset($prefix) && is_string($prefix)) {

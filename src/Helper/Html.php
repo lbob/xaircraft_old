@@ -28,6 +28,11 @@ class Html {
 
     public function link($url, $text, $params = null, $id = null, $class = null, $attrs = null)
     {
+        return new Html($this->view, $this->html . $this->linkTag($url, $text, $params, $id, $class, $attrs));
+    }
+
+    public function linkTag($url, $text, $params = null, $id = null, $class = null, $attrs = null)
+    {
         $result[] = '<a';
         $result[] = 'href="' . Url::link($url, $params) . '"';
         if (isset($id))
@@ -43,7 +48,7 @@ class Html {
             }
         }
         $result[] = '>' . $text . '</a>';
-        return new Html($this->view, $this->html . implode(' ', $result));
+        return implode(' ', $result);
     }
 
     public function beginTag($tagName, $args = null)
@@ -214,6 +219,87 @@ class Html {
         else
             $result[] = 'id="submit" name="submit"';
         $result[] = '/>';
+        return new Html($this->view, $this->html . implode(' ', $result));
+    }
+
+    public function showList(array $list, array $options)
+    {
+        $columns = array();
+
+        if (isset($options) && !empty($options)) {
+            if (isset($options['show'])) {
+                $showColumns = $options['show'];
+                foreach ($showColumns as $key => $value) {
+                    if (is_string($value)) {
+                        $columns[$key] = $value;
+                    }
+                    if (is_array($value)) {
+                        if (isset($value[1])) {
+                            $columns[$key] = trim($value);
+                        } else {
+                            $columns[$key] = trim($key);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (empty($columns)) {
+            if (isset($list) && !empty($list)) {
+                $showColumns = array_keys($list);
+                foreach ($showColumns as $item) {
+                    $columns[$item] = $item;
+                }
+            }
+        }
+
+        $result[] = '<table>';
+        $result[] = '<thead><tr>';
+        foreach ($columns as $key => $value) {
+            $result[] = '<td>' . $value . '</td>';
+        }
+        $result[] = '</tr></thead>';
+        $result[] = '<tbody>';
+
+        if (isset($list) && !empty($list)) {
+            foreach ($list as $item) {
+                $result[] = '<tr>';
+                foreach ($columns as $key => $value) {
+                    $tdContent = ' ';
+                    if (isset($item[$key])) {
+                        $tdContent = $item[$key];
+                        if ($key === 'update_at' || $key === 'create_at') {
+                            $tdContent = date("Y-m-d h:i:s", $item[$key]);
+                        }
+                    }
+                    $result[] = '<td>' . $tdContent . '</td>';
+                }
+                $result[] = '</tr>';
+            }
+        }
+        $result[] = '</tbody>';
+        $result[] = '</table>';
+
+        return new Html($this->view, $this->html . implode(' ', $result));
+    }
+
+    public function page($pageIndex, $pageCount, $recordCount)
+    {
+        if (!isset($pageIndex)) {
+            $pageIndex = 1;
+        }
+        $result[] = '第 ' . $pageIndex . ' 页 / 共 ' . $pageCount . ' 页';
+        $result[] = '记录数 ' . $recordCount;
+        $prePageParams = $this->view->req->params();
+        $prePageParams['p'] = $pageIndex - 1;
+        $nextPageParams = $this->view->req->params();
+        $nextPageParams['p'] = $pageIndex + 1;
+        if ($pageIndex - 1 > 0) {
+            $result[] = $this->linkTag($this->view->req->url(), '上一页', $prePageParams);
+        }
+        if ($pageIndex < $pageCount) {
+            $result[] = $this->linkTag($this->view->req->url(), '下一页', $nextPageParams);
+        }
         return new Html($this->view, $this->html . implode(' ', $result));
     }
 

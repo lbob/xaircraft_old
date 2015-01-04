@@ -290,7 +290,7 @@ class Html {
         return new Html($this->view, $this->html . implode(' ', $result));
     }
 
-    public function page($pageIndex, $pageCount, $recordCount)
+    public function page($pageIndex, $pageCount, $recordCount, $pageParamName = 'p')
     {
         if (!isset($pageIndex)) {
             $pageIndex = 1;
@@ -298,9 +298,9 @@ class Html {
         $result[] = '第 ' . $pageIndex . ' 页 / 共 ' . $pageCount . ' 页';
         $result[] = '记录数 ' . $recordCount;
         $prePageParams = $this->view->req->params();
-        $prePageParams['p'] = $pageIndex - 1;
+        $prePageParams[$pageParamName] = $pageIndex - 1;
         $nextPageParams = $this->view->req->params();
-        $nextPageParams['p'] = $pageIndex + 1;
+        $nextPageParams[$pageParamName] = $pageIndex + 1;
         if ($pageIndex - 1 > 0) {
             $result[] = $this->linkTag($this->view->req->url(), '上一页', $prePageParams);
         }

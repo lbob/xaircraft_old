@@ -30,8 +30,12 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function hello()
     {
+        $hash = password_hash('123456', PASSWORD_BCRYPT);
 
-        return $this->view();
+        $result = password_verify('123456', $hash);
+        var_dump($result);
+
+        return $this->text($hash);
     }
 }
 

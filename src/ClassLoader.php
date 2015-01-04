@@ -30,6 +30,17 @@ class ClassLoader extends Container
             $this->paths[] = $path;
     }
 
+    public function addPaths(array $paths)
+    {
+        if (isset($paths)) {
+            foreach ($paths as $item) {
+                if (is_dir($item)) {
+                    $this->addPath($item);
+                }
+            }
+        }
+    }
+
     private function loadClass($className)
     {
         if (isset($className) && !isset($this[$className])) {

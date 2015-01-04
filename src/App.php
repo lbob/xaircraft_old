@@ -112,6 +112,17 @@ class App extends Container {
     private function autoload()
     {
         $this->classLoader = new ClassLoader();
+        $autoloadConfigFilePath = \Xaircraft\App::path("autoload");
+        if (is_file($autoloadConfigFilePath) && is_readable($autoloadConfigFilePath)) {
+            $autoloadDirs = require $autoloadConfigFilePath;
+            $paths = array();
+            if (isset($autoloadDirs) && is_array($autoloadDirs)) {
+                foreach ($autoloadDirs as $item) {
+                    $paths[] = \Xaircraft\App::path("app").$item;
+                }
+                $this->classLoader->addPaths($paths);
+            }
+        }
         $this->classLoader->addPath(\Xaircraft\App::path("app").'/models');
     }
 

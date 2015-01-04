@@ -12,5 +12,6 @@ return array(
     'routes'    => __DIR__.'/../app/config/routes.php',
     'cache'     => __DIR__.'/../app/cache',
     'schema'    => __DIR__.'/../app/cache/schema/',
-    'log'       => __DIR__.'/../app/log'
+    'log'       => __DIR__.'/../app/log',
+    'autoload'  => __DIR__.'/../app/config/autoload.php'
 );

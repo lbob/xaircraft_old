@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "91825d0cbe2d3c84dacf9088ec9cec78",
+    "hash": "dd19cb2ac2ecff2dc3e6b4047e0eb74f",
     "packages": [],
     "packages-dev": [
         {
@@ -189,12 +189,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/lbob/router.git",
-                "reference": "6e7b181c76f41befb8012dc8dc9cfde2777714dd"
+                "reference": "9e68799b41bd6b09cac1e1d708cc97b094ed3a54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lbob/router/zipball/6e7b181c76f41befb8012dc8dc9cfde2777714dd",
-                "reference": "6e7b181c76f41befb8012dc8dc9cfde2777714dd",
+                "url": "https://api.github.com/repos/lbob/router/zipball/9e68799b41bd6b09cac1e1d708cc97b094ed3a54",
+                "reference": "9e68799b41bd6b09cac1e1d708cc97b094ed3a54",
                 "shasum": ""
             },
             "require": {
@@ -220,7 +220,7 @@
                 }
             ],
             "description": "A PHP URL Router",
-            "time": "2014-12-18 14:22:05"
+            "time": "2015-01-04 08:41:38"
         },
         {
             "name": "nesbot/carbon",
@@ -274,12 +274,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nrk/predis.git",
-                "reference": "28accc93f0c3868711cfc89089f8cd953d642851"
+                "reference": "b8decc75a884fce1bfc62d5bc6823298a678f890"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nrk/predis/zipball/28accc93f0c3868711cfc89089f8cd953d642851",
-                "reference": "28accc93f0c3868711cfc89089f8cd953d642851",
+                "url": "https://api.github.com/repos/nrk/predis/zipball/b8decc75a884fce1bfc62d5bc6823298a678f890",
+                "reference": "b8decc75a884fce1bfc62d5bc6823298a678f890",
                 "shasum": ""
             },
             "require": {
@@ -321,7 +321,7 @@
                 "predis",
                 "redis"
             ],
-            "time": "2014-11-07 13:24:35"
+            "time": "2015-01-02 13:37:26"
         },
         {
             "name": "psr/log",

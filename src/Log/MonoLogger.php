@@ -2,6 +2,7 @@
 
 namespace Xaircraft\Log;
 use Xaircraft\Common\IO;
+use Xaircraft\Common\Net;
 use Xaircraft\Log\Logger;
 
 
@@ -22,7 +23,7 @@ class MonoLogger implements Logger {
 
     public function debug($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('debug');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::DEBUG));
@@ -31,7 +32,7 @@ class MonoLogger implements Logger {
 
     public function info($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('info');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::INFO));
@@ -40,7 +41,7 @@ class MonoLogger implements Logger {
 
     public function notic($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('notic');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::NOTICE));
@@ -49,7 +50,7 @@ class MonoLogger implements Logger {
 
     public function warning($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('warning');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::WARNING));
@@ -58,7 +59,7 @@ class MonoLogger implements Logger {
 
     public function error($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('error');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::ERROR));
@@ -67,7 +68,7 @@ class MonoLogger implements Logger {
 
     public function critical($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('critical');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::CRITICAL));
@@ -76,7 +77,7 @@ class MonoLogger implements Logger {
 
     public function alert($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('alert');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::ALERT));
@@ -85,7 +86,7 @@ class MonoLogger implements Logger {
 
     public function emergency($key, $message, array $context = array())
     {
-        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI']));
+        $context = array_merge($context, array('url' => $_SERVER['REQUEST_URI'], 'ClientIP' => Net::getClientIP()));
         $path = $this->getLogPath('emergency');
         $logger = new \Monolog\Logger($key);
         $logger->pushHandler(new \Monolog\Handler\StreamHandler($path, \Monolog\Logger::EMERGENCY));

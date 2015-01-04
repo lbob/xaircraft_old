@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft;
+use Xaircraft\Common\Net;
 use Xaircraft\Http\Response;
 
 
@@ -183,6 +184,16 @@ class App extends Container {
     {
         $this->onEnd();
         exit;
+    }
+
+    public function getClientIP()
+    {
+        return Net::getClientIP();
+    }
+
+    public function getServerIP()
+    {
+        return Net::getServerIP();
     }
 
     private function onStart()

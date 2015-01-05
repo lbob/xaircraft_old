@@ -136,6 +136,11 @@ abstract class Controller
         $this->layoutName = $layoutName;
     }
 
+    protected function disableLayout()
+    {
+        unset($this->layoutName);
+    }
+
     public function __set($key, $value)
     {
         if (isset($key) && is_string($key))

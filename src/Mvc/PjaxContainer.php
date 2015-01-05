@@ -53,6 +53,7 @@ class PjaxContainer {
         $content = $this->view->response->getOriginalContent();
         $this->view->response->setContent($content);
         $this->view->response->flush();
+        $this->view->response->setStatusCode(200);
         App::getInstance()->end();
     }
 

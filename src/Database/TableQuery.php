@@ -736,6 +736,7 @@ class TableQuery
     public function count()
     {
         $this->queryType = self::QUERY_SELECT;
+        $this->isCount = true;
         $column          = '*';
         if (isset($this->primaryKey)) {
             $column = $this->primaryKey;

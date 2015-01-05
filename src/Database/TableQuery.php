@@ -147,7 +147,7 @@ class TableQuery
         $query = implode(' ', $query);
         $result = $this->driver->select($query, $this->getParams());
         if ($this->isCount) {
-            return $result[0][0];
+            return $result[0][0] + '0';
         }
         return $result;
     }

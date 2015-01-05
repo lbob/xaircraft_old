@@ -46,6 +46,7 @@ class TableQuery
     private $inserts;
     private $isInsertGetId = false;
     private $updates;
+    private $isCount = false;
 
     /**
      * @var TableSchema
@@ -144,7 +145,11 @@ class TableQuery
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
         }
         $query = implode(' ', $query);
-        return $this->driver->select($query, $this->getParams());
+        $result = $this->driver->select($query, $this->getParams());
+        if ($this->isCount) {
+            return $result[0][0];
+        }
+        return $result;
     }
 
     private function parsePageQuery($preQuery)
@@ -726,7 +731,7 @@ class TableQuery
 
     /**
      * 设置返回查询的记录条数
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function count()
     {

@@ -97,6 +97,7 @@ class App extends Container {
         try {
             $this->onStart();
             $this->autoload();
+            $this->inject();
             $this->routing();
             $this->onEnd();
         } catch (\Exception $ex) {
@@ -119,6 +120,16 @@ class App extends Container {
     {
         $app = App::getInstance();
         return $app->getPath($key);
+    }
+
+    private function inject()
+    {
+        $path = App::path('inject');
+        if (isset($path)) {
+            if (is_file($path) && is_readable($path)) {
+                require $path;
+            }
+        }
     }
 
     private function autoload()

@@ -46,8 +46,4 @@ $app->registerErrorHandler(function($app, \Exception $ex) {
     echo "应用程序错误：" . $ex->getMessage();
 });
 
-$app->bind('UserSession', function() {
-    return new UserSessionImpl();
-});
-
 return $app;

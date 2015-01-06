@@ -274,7 +274,7 @@ class App extends Container {
         $this->injectMappings[$interface] = $implement;
     }
 
-    private function getInjectImplement($interface)
+    public function getInjectImplement($interface)
     {
         if (isset($interface)) {
             if (array_key_exists($interface, $this->injectMappings)) {

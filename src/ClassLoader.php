@@ -45,12 +45,12 @@ class ClassLoader extends Container
     {
         if (isset($className) && !isset($this[$className])) {
             $this[$className] = true;
-            $className        = strtolower($className);
+            //$className        = strtolower($className);
 
             $path = null;
             // Controller
             if (strpos($className, "_controller") > 0) {
-                $path = $this->getControllerPath($className);
+                $path = $this->getControllerPath(strtolower($className));
             }
             if (is_file($path) && is_readable($path)) {
                 require_once $path;

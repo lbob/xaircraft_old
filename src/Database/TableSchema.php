@@ -175,8 +175,7 @@ class TableSchema
      */
     private function getColumnType($type, $field)
     {
-        static $typeMaps
-        = [
+        static $typeMaps = array(
             'tinyint'    => self::TYPE_SMALLINT,
             'bit'        => self::TYPE_INTEGER,
             'smallint'   => self::TYPE_SMALLINT,
@@ -204,7 +203,7 @@ class TableSchema
             'time'       => self::TYPE_TIME,
             'timestamp'  => self::TYPE_TIMESTAMP,
             'enum'       => self::TYPE_STRING,
-        ];
+        );
 
         if (isset($typeMaps[$type])) {
             return $typeMaps[$type];
@@ -228,15 +227,14 @@ class TableSchema
      */
     private function getColumnPhpType($columnType, $field)
     {
-        static $typeMaps
-        = [
+        static $typeMaps = array(
             'smallint' => 'integer',
             'integer'  => 'integer',
             'bigint'   => 'integer',
             'boolean'  => 'boolean',
             'float'    => 'double',
             'binary'   => 'resource'
-        ];
+        );
 
         // 除了上面的映射关系外，还有几个特殊情况：
         // 1. bigint字段，在64位环境下，且为singed时，使用integer来表示，否则string

@@ -16,6 +16,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
+
         $this->testHere = 'sfs';
 
         $user = DB::entity('user');

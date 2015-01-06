@@ -49,6 +49,17 @@ class App extends Container {
      */
     private static $instance;
 
+    /**
+     * @var \Xaircraft\Session\UserSession
+     */
+    private $userSession;
+
+    /**
+     * 依赖注入容器
+     * @var array
+     */
+    private $injectMappings = array();
+
     public static function getInstance()
     {
         if (!isset(self::$instance)) {
@@ -133,8 +144,8 @@ class App extends Container {
         $this->router->baseMappings['default']['default'] = $this->environment[self::ENV_DEFAULT_TOKEN];
 
         $this->router->registerMatchedHandler(function ($params) {
-            $this->req = Http\Request::getInstance($params);
-            $this->response = new Response();
+            App::getInstance()->req = Http\Request::getInstance($params);
+            App::getInstance()->response = new Response();
         });
 
         $this->router->registerDefaultMatchedHandler(function ($params) {
@@ -196,6 +207,22 @@ class App extends Container {
         return Net::getServerIP();
     }
 
+    /**
+     * @return \Xaircraft\Session\CurrentUser
+     */
+    public function getCurrentUser()
+    {
+        if (!isset($this->userSession)) {
+            $this->userSession = $this->getInjectImplement('UserSession');
+        }
+
+        if (isset($this->userSession)) {
+            return $this->userSession->getCurrentUser();
+        }
+
+        return null;
+    }
+
     private function onStart()
     {
         if ($this->isStarted) {
@@ -229,6 +256,29 @@ class App extends Container {
                 $handler($this, $ex);
             }
         }
+    }
+
+    public function bind($interface, $implement)
+    {
+        $this->injectMappings[$interface] = $implement;
+    }
+
+    private function getInjectImplement($interface)
+    {
+        if (isset($interface)) {
+            if (array_key_exists($interface, $this->injectMappings)) {
+                $implement = $this->injectMappings[$interface];
+
+                if (isset($implement)) {
+                    if (is_callable($implement)) {
+                        return call_user_func($implement);
+                    } else {
+                        return $implement;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public function __get($key)

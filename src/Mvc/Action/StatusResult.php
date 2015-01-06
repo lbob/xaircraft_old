@@ -60,6 +60,9 @@ class StatusResult extends ActionResult
         }
 
         echo json_encode($json);
+
+        $app = \Xaircraft\App::getInstance();
+        unset($app['bench']);
     }
 }
 

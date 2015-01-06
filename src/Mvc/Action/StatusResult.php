@@ -41,10 +41,11 @@ class StatusResult extends ActionResult
     {
         $json = array();
         //$json['status'] = '0x'.dechex($this->statusCode); 暂时不采用十六进制表示状态码
-        if (strpos($this->statusCode, '0x') === 0)
-            $json['status'] = $this->statusCode;
-        else
-            $json['status'] = '0x'.dechex($this->statusCode);
+//        if (strpos($this->statusCode, '0x') === 0)
+//            $json['status'] = $this->statusCode;
+//        else
+//            $json['status'] = '0x'.dechex($this->statusCode);
+        $json['status'] = $this->statusCode;
         $json['message'] = $this->message;
 
         if (isset($this->data) && !empty($this->data)) {

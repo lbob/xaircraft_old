@@ -15,7 +15,7 @@ interface UserSession {
      * @param CurrentUser $currentUser
      * @return mixed
      */
-    public function setCurrentUser(CurrentUser $currentUser);
+    public function setCurrentUser(CurrentUser $currentUser = null);
 
     /**
      * @return CurrentUser

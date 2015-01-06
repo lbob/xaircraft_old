@@ -13,9 +13,13 @@ class UserSessionImpl implements \Xaircraft\Session\UserSession {
      * @param \Xaircraft\Session\CurrentUser $currentUser
      * @return mixed
      */
-    public function setCurrentUser(\Xaircraft\Session\CurrentUser $currentUser)
+    public function setCurrentUser(\Xaircraft\Session\CurrentUser $currentUser = null)
     {
-        \Xaircraft\Session::put(self::CURRENT_USER_SESSION_ID, $currentUser);
+        if (!isset($currentUser)) {
+            \Xaircraft\Session::forget(self::CURRENT_USER_SESSION_ID);
+        } else {
+            \Xaircraft\Session::put(self::CURRENT_USER_SESSION_ID, $currentUser);
+        }
     }
 
     /**

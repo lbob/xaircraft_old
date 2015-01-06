@@ -208,16 +208,16 @@ class App extends Container {
     }
 
     /**
-     * @return \Xaircraft\Session\CurrentUser
+     * @return \Xaircraft\Session\UserSession
      */
-    public function getCurrentUser()
+    public function getUserSession()
     {
         if (!isset($this->userSession)) {
             $this->userSession = $this->getInjectImplement('UserSession');
         }
 
         if (isset($this->userSession)) {
-            return $this->userSession->getCurrentUser();
+            return $this->userSession;
         }
 
         return null;

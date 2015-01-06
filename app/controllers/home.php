@@ -16,6 +16,12 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
+        $userSession = \Xaircraft\App::getInstance()->getUserSession();
+        $current = new \Xaircraft\Session\CurrentUser();
+        $current->id = 1;
+        $current->username = 'liub';
+        $userSession->setCurrentUser($current);
+        var_dump($userSession->getCurrentUser());
 
         $this->testHere = 'sfs';
 
@@ -31,6 +37,8 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function hello()
     {
+        $userSession = \Xaircraft\App::getInstance()->getUserSession();
+        var_dump($userSession->getCurrentUser());
         $hash = password_hash('123456', PASSWORD_BCRYPT);
 
         $result = password_verify('123456', $hash);

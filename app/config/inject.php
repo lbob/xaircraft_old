@@ -10,3 +10,7 @@
 $this->bind('UserSession', function() {
     return new UserSessionImpl();
 });
+
+$this->bind('DatabaseErrorHandler', function() {
+    return new DatabaseErrorHandlerImpl();
+});

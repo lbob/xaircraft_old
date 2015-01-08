@@ -265,6 +265,24 @@ class DB {
     {
         return self::getInstance()->provider->entity($query);
     }
+
+    /**
+     * 获得上一次执行产生的错误代码
+     * @return string
+     */
+    public function errorCode()
+    {
+        return self::getInstance()->provider->errorCode();
+    }
+
+    /**
+     * 获得上一次执行产生的错误信息
+     * @return array
+     */
+    public function errorInfo()
+    {
+        return self::getInstance()->provider->errorInfo();
+    }
 }
 
  

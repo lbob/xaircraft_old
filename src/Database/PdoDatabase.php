@@ -2,6 +2,7 @@
 
 namespace Xaircraft\Database;
 use Whoops\Example\Exception;
+use Xaircraft\App;
 use Xaircraft\ERM\Entity;
 
 
@@ -24,6 +25,9 @@ class PdoDatabase implements Database {
     private $patternUpdateStatement = '#update[ a-zA-Z][ \*\_a-zA-Z0-9\[\]\,\.]+[ ]set#i';
 
     private $errorState = false;
+    private $errorCode;
+    private $errorInfo = array();
+    private $errorBindParams = array();
 
     /**
      * @var array 存储的查询语句
@@ -51,11 +55,17 @@ class PdoDatabase implements Database {
         }
     }
 
-    private function log($statement)
+    private function log($statement, $params = null)
     {
         if ($this->isLog) {
             $time = explode(' ', microtime());
             $time = (float)$time[1] + (float)$time[0];
+            if (isset($params)) {
+                foreach ($params as $item) {
+                    $index = stripos($statement, '?');
+                    $statement = substr($statement, 0, $index) . "'" . $item . "'" . substr($statement, $index + 1, strlen($statement) - $index);
+                }
+            }
             $this->statements[] = '[' . $time . '] ' . $statement;
         }
     }
@@ -69,9 +79,10 @@ class PdoDatabase implements Database {
     {
         if (is_string($query)) {
             if (preg_match($this->patternSelectStatement, $query)) {
-                $this->log($query);
+                $this->log($query, $params);
                 $stmt = $this->getDriverInstance()->prepare($query);
                 $stmt->execute($params);
+                $this->recordError($stmt, $params);
                 return $stmt->fetchAll();
             }
         }
@@ -87,9 +98,11 @@ class PdoDatabase implements Database {
     {
         if (is_string($query)) {
             if (preg_match($this->patternInsertStatement, $query)) {
-                $this->log($query);
+                $this->log($query, $params);
                 $stmt = $this->getDriverInstance()->prepare($query);
-                return $stmt->execute($params);
+                $result = $stmt->execute($params);
+                $this->recordError($stmt, $params);
+                return $result;
             }
         }
         return $this->errorState;
@@ -104,9 +117,11 @@ class PdoDatabase implements Database {
     {
         if (is_string($query)) {
             if (preg_match($this->patternDeleteStatement, $query)) {
-                $this->log($query);
+                $this->log($query, $params);
                 $stmt = $this->getDriverInstance()->prepare($query);
-                return $stmt->execute($params);
+                $result = $stmt->execute($params);
+                $this->recordError($stmt, $params);
+                return $result;
             }
         }
         return $this->errorState;
@@ -121,9 +136,11 @@ class PdoDatabase implements Database {
     {
         if (is_string($query)) {
             if (preg_match($this->patternUpdateStatement, $query)) {
-                $this->log($query);
+                $this->log($query, $params);
                 $stmt = $this->getDriverInstance()->prepare($query);
-                return $stmt->execute($params);
+                $result = $stmt->execute($params);
+                $this->recordError($stmt, $params);
+                return $result;
             }
         }
         return $this->errorState;
@@ -137,7 +154,7 @@ class PdoDatabase implements Database {
     public function statement($query, array $params = null)
     {
         if (is_string($query)) {
-            $this->log($query);
+            $this->log($query, $params);
             return $this->getDriverInstance()->exec($query);
         }
         return $this->errorState;
@@ -151,7 +168,7 @@ class PdoDatabase implements Database {
     public function query($query, array $params = null)
     {
         if (is_string($query)) {
-            $this->log($query);
+            $this->log($query, $params);
             return $this->getDriverInstance()->query($query);
         }
         return $this->errorState;
@@ -304,6 +321,41 @@ class PdoDatabase implements Database {
     function __destruct()
     {
         $this->disconnect();
+    }
+
+    /**
+     * 获得上一次执行产生的错误代码
+     * @return string
+     */
+    public function errorCode()
+    {
+        return $this->errorCode;
+    }
+
+    /**
+     * 获得上一次执行产生的错误信息
+     * @return array
+     */
+    public function errorInfo()
+    {
+        return $this->errorInfo;
+    }
+
+    private function recordError(\PDOStatement $stmt, array $params)
+    {
+        $errorCode = $stmt->errorCode();
+        if (isset($errorCode) && $errorCode !== '00000') {
+            $this->errorCode = $errorCode;
+            $this->errorInfo = $stmt->errorInfo();
+
+            /**
+             * $errorHandler \Xaircraft\Database\DatabaseErrorHandler
+             */
+            $errorHandler = App::getInstance()->getInjectImplement('DatabaseErrorHandler');
+            if (isset($errorHandler)) {
+                $errorHandler->onError($this->errorCode, $this->errorInfo, $stmt->queryString, $params);
+            }
+        }
     }
 }
 

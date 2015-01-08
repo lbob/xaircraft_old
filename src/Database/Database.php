@@ -106,6 +106,18 @@ interface Database {
     public function disconnect();
 
     /**
+     * 获得上一次执行产生的错误代码
+     * @return string
+     */
+    public function errorCode();
+
+    /**
+     * 获得上一次执行产生的错误信息
+     * @return array
+     */
+    public function errorInfo();
+
+    /**
      * 重新建立新的连接
      * @param $dsn
      * @param $username

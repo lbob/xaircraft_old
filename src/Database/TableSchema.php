@@ -4,6 +4,7 @@ namespace Xaircraft\Database;
 use Whoops\Example\Exception;
 use Xaircraft\App;
 use Xaircraft\DB;
+use Xaircraft\Exception\InvalidColumnExecption;
 
 
 /**
@@ -282,7 +283,9 @@ class TableSchema
         $validation = $this->validations[$columnName];
         list($isSuccess, $message) = $validation->valid($columnValue);
         if (!$isSuccess)
-            throw new \Exception("[$this->tableName].[$columnName] : $message.");
+            throw new InvalidColumnExecption("[$this->tableName].[$columnName] : $message.",
+                InvalidColumnExecption::INVALID_COLUMN_ERROR_CODE,
+                array('field' => $columnName));
     }
 
     public function valid($columns)
@@ -298,7 +301,9 @@ class TableSchema
             foreach ($nullValidColumns as $key => $value) {
                 if ($value === 'NO') {
                     if (!array_key_exists($key, $columns)) {
-                        throw new \Exception("[$this->tableName].[$key] : can't be null.");
+                        throw new InvalidColumnExecption("[$this->tableName].[$key] : can't be null.",
+                            InvalidColumnExecption::INVALID_COLUMN_ERROR_CODE,
+                            array('field' => $key));
                     }
                 }
             }

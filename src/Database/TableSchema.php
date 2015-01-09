@@ -277,6 +277,11 @@ class TableSchema
 
     private function validColumn($columnName, $columnValue)
     {
+        if (!array_key_exists($columnValue, $this->validations)) {
+            throw new InvalidColumnExecption("[$this->tableName].[$columnName] : Undefined field.",
+                InvalidColumnExecption::INVALID_COLUMN_ERROR_CODE,
+                array('field' => $columnName));
+        }
         /**
          * @var $validation Validation
          */

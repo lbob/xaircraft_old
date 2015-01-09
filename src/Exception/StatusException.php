@@ -11,9 +11,17 @@ namespace Xaircraft\Exception;
  */
 class StatusException extends \Exception {
 
-    public function __construct($message = "", $code = 0, \Exception $previous = null)
+    private $params = array();
+
+    public function __construct($message = "", $code = 0, array $params = null, \Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
+        $this->params = $params;
+    }
+
+    public function getParams()
+    {
+        return $this->params;
     }
 }
 

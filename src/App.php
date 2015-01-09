@@ -274,7 +274,7 @@ class App extends Container {
         $this->injectMappings[$interface] = $implement;
     }
 
-    public function getInjectImplement($interface)
+    public function getInjectImplement($interface, array $params = null)
     {
         if (isset($interface)) {
             if (array_key_exists($interface, $this->injectMappings)) {
@@ -282,7 +282,7 @@ class App extends Container {
 
                 if (isset($implement)) {
                     if (is_callable($implement)) {
-                        return call_user_func($implement);
+                        return call_user_func($implement, $params);
                     } else {
                         return $implement;
                     }

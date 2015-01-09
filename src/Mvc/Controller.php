@@ -87,6 +87,7 @@ abstract class Controller
     public function status($message, $statusCode, $object = null)
     {
         $result = new StatusResult($message, $statusCode, $object);
+        $result->data = $this->data;
         return $result;
     }
 

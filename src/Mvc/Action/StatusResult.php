@@ -22,29 +22,24 @@ class StatusResult extends ActionResult
     public $message;
 
     /**
-     * @var object
+     * @var array
      */
-    public $object;
+    public $params;
 
     /**
      * @param $message string
      * @param $statusCode int
-     * @param $object object
+     * @param $params array
      */
-    public function __construct($message, $statusCode, $object = null) {
+    public function __construct($message, $statusCode, array $params = null) {
         $this->statusCode = $statusCode;
         $this->message = $message;
-        $this->object = $object;
+        $this->params = $params;
     }
 
     public function execute()
     {
         $json = array();
-        //$json['status'] = '0x'.dechex($this->statusCode); 暂时不采用十六进制表示状态码
-//        if (strpos($this->statusCode, '0x') === 0)
-//            $json['status'] = $this->statusCode;
-//        else
-//            $json['status'] = '0x'.dechex($this->statusCode);
         $json['status'] = $this->statusCode;
         $json['message'] = $this->message;
 
@@ -52,11 +47,10 @@ class StatusResult extends ActionResult
             $json['data'] = $this->data;
         }
 
-        if (isset($this->object)) {
-            if (is_object($this->object)) {
-                $json[strtolower(get_class($this->object))] = $this->object;
-            } else {
-                $json[] = $this->object;
+        if (isset($this->params)) {
+            $json['data'] = array();
+            foreach ($this->params as $key => $value) {
+                $json['data'][$key] = $value;
             }
         }
 
@@ -64,6 +58,14 @@ class StatusResult extends ActionResult
 
         $app = \Xaircraft\App::getInstance();
         unset($app['bench']);
+    }
+
+    private function getHexStatusCode($code)
+    {
+        if (strpos($code, '0x') === 0)
+            return $code;
+        else
+            return '0x'.dechex($code);
     }
 }
 

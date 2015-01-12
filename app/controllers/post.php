@@ -19,7 +19,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        $query = DB::table('post')->where('id', '>', 0)->whereExists(function(\Xaircraft\Database\WhereQuery $query) {
+        $query = DB::table('post')->whereExists(function(\Xaircraft\Database\WhereQuery $query) {
             $query->select()->from('post')->where('id', '>', 1);
         })->page($this->req->param('p'), 3)->select();
         $result = $query->execute();

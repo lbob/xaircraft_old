@@ -120,7 +120,10 @@ class TableQuery
         }
         if ($this->isPaged) {
             $pageResult  = $this->parsePageQuery($query);
-            $queryResult = $this->driver->select($pageResult['query'], $this->joinParams);
+            $queryResult = array();
+            if ($pageResult['recordCount'] > 0) {
+                $queryResult = $this->driver->select($pageResult['query'], $this->joinParams);
+            }
             return array(
                 'recordCount' => $pageResult['recordCount'],
                 'pageCount'   => $pageResult['pageCount'],
@@ -190,7 +193,7 @@ class TableQuery
         }
         $pageCount       = $recordCount % $this->pageSize == 0 ? $recordCount / $this->pageSize
             : intval($recordCount / $this->pageSize + 1);
-        $this->pageIndex = $this->pageIndex > $pageCount ? $pageCount : $this->pageIndex;
+        $this->pageIndex = $this->pageIndex > $pageCount && $pageCount > 0 ? $pageCount : $this->pageIndex;
         $query           = array();
         $query[]         = 'SELECT';
         $query[]         = $primaryKey . ' AS ' . str_replace('.', '_', $primaryKey);
@@ -218,6 +221,13 @@ class TableQuery
         $query[]              = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
         $query                = implode(' ', $query);
         $primaryKeyValues     = $this->driver->select($query, $this->getParams());
+        if (!isset($primaryKeyValues) || empty($primaryKeyValues)) {
+            return array(
+                'query'       => $preQuery,
+                'recordCount' => $recordCount,
+                'pageCount'   => $pageCount
+            );
+        }
         $preQuery[]           = 'WHERE ' . $primaryKey . ' IN (';
         $primaryKeyValueArray = array();
         foreach ($primaryKeyValues as $row) {
@@ -679,7 +689,7 @@ class TableQuery
 
     public function page($pageIndex, $pageSize)
     {
-        $pageIndex = $pageIndex <= 0 ? 1 : $pageIndex;
+        $pageIndex = !isset($pageIndex) || $pageIndex <= 0 ? 1 : $pageIndex;
 
         $this->queryType = self::QUERY_SELECT;
         $this->isPaged   = true;

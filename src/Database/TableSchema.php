@@ -277,7 +277,7 @@ class TableSchema
 
     private function validColumn($columnName, $columnValue)
     {
-        if (!array_key_exists($columnValue, $this->validations)) {
+        if (!array_key_exists($columnName, $this->validations)) {
             throw new InvalidColumnExecption("[$this->tableName].[$columnName] : Undefined field.",
                 InvalidColumnExecption::INVALID_COLUMN_ERROR_CODE,
                 array('field' => $columnName));
@@ -293,8 +293,9 @@ class TableSchema
                 array('field' => $columnName));
     }
 
-    public function valid($columns)
+    public function valid($columns, $isUpdateQuery = false)
     {
+        var_dump($columns);
         if (isset($columns)) {
             foreach ($columns as $key => $value) {
                 $this->validColumn($key, $value);
@@ -305,7 +306,16 @@ class TableSchema
             }
             foreach ($nullValidColumns as $key => $value) {
                 if ($value === 'NO') {
-                    if (!array_key_exists($key, $columns)) {
+                    $nullErrorBreakout = false;
+                    if (array_key_exists($key, $columns)) {
+                        if (is_null($columns[$key]))
+                            $nullErrorBreakout = true;
+                    } else {
+                        if (!$isUpdateQuery)
+                            $nullErrorBreakout = true;
+                    }
+
+                    if ($nullErrorBreakout) {
                         throw new InvalidColumnExecption("[$this->tableName].[$key] : can't be null.",
                             InvalidColumnExecption::INVALID_COLUMN_ERROR_CODE,
                             array('field' => $key));

@@ -90,7 +90,7 @@ class Entity {
                         unset($updateColumns[$key]);
                 }
                 if (isset($updateColumns) && !empty($updateColumns)) {
-                    $meta->valid($updateColumns);
+                    $meta->valid($updateColumns, true);
                     if (array_search('update_at', $meta->getFields()) !== false) {
                         $updateColumns['update_at'] = time();
                     }

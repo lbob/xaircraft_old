@@ -189,12 +189,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/lbob/router.git",
-                "reference": "afce899aed5c30c4924b0b8aafe5ad8090e6953b"
+                "reference": "267d7ff4c6a1ede0f85365df8e98219fefd6cae0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lbob/router/zipball/afce899aed5c30c4924b0b8aafe5ad8090e6953b",
-                "reference": "afce899aed5c30c4924b0b8aafe5ad8090e6953b",
+                "url": "https://api.github.com/repos/lbob/router/zipball/267d7ff4c6a1ede0f85365df8e98219fefd6cae0",
+                "reference": "267d7ff4c6a1ede0f85365df8e98219fefd6cae0",
                 "shasum": ""
             },
             "require": {
@@ -220,7 +220,7 @@
                 }
             ],
             "description": "A PHP URL Router",
-            "time": "2015-01-06 08:22:30"
+            "time": "2015-01-12 02:24:43"
         },
         {
             "name": "nesbot/carbon",

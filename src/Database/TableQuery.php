@@ -453,6 +453,40 @@ class TableQuery
         return $this;
     }
 
+    public function whereExists($subQueryHandler)
+    {
+        if (isset($subQueryHandler) && is_callable($subQueryHandler)) {
+            $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+            call_user_func($subQueryHandler, $whereQuery);
+            $this->wheres[] = array(
+                (count($this->wheres) > 0 ? 'AND ' : ' ') . 'EXISTS',
+                $whereQuery->getQuery()
+            );
+            $params         = $whereQuery->getParams();
+            if (isset($params))
+                $this->whereParams = array_merge($this->whereParams, $params);
+        }
+
+        return $this;
+    }
+
+    public function orWhereExists($subQueryHandler)
+    {
+        if (isset($subQueryHandler) && is_callable($subQueryHandler)) {
+            $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+            call_user_func($subQueryHandler, $whereQuery);
+            $this->wheres[] = array(
+                (count($this->wheres) > 0 ? 'OR ' : ' ') . 'EXISTS',
+                $whereQuery->getQuery()
+            );
+            $params         = $whereQuery->getParams();
+            if (isset($params))
+                $this->whereParams = array_merge($this->whereParams, $params);
+        }
+
+        return $this;
+    }
+
     public function orderBy($columnName, $order)
     {
         if (!isset($columnName))

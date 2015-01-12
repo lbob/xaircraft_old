@@ -19,12 +19,15 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        $query = DB::table('post')->page($this->req->param('p'), 3)->select();
+        $query = DB::table('post')->where('id', '>', 0)->whereExists(function(\Xaircraft\Database\WhereQuery $query) {
+            $query->select()->from('post')->where('id', '>', 1);
+        })->page($this->req->param('p'), 3)->select();
         $result = $query->execute();
         $this->posts = $result['data'];
         $this->pageIndex = $this->req->param('p');
         $this->pageCount = $result['pageCount'];
         $this->recordCount = $result['recordCount'];
+        var_dump(DB::getQueryLog());
         return $this->view();
     }
 

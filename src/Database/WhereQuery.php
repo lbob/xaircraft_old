@@ -17,6 +17,8 @@ class WhereQuery {
     private $logicTableName;
     private $params = array();
     private $isSubQueryMode = false;
+    private $selectFields;
+    private $subQueryTableName;
 
     public function __construct($tableName, $prefix)
     {
@@ -73,27 +75,68 @@ class WhereQuery {
     public function select()
     {
         $this->isSubQueryMode = true;
+        if (func_num_args() > 0) {
+            $this->selectFields = func_get_args();
+        }
+
+        return $this;
     }
 
     public function from($tableName)
     {
         $this->isSubQueryMode = true;
+        if (isset($tableName)) {
+            $this->subQueryTableName = $tableName;
+        }
 
-
+        return $this;
     }
 
     public function getQuery()
     {
-        if (isset($this->wheres) && count($this->wheres) > 0) {
+        if ($this->isSubQueryMode && isset($this->subQueryTableName)) {
             $query[] = '(';
+
+            $query[] = 'SELECT';
+            if (isset($this->selectFields)) {
+                $fields = array();
+                foreach ($this->selectFields as $item) {
+                    $fields[] = '`' . $item . '`';
+                }
+                $query[] = implode(',', $fields);
+            } else {
+                $query[] = '1';
+            }
+
+            if (isset($this->prefix)) {
+                $query[] = 'FROM `' . $this->prefix . $this->subQueryTableName . '`';
+            } else {
+                $query[] = 'FROM `' . $this->subQueryTableName . '`';
+            }
+
+            $query[] = 'WHERE';
+
             if (isset($this->wheres) && count($this->wheres) > 0) {
                 foreach ($this->wheres as $item) {
                     $query[] = implode(' ', $item);
                 }
             }
+
             $query[] = ')';
 
             return implode(' ', $query);
+        } else {
+            if (isset($this->wheres) && count($this->wheres) > 0) {
+                $query[] = '(';
+                if (isset($this->wheres) && count($this->wheres) > 0) {
+                    foreach ($this->wheres as $item) {
+                        $query[] = implode(' ', $item);
+                    }
+                }
+                $query[] = ')';
+
+                return implode(' ', $query);
+            }
         }
 
         return null;

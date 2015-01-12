@@ -63,7 +63,13 @@ class home_controller extends \Xaircraft\Mvc\Controller {
             var_dump($query);
             var_dump($index);
         }
+    }
 
+    public function testwhere()
+    {
+        $result = DB::table('user')->where(function(\Xaircraft\Database\WhereQuery $query) {
+            //$query->select()
+        });
     }
 }
 

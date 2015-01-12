@@ -295,7 +295,6 @@ class TableSchema
 
     public function valid($columns, $isUpdateQuery = false)
     {
-        var_dump($columns);
         if (isset($columns)) {
             foreach ($columns as $key => $value) {
                 $this->validColumn($key, $value);

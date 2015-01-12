@@ -561,7 +561,7 @@ class TableQuery
     /**
      * 设置获得查询结果的第一条记录的指定列的值
      * @param $columnName String 列名称
-     * @return mixed TableQuery
+     * @return TableQuery
      */
     public function pluck($columnName)
     {

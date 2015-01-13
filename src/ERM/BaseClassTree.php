@@ -29,6 +29,8 @@ class BaseClassTree {
             ->execute();
         $nextClassValue = 1;
         if (isset($lastClassNo)) {
+
+            $lastClassNo = substr($lastClassNo, strlen($lastClassNo) - $this->classNoLength + 1, $this->classNoLength);
             $nextClassValue = $lastClassNo + 1;
         }
         $nextClassNo = $nextClassValue . '';

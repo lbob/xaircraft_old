@@ -22,7 +22,7 @@ class BaseClassTree {
     public function getNextClassNo($parentClassNo = '')
     {
         $lastClassNo = \Xaircraft\DB::table($this->tableName)
-            ->where($this->classColumnName, 'LIKE', "'" . $parentClassNo . "%'")
+            ->where($this->classColumnName, 'LIKE', $parentClassNo . "%")
             ->where('LENGTH(' . $this->classColumnName . ')', strlen($parentClassNo) + 4)
             ->orderBy($this->classColumnName, 'DESC')
             ->pluck($this->classColumnName)

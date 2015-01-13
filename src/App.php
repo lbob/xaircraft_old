@@ -21,6 +21,7 @@ class App extends Container {
     const ENV_DATABASE_PROVIDER = 'database_provider';
     const APP_MODE_DEV = 'dev';
     const APP_MODE_PUB = 'pub';
+    const APP_MODE_TEST = 'test';
     const HOST = 'host';
 
     /**
@@ -151,6 +152,9 @@ class App extends Container {
 
     private function routing()
     {
+        if ($this->environment[self::ENV_MODE] === self::APP_MODE_TEST) {
+            return;
+        }
         $this->router = \Nebula\Router::getInstance($this->paths['routes'], $this->paths['filter']);
         $this->router->baseMappings['default']['default'] = $this->environment[self::ENV_DEFAULT_TOKEN];
 

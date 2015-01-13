@@ -44,7 +44,7 @@ class Request {
 
     public function isPost()
     {
-        return isset($_POST['submit']);
+        return isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) === 'post';
     }
 
     public function isXMLHttpRequest()

@@ -36,6 +36,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $query = DB::table('post')->where('id', $this->req->param('id'))->first();
         $post = DB::entity($query);
         $this->post = $post;
+        var_dump($_SERVER['REQUEST_METHOD']);
         if ($this->req->isPost()) {
             if ($post->save($this->req->posts('post'))) {
                 Url::redirect('/post/edit/', array('id' => $post->id));

@@ -47,6 +47,7 @@ class TableQuery
     private $isInsertGetId = false;
     private $updates;
     private $isCount = false;
+    private $isPluck = false;
 
     /**
      * @var TableSchema
@@ -151,6 +152,9 @@ class TableQuery
         $result = $this->driver->select($query, $this->getParams());
         if ($this->isCount) {
             return $result[0][0] + '0';
+        }
+        if ($this->isPluck) {
+            return isset($result[0][0]) ? $result[0][0] : null;
         }
         return $result;
     }
@@ -569,6 +573,7 @@ class TableQuery
             throw new \InvalidArgumentException("Invalid column name.");
 
         $this->queryType = self::QUERY_SELECT;
+        $this->isPluck = true;
         $this->isLimited = true;
         $this->limitStartIndex = 0;
         $this->limitTakeLength = 1;

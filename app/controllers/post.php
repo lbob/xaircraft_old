@@ -46,15 +46,8 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function show()
     {
-        $query = DB::table('post')->where('id', $this->req->param('id'))->first();
-        $post = DB::entity($query);
-        if ($post->isExist()) {
-            $this->title = $post->title;
-            $this->post = $post;
-            return $this->view();
-        } else {
-            return $this->view('post.notfound');
-        }
+        $query = DB::table('post')->pluck('title')->execute();
+        var_dump($query);
     }
 }
 

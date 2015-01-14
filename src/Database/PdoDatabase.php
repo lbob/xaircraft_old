@@ -234,6 +234,7 @@ class PdoDatabase implements Database {
                 $this->isRollback = false;
             } else {
                 $this->getDriverInstance()->commit();
+                $this->isFinishRollback = false;
             }
         }
         --$this->transactionLevel;

@@ -38,6 +38,7 @@ class PdoDatabase implements Database {
     private $isLog = true;
     private $prefix;
     private $isRollback = false;
+    private $isFinishRollback = false;
     /**
      * @var int 事务嵌套层级
      */
@@ -198,6 +199,7 @@ class PdoDatabase implements Database {
     {
         ++$this->transactionLevel;
         if ($this->transactionLevel == 1) {
+            $this->isFinishRollback = false;
             $this->getDriverInstance()->beginTransaction();
         }
     }
@@ -210,8 +212,11 @@ class PdoDatabase implements Database {
     {
         $this->isRollback = true;
         if ($this->transactionLevel == 1) {
-            $this->transactionLevel = 0;
-            $this->getDriverInstance()->rollBack();
+            //$this->transactionLevel = 0;
+            if (!$this->isFinishRollback) {
+                $this->getDriverInstance()->rollBack();
+                $this->isFinishRollback = true;
+            }
         } else {
             //--$this->transactionLevel;
         }
@@ -225,7 +230,7 @@ class PdoDatabase implements Database {
     {
         if ($this->transactionLevel == 1) {
             if ($this->isRollback) {
-                $this->getDriverInstance()->rollBack();
+                $this->rollBack();
                 $this->isRollback = false;
             } else {
                 $this->getDriverInstance()->commit();

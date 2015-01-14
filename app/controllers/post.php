@@ -56,18 +56,39 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         //DB::table('post')->where('id', 2)->delete()->execute();
         DB::transaction(function($db) {
             DB::transaction(function($db) {
-                $db->table('post')->where('id', 18)->delete()->execute();
+                $db->table('post')->where('id', 26)->delete()->execute();
 
                 DB::transaction(function($db) {
-                    $db->table('post')->where('id', 19)->delete()->execute();
-                    $db->rollback();
+                    $db->table('post')->where('id', 27)->delete()->execute();
+                    //$db->rollback();
                 });
             });
 
             DB::transaction(function($db) {
-                $db->table('post')->where('id', 20)->delete()->execute();
+                $db->table('post')->where('id', 28)->delete()->execute();
             });
         });
+    }
+
+    public function trans2()
+    {
+        DB::beginTransaction();
+
+        DB::beginTransaction();
+        DB::table('post')->where('id', 18)->delete()->execute();
+        //DB::rollback();
+        DB::commit();
+        DB::beginTransaction();
+        DB::table('post')->where('id', 24)->delete()->execute();
+        //DB::rollback();
+        DB::commit();
+        DB::beginTransaction();
+        DB::table('post')->where('id', 25)->delete()->execute();
+        //DB::rollback();
+        DB::commit();
+
+        //DB::rollback();
+        DB::commit();
     }
 }
 

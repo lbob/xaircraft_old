@@ -11,6 +11,9 @@ namespace Xaircraft;
  */
 class ClassLoader extends Container
 {
+    private $blackList = array(
+        'PHPUnit_Extensions_Story_TestCase'
+    );
 
     private $paths = array();
 
@@ -44,6 +47,9 @@ class ClassLoader extends Container
     private function loadClass($className)
     {
         if (isset($className) && !isset($this[$className])) {
+            if ($this->checkBlackList($className)) {
+                return;
+            }
             $this[$className] = true;
             //$className        = strtolower($className);
 
@@ -63,6 +69,11 @@ class ClassLoader extends Container
                 }
             }
         }
+    }
+
+    private function checkBlackList($className)
+    {
+        return array_search($className, $this->blackList) != false;
     }
 
     private function getControllerPath($className)

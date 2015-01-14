@@ -50,6 +50,25 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $query = DB::table('post')->pluck('title')->execute();
         var_dump($query);
     }
+
+    public function trans()
+    {
+        //DB::table('post')->where('id', 2)->delete()->execute();
+        DB::transaction(function($db) {
+            DB::transaction(function($db) {
+                $db->table('post')->where('id', 18)->delete()->execute();
+
+                DB::transaction(function($db) {
+                    $db->table('post')->where('id', 19)->delete()->execute();
+                    $db->rollback();
+                });
+            });
+
+            DB::transaction(function($db) {
+                $db->table('post')->where('id', 20)->delete()->execute();
+            });
+        });
+    }
 }
 
  

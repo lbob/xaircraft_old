@@ -28,20 +28,20 @@ class PdoDatabase implements Database {
     private $errorCode;
     private $errorInfo = array();
     private $errorBindParams = array();
-
     /**
      * @var array 存储的查询语句
      */
     private $statements = array();
-
     /**
      * @var bool 是否记录查询语句
      */
     private $isLog = true;
-
     private $prefix;
-
     private $isRollback = false;
+    /**
+     * @var int 事务嵌套层级
+     */
+    private $transactionLevel = 0;
 
     /**
      * @return \PDO
@@ -181,8 +181,8 @@ class PdoDatabase implements Database {
      */
     public function transaction(callable $handler)
     {
-        $this->beginTransaction();
         try {
+            $this->beginTransaction();
             call_user_func($handler, $this);
             $this->commit();
         } catch (\Exception $ex) {
@@ -196,8 +196,10 @@ class PdoDatabase implements Database {
      */
     public function beginTransaction()
     {
-        $this->isRollback = false;
-        $this->getDriverInstance()->beginTransaction();
+        ++$this->transactionLevel;
+        if ($this->transactionLevel == 1) {
+            $this->getDriverInstance()->beginTransaction();
+        }
     }
 
     /**
@@ -206,9 +208,12 @@ class PdoDatabase implements Database {
      */
     public function rollback()
     {
-        if (!$this->isRollback) {
+        $this->isRollback = true;
+        if ($this->transactionLevel == 1) {
+            $this->transactionLevel = 0;
             $this->getDriverInstance()->rollBack();
-            $this->isRollback = true;
+        } else {
+            //--$this->transactionLevel;
         }
     }
 
@@ -218,7 +223,15 @@ class PdoDatabase implements Database {
      */
     public function commit()
     {
-        $this->getDriverInstance()->commit();
+        if ($this->transactionLevel == 1) {
+            if ($this->isRollback) {
+                $this->getDriverInstance()->rollBack();
+                $this->isRollback = false;
+            } else {
+                $this->getDriverInstance()->commit();
+            }
+        }
+        --$this->transactionLevel;
     }
 
     /**

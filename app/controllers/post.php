@@ -90,6 +90,14 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         //DB::rollback();
         DB::commit();
     }
+
+    public function where()
+    {
+        $result = DB::table('post')->whereIn('id', function(\Xaircraft\Database\WhereQuery $whereQuery) {
+            $whereQuery->select('id')->from('post')->where('id', '>', 0);
+        })->select()->execute();
+        var_dump(DB::getQueryLog());
+    }
 }
 
  

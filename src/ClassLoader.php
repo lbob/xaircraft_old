@@ -73,7 +73,7 @@ class ClassLoader extends Container
 
     private function checkBlackList($className)
     {
-        return array_search($className, $this->blackList) != false;
+        return array_search($className, $this->blackList) !== false;
     }
 
     private function getControllerPath($className)

@@ -216,6 +216,7 @@ class PdoDatabase implements Database {
             if (!$this->isFinishRollback) {
                 $this->getDriverInstance()->rollBack();
                 $this->isFinishRollback = true;
+                $this->transactionLevel = 0;
             }
         } else {
             //--$this->transactionLevel;
@@ -235,6 +236,7 @@ class PdoDatabase implements Database {
             } else {
                 $this->getDriverInstance()->commit();
                 $this->isFinishRollback = false;
+                $this->transactionLevel = 0;
             }
         }
         --$this->transactionLevel;

@@ -362,6 +362,15 @@ class PdoDatabase implements Database {
         return $this->errorInfo;
     }
 
+    /**
+     * @param string $value
+     * @return Raw
+     */
+    public function raw($value)
+    {
+        return new Raw($value);
+    }
+
     private function recordError(\PDOStatement $stmt, array $params)
     {
         $errorCode = $stmt->errorCode();

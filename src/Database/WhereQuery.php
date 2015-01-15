@@ -41,12 +41,20 @@ class WhereQuery {
         $argsLen = func_num_args();
         $columnName = $args[0];
         if ($argsLen === 2) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
-            $this->params[] = $args[1];
+            if (is_a($args[1], Raw::RAW)) {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ' . $args[1]->getValue());
+            } else {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
+                $this->params[] = $args[1];
+            }
         }
         if ($argsLen === 3) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ? ');
-            $this->params[] = $args[2];
+            if (is_a($args[2], Raw::RAW)) {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ' . $args[2]->getValue());
+            } else {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ? ');
+                $this->params[] = $args[2];
+            }
         }
 
         return $this;
@@ -61,12 +69,20 @@ class WhereQuery {
         $argsLen = func_num_args();
         $columnName = $args[0];
         if ($argsLen === 2) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
-            $this->params[] = $args[1];
+            if (is_a($args[1], Raw::RAW)) {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ' . $args[1]->getValue());
+            } else {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
+                $this->params[] = $args[1];
+            }
         }
         if ($argsLen === 3) {
-            $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ? ');
-            $this->params[] = $args[2];
+            if (is_a($args[2], Raw::RAW)) {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ' . $args[2]->getValue());
+            } else {
+                $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ? ');
+                $this->params[] = $args[2];
+            }
         }
 
         return $this;

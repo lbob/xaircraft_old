@@ -110,10 +110,10 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
         $result = DB::table('post')->whereIn('id', function(\Xaircraft\Database\WhereQuery $whereQuery) {
             $whereQuery->select('id')->from('post')->where('id', '>', 0);
-        })->select(array(
+        })->where('id', '>', DB::raw(0))->select(array(
             'id', 'title',
             'count' => function(\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select('COUNT(*)')->from('post')->where('id', '>', 0);
+                $whereQuery->select('COUNT(*)')->from('post')->where('id', DB::raw('x_post.id'));
             }
         ))->execute();
         var_dump($result);

@@ -270,7 +270,7 @@ class DB {
      * 获得上一次执行产生的错误代码
      * @return string
      */
-    public function errorCode()
+    public static function errorCode()
     {
         return self::getInstance()->provider->errorCode();
     }
@@ -279,9 +279,18 @@ class DB {
      * 获得上一次执行产生的错误信息
      * @return array
      */
-    public function errorInfo()
+    public static function errorInfo()
     {
         return self::getInstance()->provider->errorInfo();
+    }
+
+    /**
+     * @param string $value
+     * @return \Xaircraft\Database\Raw
+     */
+    public static function raw($value)
+    {
+        return new \Xaircraft\Database\Raw($value);
     }
 }
 

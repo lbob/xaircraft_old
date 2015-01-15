@@ -151,6 +151,12 @@ interface Database {
      * @return \Xaircraft\ERM\Entity
      */
     public function entity($query);
+
+    /**
+     * @param string $value
+     * @return Raw
+     */
+    public function raw($value);
 }
 
  

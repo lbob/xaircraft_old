@@ -101,7 +101,7 @@ class WhereQuery {
             if (isset($this->selectFields)) {
                 $fields = array();
                 foreach ($this->selectFields as $item) {
-                    $fields[] = '`' . $item . '`';
+                    $fields[] = $item;
                 }
                 $query[] = implode(',', $fields);
             } else {

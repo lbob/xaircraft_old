@@ -624,6 +624,30 @@ class TableQuery
         if (func_num_args() > 0) {
             $this->selectFields = func_get_args();
         }
+        if (func_num_args() === 1) {
+            $params = func_get_arg(0);
+            if (isset($params) && is_array($params)) {
+                $fields = array();
+                foreach ($params as $key => $value) {
+                    if (!is_string($key)) {
+                        $fields[] = $value;
+                    } else {
+                        if (is_callable($value)) {
+                            $subQueryHandler = $value;
+                            $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+                            call_user_func($subQueryHandler, $whereQuery);
+                            $fields[] = $whereQuery->getQuery() . ' AS ' . $key;
+                            $params         = $whereQuery->getParams();
+                            if (isset($params))
+                                $this->whereParams = array_merge($this->whereParams, $params);
+                        } else {
+                            $fields[] = $value . ' AS ' . $key;
+                        }
+                    }
+                }
+                $this->selectFields = $fields;
+            }
+        }
         return $this;
     }
 

@@ -57,7 +57,6 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         DB::transaction(function($db) {
             DB::transaction(function($db) {
                 $db->table('post')->where('id', 29)->delete()->execute();
-                $db->rollback();
 
                 DB::transaction(function($db) {
                     $db->table('post')->where('id', 32)->delete()->execute();
@@ -76,7 +75,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
         DB::beginTransaction();
         DB::table('post')->where('id', 29)->delete()->execute();
-        DB::rollback();
+        //DB::rollback();
         DB::commit();
         DB::beginTransaction();
         DB::table('post')->where('id', 32)->delete()->execute();
@@ -96,6 +95,28 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $result = DB::table('post')->whereIn('id', function(\Xaircraft\Database\WhereQuery $whereQuery) {
             $whereQuery->select('id')->from('post')->where('id', '>', 0);
         })->select()->execute();
+        var_dump(DB::getQueryLog());
+    }
+
+    public function testarray()
+    {
+        $array = array(
+            'id',
+            'title',
+            'count' => 4
+        );
+
+        var_dump($array);
+
+        $result = DB::table('post')->whereIn('id', function(\Xaircraft\Database\WhereQuery $whereQuery) {
+            $whereQuery->select('id')->from('post')->where('id', '>', 0);
+        })->select(array(
+            'id', 'title',
+            'count' => function(\Xaircraft\Database\WhereQuery $whereQuery) {
+                $whereQuery->select('COUNT(*)')->from('post')->where('id', '>', 0);
+            }
+        ))->execute();
+        var_dump($result);
         var_dump(DB::getQueryLog());
     }
 }

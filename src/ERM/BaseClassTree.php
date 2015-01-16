@@ -44,15 +44,19 @@ class BaseClassTree {
         return $parentClassNo . $nextClassNo;
     }
 
-    public function getTree(array $showColumns = null, $parentClassNo = '')
+    public function getTree(array $showColumns = null, $parentClassNo = '', $isSort = false, $sortColumnName = 'sort')
     {
         $brothers = array();
         $query = DB::table($this->tableName)
             ->where($this->classColumnName, 'LIKE', $parentClassNo . "%")
             ->where('LENGTH(' . $this->classColumnName . ')', strlen($parentClassNo) + 4)
-            ->orderBy($this->classColumnName, 'ASC')
-            ->select($showColumns)
-            ->execute();
+            ->select($showColumns);
+
+        if ($isSort) {
+            $query = $query->orderBy($sortColumnName, 'ASC')->orderBy($this->classColumnName, 'ASC');
+        } else {
+            $query = $query->orderBy($this->classColumnName, 'ASC');
+        }
 
         if (!isset($query) || empty($query)) {
             return null;

@@ -65,6 +65,7 @@ class BaseClassTree {
         }
 
         foreach ($result as $item) {
+            $item['level'] = strlen($item['classNo']) / $this->classNoLength;
             $item['subTree'] = $this->getTree($showColumns, $item['classNo'], $isSort, $sortColumnName);
             $brothers[] = $item;
         }

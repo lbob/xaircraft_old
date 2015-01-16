@@ -58,11 +58,13 @@ class BaseClassTree {
             $query = $query->orderBy($this->classColumnName, 'ASC');
         }
 
-        if (!isset($query) || empty($query)) {
+        $result = $query->execute();
+
+        if (!isset($result) || empty($result)) {
             return null;
         }
 
-        foreach ($query as $item) {
+        foreach ($result as $item) {
             $item['subTree'] = $this->getTree($showColumns, $item['classNo']);
             $brothers[] = $item;
         }

@@ -65,7 +65,7 @@ class BaseClassTree {
         }
 
         foreach ($result as $item) {
-            $item['subTree'] = $this->getTree($showColumns, $item['classNo']);
+            $item['subTree'] = $this->getTree($showColumns, $item['classNo'], $isSort, $sortColumnName);
             $brothers[] = $item;
         }
 

@@ -122,6 +122,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function test_test()
     {
+        var_dump(DB::table('post')->select('id')->single()->execute());
         return $this->text('success');
     }
 }

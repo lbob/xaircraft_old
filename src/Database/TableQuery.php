@@ -48,6 +48,7 @@ class TableQuery
     private $updates;
     private $isCount = false;
     private $isPluck = false;
+    private $isSingle = false;
 
     /**
      * @var TableSchema
@@ -155,6 +156,18 @@ class TableQuery
         }
         if ($this->isPluck) {
             return isset($result[0][0]) ? $result[0][0] : null;
+        }
+        if ($this->isSingle) {
+            if (count($this->selectFields) === 1) {
+                $colunmName = $this->selectFields[0];
+                $data = array();
+                if (isset($result)) {
+                    foreach ($result as $row) {
+                        $data[] = $row[$colunmName];
+                    }
+                }
+                $result = $data;
+            }
         }
         return $result;
     }
@@ -658,6 +671,13 @@ class TableQuery
                 $this->selectFields = $fields;
             }
         }
+        return $this;
+    }
+
+    public function single()
+    {
+        $this->isSingle = true;
+
         return $this;
     }
 

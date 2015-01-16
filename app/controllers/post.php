@@ -119,6 +119,11 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         var_dump($result);
         var_dump(DB::getQueryLog());
     }
+
+    public function test_test()
+    {
+        return $this->text('success');
+    }
 }
 
  

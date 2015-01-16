@@ -1,5 +1,6 @@
 <?php
 namespace Xaircraft\ERM;
+use Xaircraft\DB;
 
 /**
  * Class BaseClassTree
@@ -41,6 +42,28 @@ class BaseClassTree {
             }
         }
         return $parentClassNo . $nextClassNo;
+    }
+
+    public function getTree(array $showColumns = null, $parentClassNo = '')
+    {
+        $brothers = array();
+        $query = DB::table($this->tableName)
+            ->where($this->classColumnName, 'LIKE', $parentClassNo . "%")
+            ->where('LENGTH(' . $this->classColumnName . ')', strlen($parentClassNo) + 4)
+            ->orderBy($this->classColumnName, 'ASC')
+            ->select($showColumns)
+            ->execute();
+
+        if (!isset($query) || empty($query)) {
+            return null;
+        }
+
+        foreach ($query as $item) {
+            $item['subTree'] = $this->getTree($showColumns, $item['classNo']);
+            $brothers[] = $item;
+        }
+
+        return $brothers;
     }
 }
 

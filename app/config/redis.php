@@ -6,7 +6,9 @@
  * Time: 16:53
  */
 
-return [
-    'host' => '127.0.0.1',
-    'post' => '6379'
-];
+return array(
+    'default' => array(
+        'host' => '127.0.0.1',
+        'port' => '6379'
+    )
+);

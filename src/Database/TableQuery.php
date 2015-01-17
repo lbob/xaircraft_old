@@ -889,6 +889,11 @@ class TableQuery
     {
         return $this->meta;
     }
+
+    public function remeber($minutes = 1)
+    {
+
+    }
 }
 
  

@@ -122,8 +122,22 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function test_test()
     {
-        var_dump(DB::table('post')->select('id')->single()->execute());
+        var_dump(DB::table('post')->select('title')->single()->execute());
         return $this->text('success');
+    }
+
+    public function test_redis()
+    {
+        \Xaircraft\Storage\Redis::set('test', 'hello');
+        $test = \Xaircraft\Storage\Redis::get('test');
+        var_dump($test);
+    }
+
+    public function test_redis2()
+    {
+        //\Xaircraft\Storage\Redis::setex('test', 10, 'hello');
+        $test = \Xaircraft\Storage\Redis::get('test');
+        var_dump($test);
     }
 }
 

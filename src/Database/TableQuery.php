@@ -133,15 +133,7 @@ class TableQuery
             $pageResult  = $this->parsePageQuery($query);
             $queryResult = array();
             if ($pageResult['recordCount'] > 0) {
-                if ($this->isRemeber && $this->isCanReadFromCached()) {
-                    $queryResult = $this->readFromCache($pageResult['query'], $this->joinParams);
-                    if (!isset($queryResult)) {
-                        $queryResult = $this->driver->select($queryResult, $this->joinParams);
-                        $this->writeToCache($queryResult, $this->joinParams, $queryResult);
-                    }
-                } else {
-                    $queryResult = $this->driver->select($pageResult['query'], $this->joinParams);
-                }
+                $queryResult = $this->getSelectResult($pageResult['query'], $this->joinParams);
             }
             return array(
                 'recordCount' => $pageResult['recordCount'],
@@ -167,15 +159,7 @@ class TableQuery
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
         }
         $query = implode(' ', $query);
-        if ($this->isRemeber && $this->isCanReadFromCached()) {
-            $result = $this->readFromCache($query, $this->getParams());
-            if (!isset($result)) {
-                $result = $this->driver->select($query, $this->getParams());
-                $this->writeToCache($query, $this->getParams(), $result);
-            }
-        } else {
-            $result = $this->driver->select($query, $this->getParams());
-        }
+        $result = $this->getSelectResult($query, $this->getParams());
         if ($this->isCount) {
             return $result[0][0] + '0';
         }
@@ -193,6 +177,21 @@ class TableQuery
                 }
                 $result = $data;
             }
+        }
+        return $result;
+    }
+
+    private function getSelectResult($query, $params)
+    {
+        $result = array();
+        if ($this->isRemeber && $this->isCanReadFromCached()) {
+            $result = $this->readFromCache($query, $params);
+            if (!isset($result)) {
+                $result = $this->driver->select($query, $params);
+                $this->writeToCache($query, $params, $result);
+            }
+        } else {
+            $result = $this->driver->select($query, $params);
         }
         return $result;
     }
@@ -272,7 +271,7 @@ class TableQuery
         }
         $query             = implode(' ', $query);
         $recordCount       = 0;
-        $recordCountResult = $this->driver->select($query, $this->getParams());
+        $recordCountResult = $this->getSelectResult($query, $this->getParams());
         foreach ($recordCountResult as $row) {
             $recordCount = $row['TotalCount'];
         }
@@ -305,7 +304,7 @@ class TableQuery
         $limitTakeLength      = $this->pageSize;
         $query[]              = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
         $query                = implode(' ', $query);
-        $primaryKeyValues     = $this->driver->select($query, $this->getParams());
+        $primaryKeyValues     = $this->getSelectResult($query, $this->getParams());
         if (!isset($primaryKeyValues) || empty($primaryKeyValues)) {
             return array(
                 'query'       => $preQuery,

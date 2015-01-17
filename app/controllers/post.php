@@ -20,8 +20,8 @@ class post_controller extends \Xaircraft\Mvc\Controller {
     public function index()
     {
         $query = DB::table('post')->whereExists(function(\Xaircraft\Database\WhereQuery $query) {
-            $query->select()->from('post')->where('id', '>', 1);
-        })->page($this->req->param('p'), 3)->select();
+            $query->select()->from('post')->where('id', '>', 0);
+        })->page($this->req->param('p'), 3)->select()->remeber(1);
         $result = $query->execute();
         $this->posts = $result['data'];
         $this->pageIndex = $this->req->param('p');
@@ -115,7 +115,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             'count' => function(\Xaircraft\Database\WhereQuery $whereQuery) {
                 $whereQuery->select('COUNT(*)')->from('post')->where('id', DB::raw('x_post.id'));
             }
-        ))->remeber(1)->execute();
+        ))->remeber(5)->execute();
         var_dump($result);
         var_dump(DB::getQueryLog());
     }

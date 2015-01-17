@@ -15,6 +15,4 @@ $this->bind('DatabaseErrorHandler', function() {
     return new DatabaseErrorHandlerImpl();
 });
 
-$this->bind('CacheDriver', function() {
-    return new \Xaircraft\Cache\RedisCacheDriverImpl();
-});
+$this->bind('CacheDriver', new \Xaircraft\Cache\RedisCacheDriverImpl());

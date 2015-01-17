@@ -27,6 +27,8 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $this->pageIndex = $this->req->param('p');
         $this->pageCount = $result['pageCount'];
         $this->recordCount = $result['recordCount'];
+        $query = DB::table('post')->pluck('title')->remeber(1)->execute();
+        var_dump($query);
         var_dump(DB::getQueryLog());
         return $this->view();
     }

@@ -33,7 +33,7 @@ interface CacheDriver {
      * @param $default
      * @return mixed
      */
-    public function get($key, $default);
+    public function get($key, $default = null);
 
     /**
      * 永久存储数据到缓存中

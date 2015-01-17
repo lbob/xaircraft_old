@@ -1,6 +1,9 @@
 <?php
 
 namespace Xaircraft\Database;
+use Predis\Connection\ConnectionException;
+use Xaircraft\App;
+use Xaircraft\Log;
 
 
 /**
@@ -49,6 +52,12 @@ class TableQuery
     private $isCount = false;
     private $isPluck = false;
     private $isSingle = false;
+    private $isRemeber = false;
+    private $remeberMinutes = 1;
+    /**
+     * @var \Xaircraft\Cache\CacheDriver
+     */
+    private $cacheDriver;
 
     /**
      * @var TableSchema
@@ -124,7 +133,15 @@ class TableQuery
             $pageResult  = $this->parsePageQuery($query);
             $queryResult = array();
             if ($pageResult['recordCount'] > 0) {
-                $queryResult = $this->driver->select($pageResult['query'], $this->joinParams);
+                if ($this->isRemeber && $this->isCanReadFromCached()) {
+                    $queryResult = $this->readFromCache($pageResult['query'], $this->joinParams);
+                    if (!isset($queryResult)) {
+                        $queryResult = $this->driver->select($queryResult, $this->joinParams);
+                        $this->writeToCache($queryResult, $this->joinParams, $queryResult);
+                    }
+                } else {
+                    $queryResult = $this->driver->select($pageResult['query'], $this->joinParams);
+                }
             }
             return array(
                 'recordCount' => $pageResult['recordCount'],
@@ -150,7 +167,15 @@ class TableQuery
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
         }
         $query = implode(' ', $query);
-        $result = $this->driver->select($query, $this->getParams());
+        if ($this->isRemeber && $this->isCanReadFromCached()) {
+            $result = $this->readFromCache($query, $this->getParams());
+            if (!isset($result)) {
+                $result = $this->driver->select($query, $this->getParams());
+                $this->writeToCache($query, $this->getParams(), $result);
+            }
+        } else {
+            $result = $this->driver->select($query, $this->getParams());
+        }
         if ($this->isCount) {
             return $result[0][0] + '0';
         }
@@ -170,6 +195,49 @@ class TableQuery
             }
         }
         return $result;
+    }
+
+    private function isCanReadFromCached()
+    {
+        $driver = App::getInstance()->getInjectImplement('CacheDriver');
+        if (isset($driver)) {
+            $this->cacheDriver = $driver;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function readFromCache($query, array $params)
+    {
+        try {
+            $key   = md5($query . implode(',', $params));
+            $value = $this->cacheDriver->get($key);
+            if (isset($value)) {
+                return unserialize($value);
+            } else {
+                return null;
+            }
+        } catch (ConnectionException $ex) {
+            Log::error('TableQuery', 'readFromCache error', array(
+                'error_message' => $ex->getMessage(),
+                'error_code' => $ex->getCode()
+            ));
+            return null;
+        }
+    }
+
+    private function writeToCache($query, array $params, $result)
+    {
+        try {
+            $key = md5($query . implode(',', $params));
+            $this->cacheDriver->put($key, serialize($result), $this->remeberMinutes);
+        } catch (ConnectionException $ex) {
+            Log::error('TableQuery', 'readFromCache error', array(
+                'error_message' => $ex->getMessage(),
+                'error_code'    => $ex->getCode()
+            ));
+        }
     }
 
     private function parsePageQuery($preQuery)
@@ -892,7 +960,10 @@ class TableQuery
 
     public function remeber($minutes = 1)
     {
+        $this->isRemeber = true;
+        $this->remeberMinutes = $minutes;
 
+        return $this;
     }
 }
 

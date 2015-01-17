@@ -115,21 +115,26 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             'count' => function(\Xaircraft\Database\WhereQuery $whereQuery) {
                 $whereQuery->select('COUNT(*)')->from('post')->where('id', DB::raw('x_post.id'));
             }
-        ))->execute();
+        ))->remeber(1)->execute();
         var_dump($result);
         var_dump(DB::getQueryLog());
     }
 
     public function test_test()
     {
-        var_dump(DB::table('post')->select('title')->single()->execute());
-        return $this->text('success');
+        var_dump(DB::table('post')->select('title')->single()->remeber(1)->execute());
+        var_dump(DB::getQueryLog());
+        //return $this->text('success');
     }
 
     public function test_redis()
     {
-        \Xaircraft\Storage\Redis::set('test', 'hello');
-        $test = \Xaircraft\Storage\Redis::get('test');
+        $array = array(
+            'id' => 23,
+            'title' => 'sdfsdfsd'
+        );
+        \Xaircraft\Storage\Redis::set('test', serialize($array));
+        $test = unserialize(\Xaircraft\Storage\Redis::get('test'));
         var_dump($test);
     }
 

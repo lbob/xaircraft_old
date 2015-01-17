@@ -41,7 +41,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      * @param $defaultValue
      * @return mixed
      */
-    public function get($key, $defaultValue)
+    public function get($key, $defaultValue = null)
     {
         $value = Redis::get($key);
 

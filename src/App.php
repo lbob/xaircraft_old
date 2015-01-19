@@ -23,6 +23,8 @@ class App extends Container {
     const APP_MODE_PUB = 'pub';
     const APP_MODE_TEST = 'test';
     const HOST = 'host';
+    const APP_RUNTIME_MODE_CLI = 'cli';
+    const APP_RUNTIME_MODE_APACHE2HANDLER = 'apache2handler';
 
     /**
      * @var $req Http\Request;
@@ -60,6 +62,7 @@ class App extends Container {
      * @var array
      */
     private $injectMappings = array();
+    private $runtimeMode;
 
     public static function getInstance()
     {
@@ -82,6 +85,7 @@ class App extends Container {
             self::ENV_DATABASE_PROVIDER=> 'pdo',
             self::HOST              => ''
         );
+        $this->runtimeMode = php_sapi_name();
     }
 
     public function bindPaths($paths)
@@ -152,7 +156,7 @@ class App extends Container {
 
     private function routing()
     {
-        if ($this->environment[self::ENV_MODE] === self::APP_MODE_TEST) {
+        if ($this->environment[self::ENV_MODE] === self::APP_MODE_TEST || $this->getRuntimeMode() === self::APP_RUNTIME_MODE_CLI) {
             return;
         }
         $this->router = \Nebula\Router::getInstance($this->paths['routes'], $this->paths['filter']);
@@ -294,6 +298,11 @@ class App extends Container {
             }
         }
         return null;
+    }
+
+    public function getRuntimeMode()
+    {
+        return $this->runtimeMode;
     }
 
     public function __get($key)

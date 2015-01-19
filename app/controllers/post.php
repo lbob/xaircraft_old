@@ -138,6 +138,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         \Xaircraft\Storage\Redis::set('test', serialize($array));
         $test = unserialize(\Xaircraft\Storage\Redis::get('test'));
         var_dump($test);
+        var_dump(php_sapi_name());
     }
 
     public function test_redis2()
@@ -145,6 +146,18 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         //\Xaircraft\Storage\Redis::setex('test', 10, 'hello');
         $test = \Xaircraft\Storage\Redis::get('test');
         var_dump($test);
+    }
+
+    public function test_redis_lpush()
+    {
+        \Xaircraft\Storage\Redis::lpush('queue', array('hello1', 'hello2'));
+    }
+
+    public function test_redis_brpop()
+    {
+        \Xaircraft\Storage\Redis::subcribe();
+        $result = \Xaircraft\Storage\Redis::brpop(array('queue'), 60);
+        var_dump($result);
     }
 }
 

@@ -1,12 +1,11 @@
 <?php
 
 namespace Xaircraft\Storage;
+use Predis\Client;
 
-use Predis\Connection\Aggregate\PredisCluster;
-use Xaircraft\App;
 
 /**
- * Class Redis
+ * Class PredisProvider
  *
  * @method int    del(array $keys)
  * @method string dump($key)
@@ -145,62 +144,35 @@ use Xaircraft\App;
  * @method mixed  slaveof($host, $port)
  * @method mixed  slowlog($subcommand, $argument = null)
  * @method array  time()
- * method array  command()
+ * @method array  command()
  *
  * @package Xaircraft\Storage
- * @author lbob created at 2015/1/16 19:05
+ * @author lbob created at 2015/1/20 9:34
  */
-class Redis {
+class PredisProvider {
 
-    private static $config;
     /**
-     * @var \Xaircraft\Storage\PredisProvider
+     * @var \Predis\Client
      */
-    private static $driver;
+    private $driver;
+    private $configs;
+    private $defaultConfig = array(
+        'host' => '127.0.0.1',
+        'port' => 6379
+    );
 
-    public static function getInstance()
+    public function __construct(array $configs = null)
     {
-        if (!isset(self::$driver)) {
-            self::$driver = self::createInstance();
+        $this->configs = $configs;
+        if (!isset($this->configs)) {
+            $this->configs = $this->defaultConfig;
         }
-        return self::$driver;
+        $this->driver = new Client($this->configs);
     }
 
-    private static function init($hostName = null)
+    public function __call($method, $params)
     {
-        $config = require App::getInstance()->getPath('config') . '/redis.php';
-
-        if (isset($config) && is_array($config) && !empty($config)) {
-            if (isset($hostName) && isset($config[$hostName])) {
-                self::$config = $config[$hostName];
-            }
-        }
-        self::$driver = self::createInstance();
-    }
-
-    private static function createInstance()
-    {
-        return new PredisProvider(self::$config);
-    }
-
-    public static function connection($hostName)
-    {
-        self::init($hostName);
-    }
-
-    public static function command($commandName, $params)
-    {
-        //TODO: 未实现的方法
-    }
-
-    public static function pipeline($pipeHandler)
-    {
-        //TODO: 未实现的方法
-    }
-
-    public static function __callStatic($method, $arguments)
-    {
-        return self::getInstance()->__call($method, $arguments);
+        return $this->driver->__call($method, $params);
     }
 }
 

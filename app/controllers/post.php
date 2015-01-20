@@ -135,8 +135,8 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             'id' => 23,
             'title' => 'sdfsdfsd'
         );
-        \Xaircraft\Storage\Redis::set('test', serialize($array));
-        $test = unserialize(\Xaircraft\Storage\Redis::get('test'));
+        \Xaircraft\Storage\Redis::getInstance()->set('test', serialize($array));
+        $test = unserialize(\Xaircraft\Storage\Redis::getInstance()->get('test'));
         var_dump($test);
         var_dump(php_sapi_name());
     }
@@ -158,6 +158,62 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         \Xaircraft\Storage\Redis::subcribe();
         $result = \Xaircraft\Storage\Redis::brpop(array('queue'), 60);
         var_dump($result);
+    }
+
+    public function test_yield()
+    {
+        foreach ($this->xrange(1, 9, 2) as $number) {
+            echo "$number";
+        }
+
+        $range = $this->xrange(1, 1000000);
+        var_dump($range);
+        var_dump($range instanceof Iterator);
+
+        $range->rewind();
+        $result = $range->current();
+        var_dump($result);
+
+        $range->next();
+        $result = $range->current();
+        var_dump($result);
+
+        $range->next();
+        $result = $range->current();
+        var_dump($result);
+
+        $logger = $this->logger("D:\log" . '/log');
+        $logger->send('Foo');
+        $logger->send('Bar');
+        var_dump($logger);
+
+        $gen = $this->gen();
+        var_dump($gen->current());
+        var_dump($gen->send('ret1'));
+        var_dump($gen->send('ret2'));
+    }
+
+    function xrange($start, $limit, $step = 1)
+    {
+        for ($i = $start; $i <= $limit; $i += $step) {
+            yield $i;
+        }
+    }
+
+    function logger($fileName)
+    {
+        $fileHandler = fopen($fileName, 'a');
+        while (true) {
+            fwrite($fileHandler, yield . "\n");
+        }
+    }
+
+    function gen()
+    {
+        $ret = (yield 'yield1');
+        var_dump($ret);
+        $ret = (yield 'yield2');
+        var_dump($ret);
     }
 }
 

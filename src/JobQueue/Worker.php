@@ -32,7 +32,7 @@ class Worker
             throw new \InvalidArgumentException("Can't find action [$methodName] in [$className].");
         }
         $job = new $className;
-        return call_user_func(array($className, $job), $this->job->getParams());
+        return call_user_func(array($className, $methodName), $this->job->getParams());
     }
 
     private function parseJobHandler()

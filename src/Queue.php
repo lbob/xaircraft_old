@@ -106,6 +106,11 @@ class Queue {
     {
         return self::getInstance()->popTimeAll();
     }
+
+    public static function failing($handler)
+    {
+
+    }
 }
 
  

@@ -6,5 +6,6 @@
  * Time: 15:45
  */
 return [
-    '/service'
+    '/service',
+    '/jobs'
 ];

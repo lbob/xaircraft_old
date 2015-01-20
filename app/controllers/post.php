@@ -131,6 +131,8 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function test_redis()
     {
+        var_dump(\Carbon\Carbon::now()->format('Y-m-d-H:i:s'));
+
         $array = array(
             'id' => 23,
             'title' => 'sdfsdfsd'
@@ -139,24 +141,29 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $test = unserialize(\Xaircraft\Storage\Redis::getInstance()->get('test'));
         var_dump($test);
         var_dump(php_sapi_name());
+
+        var_dump(php_uname());
+        var_dump(PHP_OS);
+        \Xaircraft\App::getInstance()->getOS();
+        var_dump(\Xaircraft\App::getInstance());
     }
 
     public function test_redis2()
     {
         //\Xaircraft\Storage\Redis::setex('test', 10, 'hello');
-        $test = \Xaircraft\Storage\Redis::get('test');
+        $test = \Xaircraft\Storage\Redis::getInstance()->get('test');
         var_dump($test);
     }
 
     public function test_redis_lpush()
     {
-        \Xaircraft\Storage\Redis::lpush('queue', array('hello1', 'hello2'));
+        \Xaircraft\Storage\Redis::getInstance()->lpush('queue', array('hello1', 'hello2'));
     }
 
     public function test_redis_brpop()
     {
-        \Xaircraft\Storage\Redis::subcribe();
-        $result = \Xaircraft\Storage\Redis::brpop(array('queue'), 60);
+        //\Xaircraft\Storage\Redis::getInstance()->subcribe();
+        $result = \Xaircraft\Storage\Redis::getInstance()->brpop(array('queue'), 60);
         var_dump($result);
     }
 

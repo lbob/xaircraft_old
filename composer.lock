@@ -59,12 +59,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/filp/whoops.git",
-                "reference": "542400d23369c3c9f1ff221858ba4b220bcc4245"
+                "reference": "9e1ffa25c32db969b6ce0db73290ea272d896b11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filp/whoops/zipball/542400d23369c3c9f1ff221858ba4b220bcc4245",
-                "reference": "542400d23369c3c9f1ff221858ba4b220bcc4245",
+                "url": "https://api.github.com/repos/filp/whoops/zipball/9e1ffa25c32db969b6ce0db73290ea272d896b11",
+                "reference": "9e1ffa25c32db969b6ce0db73290ea272d896b11",
                 "shasum": ""
             },
             "require": {
@@ -109,7 +109,7 @@
                 "whoops",
                 "zf2"
             ],
-            "time": "2014-11-29 09:19:11"
+            "time": "2015-01-15 11:37:30"
         },
         {
             "name": "monolog/monolog",

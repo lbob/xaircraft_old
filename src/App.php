@@ -25,6 +25,8 @@ class App extends Container {
     const HOST = 'host';
     const APP_RUNTIME_MODE_CLI = 'cli';
     const APP_RUNTIME_MODE_APACHE2HANDLER = 'apache2handler';
+    const OS_WIN = 'os_win';
+    const OS_LINUX = 'os_linux';
 
     /**
      * @var $req Http\Request;
@@ -63,6 +65,11 @@ class App extends Container {
      */
     private $injectMappings = array();
     private $runtimeMode;
+    /**
+     * @var string 当前操作系统类型
+     */
+    private $os;
+    private $osInfo;
 
     public static function getInstance()
     {
@@ -303,6 +310,19 @@ class App extends Container {
     public function getRuntimeMode()
     {
         return $this->runtimeMode;
+    }
+
+    public function getOS()
+    {
+        if (!isset($this->os)) {
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                $this->os = self::OS_WIN;
+            } else {
+                $this->os = self::OS_LINUX;
+            }
+            $this->osInfo = php_uname();
+        }
+        return $this->os;
     }
 
     public function __get($key)

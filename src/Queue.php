@@ -28,16 +28,30 @@ class Queue {
 
     }
 
-    public static function getInstance($type = null)
+    public static function getInstance()
     {
         if (!isset(self::$instance)) {
-            self::$instance = self::make($type);
+            self::$instance = self::make();
         }
         return self::$instance;
     }
 
-    private static function make($type)
+    private static function make()
     {
+        $config = require App::getInstance()->getPath('config') . '/queue.php';
+
+        if (!isset($config['default'])) {
+            throw new \InvalidArgumentException("Queue config missed [default : sync|redis].");
+        }
+
+        $type = $config['default'];
+        $config = 'default';
+        if (isset($config['config'])) {
+            $config = $config['config'];
+        }
+
+        var_dump($config);
+
         //WINDOWS系统下，任务队列必须采用同步模式（等有空有需要时再为WIN系统实现异步队列的扩展）
         if (App::getInstance()->getOS() === App::OS_WIN) {
             $type = self::JOB_QUEUE_TYPE_SYNC;
@@ -45,7 +59,7 @@ class Queue {
 
         switch (strtolower($type)) {
             case self::JOB_QUEUE_TYPE_REDIS:
-                return new JobQueueRedisImpl();
+                return new JobQueueRedisImpl($config);
             default:
                 return new JobQueueSyncImpl();
         }

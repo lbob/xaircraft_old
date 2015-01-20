@@ -152,7 +152,6 @@ use Xaircraft\App;
  */
 class Redis {
 
-    private static $config;
     /**
      * @var \Xaircraft\Storage\PredisProvider
      */
@@ -166,26 +165,22 @@ class Redis {
         return self::$driver;
     }
 
-    private static function init($hostName = null)
+    private static function createInstance($hostName = null)
     {
         $config = require App::getInstance()->getPath('config') . '/redis.php';
 
         if (isset($config) && is_array($config) && !empty($config)) {
             if (isset($hostName) && isset($config[$hostName])) {
-                self::$config = $config[$hostName];
+                $config = $config[$hostName];
             }
         }
-        self::$driver = self::createInstance();
-    }
 
-    private static function createInstance()
-    {
-        return new PredisProvider(self::$config);
+        return new PredisProvider($config);
     }
 
     public static function connection($hostName)
     {
-        self::init($hostName);
+        return self::createInstance($hostName);
     }
 
     public static function command($commandName, $params)

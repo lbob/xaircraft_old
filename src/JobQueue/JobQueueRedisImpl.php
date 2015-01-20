@@ -14,6 +14,16 @@ use Xaircraft\Storage\Redis;
 class JobQueueRedisImpl extends JobQueue {
 
     /**
+     * @var \Xaircraft\Storage\Redis
+     */
+    private $driver;
+
+    public function __construct($config = null)
+    {
+        $this->driver = Redis::connection($config);
+    }
+
+    /**
      * 推送一个作业到队列中
      * @param $job
      * @param array $params
@@ -24,13 +34,13 @@ class JobQueueRedisImpl extends JobQueue {
     {
         $job = Job::createJob($job, $params, $level);
         $keys = $this->getQueueKey($level);
-        Redis::getInstance()->lpush($keys[0], serialize($job));
+        $this->driver->lpush($keys[0], serialize($job));
     }
 
     public function later($job, array $params, Carbon $date)
     {
         $job = Job::createTimeJob($job, $params, $date);
-        Redis::getInstance()->lpush($this->getLaterQueueKey($date), serialize($job));
+        $this->driver->lpush($this->getLaterQueueKey($date), serialize($job));
     }
 
     /**
@@ -41,7 +51,7 @@ class JobQueueRedisImpl extends JobQueue {
     {
         $keys = $this->getQueueKey();
         while (true) {
-            $values = Redis::getInstance()->brpop($keys, $timeout);
+            $values = $this->driver->brpop($keys, $timeout);
             yield unserialize($values[1]);
         }
     }
@@ -53,8 +63,8 @@ class JobQueueRedisImpl extends JobQueue {
     public function popTimeAll(Carbon $date = null)
     {
         $key = $this->getLaterQueueKey($date);
-        while (Redis::getInstance()->llen($key) > 0) {
-            $value = unserialize(Redis::getInstance()->rpop($key));
+        while ($this->driver->llen($key) > 0) {
+            $value = unserialize($this->driver->rpop($key));
             yield $value;
         }
     }

@@ -50,7 +50,7 @@ class JobQueueSyncImpl extends JobQueue
      */
     public function waitPopAll($timeout = 0)
     {
-        throw new NotSupportedException("任务队列为同步模式时不支持该方法。");
+        throw new NotSupportedException("Sync job queue is not supported this method : waitPopAll");
     }
 
     /**
@@ -60,12 +60,12 @@ class JobQueueSyncImpl extends JobQueue
      */
     public function popTimeQueueAndPushToJobQueue(Carbon $date = null)
     {
-        throw new NotSupportedException("任务队列为同步模式时不支持该方法。");
+        throw new NotSupportedException("Sync job queue is not supported this method : popTimeQueueAndPushToJobQueue");
     }
 
     public function getJobQueueStatus()
     {
-        throw new NotSupportedException("任务队列为同步模式时不支持该方法。");
+        throw new NotSupportedException("Sync job queue is not supported this method : getJobQueueStatus");
     }
 }
 

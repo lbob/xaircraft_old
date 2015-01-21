@@ -53,7 +53,7 @@ class Queue
 
         //WINDOWS系统下，任务队列必须采用同步模式（等有空有需要时再为WIN系统实现异步队列的扩展）
         if (App::getInstance()->getOS() === App::OS_WIN) {
-            $type = self::JOB_QUEUE_TYPE_SYNC;
+            //$type = self::JOB_QUEUE_TYPE_SYNC;
         }
 
         switch (strtolower($type)) {

@@ -9,16 +9,10 @@ class job_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        \Xaircraft\Queue::push('SendEmail@test', array('id' => 23));
-        \Xaircraft\Queue::push('SendEmail', array('id' => 23), \Xaircraft\JobQueue\JobQueue::JOB_QUEUE_LEVEL_HIGH);
-        \Xaircraft\Queue::push('SendEmail', array('id' => 23), \Xaircraft\JobQueue\JobQueue::JOB_QUEUE_LEVEL_LOW);
+        var_dump('web start.');
         \Xaircraft\Queue::push('SendEmail', array('id' => 23));
-        $i = 5;
-        foreach (\Xaircraft\Queue::waitPopAll(3) as $item) {
-            var_dump($item);
-            $i--;
-            if ($i <= 0) break;
-        }
+        \Xaircraft\Queue::later('SendEmail@time', array(), \Carbon\Carbon::now()->addMinutes(1));
+        var_dump('web end.');
     }
 
     public function test_time()

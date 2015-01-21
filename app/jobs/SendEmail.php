@@ -9,13 +9,21 @@ class SendEmail {
 
     public function fire($params)
     {
-        var_dump('fire');
-        var_dump($params);
+        var_dump('fire!!Send email..');
+        for ($i = 0; $i < 100000; $i++) {
+
+        }
+        var_dump('fire!!Send email..end');
     }
 
     public function test($params)
     {
-        var_dump($params);
+        var_dump('test!!Send email..');
+    }
+
+    public function time($params)
+    {
+        var_dump('time!!Send email..');
     }
 }
 

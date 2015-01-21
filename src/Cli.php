@@ -32,19 +32,26 @@ foreach ($sections as $item) {
 
 if (isset($autoload)) {
     require $autoload;
+    echo \Xaircraft\App::FRAMEWORK . ' v' . \Xaircraft\App::VERSION . ' CLI Mode.' . \Xaircraft\Core\Cli\Command::newLine();
 } else {
     echo "Can't load cli config.";
 }
 
 if (isset($args[1])) {
     $command = $args[1];
-    $params = $args;
-    unset($params[0]);
-    unset($params[1]);
     $parameters = array();
-    foreach ($params as $item) {
-        $parameters[] = $item;
+    if ($argc >= 3) {
+        $params = $args;
+        unset($params[0]);
+        unset($params[1]);
+        foreach ($params as $item) {
+            $parameters[] = $item;
+        }
     }
     $command = \Xaircraft\Core\Cli\Command::create($command, $parameters);
-    $command->execute();
+    if (isset($command)) {
+        $command->execute();
+    } else {
+        echo "What do you want to do?";
+    }
 }

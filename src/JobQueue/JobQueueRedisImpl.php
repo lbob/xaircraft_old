@@ -77,9 +77,9 @@ class JobQueueRedisImpl extends JobQueue
     public function getJobQueueStatus()
     {
         return array(
-            'high'   => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_HIGH)),
-            'normal' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_NORMAL)),
-            'low'    => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_LOW))
+            'high'   => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_HIGH)[0]),
+            'normal' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_NORMAL)[0]),
+            'low'    => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_LOW)[0])
         );
     }
 }

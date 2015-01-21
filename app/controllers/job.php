@@ -11,9 +11,6 @@ class job_controller extends \Xaircraft\Mvc\Controller {
     {
         var_dump('web start.');
         \Xaircraft\Queue::push('SendEmail', array('id' => 23));
-        \Xaircraft\Queue::push('SendEmail', array('id' => 23));
-        \Xaircraft\Queue::push('SendEmail', array('id' => 23));
-        \Xaircraft\Queue::push('SendEmail', array('id' => 23));
         \Xaircraft\Queue::later('SendEmail@time', array(), \Carbon\Carbon::now()->addMinutes(1));
         var_dump('web end.');
     }

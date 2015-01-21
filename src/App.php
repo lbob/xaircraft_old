@@ -14,6 +14,8 @@ use Xaircraft\Http\Response;
  */
 class App extends Container {
 
+    const FRAMEWORK = 'Xaircraft';
+    const VERSION = '0.1';
     const ENV_MODE = 'mode';
     const ENV_VIEW_FILE_EXT = 'view_file_ext';
     const ENV_DEFAULT_TOKEN = 'default_token';

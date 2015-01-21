@@ -59,7 +59,7 @@ abstract class JobQueue
     protected function getQueueKey($level = null)
     {
         if (isset($level)) {
-            return array($level);
+            return $level;
         } else {
             return array(
                 JobQueue::JOB_QUEUE_LEVEL_HIGH,

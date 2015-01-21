@@ -22,6 +22,12 @@ class QueueCommand extends Command {
                 case 'listen':
                     $this->listen();
                     break;
+                case 'status':
+                    $this->status();
+                    break;
+                case 'stop':
+                    $this->stop();
+                    break;
             }
         }
     }
@@ -44,6 +50,22 @@ class QueueCommand extends Command {
             $this->showMessage("Job monitor stopped.");
         });
         Monitor::getInstance()->start();
+    }
+
+    private function status()
+    {
+        $status = Monitor::getInstance()->status();
+        $this->showMessage($this->newLine() .
+            "jobPopCount: " . $status['jobPopCount'] . $this->newLine() .
+            "isStopped: " . $status['isStopped'] . $this->newLine() .
+            "isStarted: " . $status['isStarted'] . $this->newLine() .
+            "jobQueueLength: [high=" . $status['jobQueueLength']['high'] . "][normal=" . $status['jobQueueLength']['normal'] . "][low=" . $status['jobQueueLength']['low'] . "]"
+        );
+    }
+
+    private function stop()
+    {
+        Monitor::getInstance()->stop();
     }
 }
 

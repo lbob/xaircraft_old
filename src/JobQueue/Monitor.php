@@ -66,8 +66,8 @@ class Monitor
     {
         return array(
             'jobPopCount'    => $this->jobPopCount,
-            'isStopped'      => $this->isStopped,
-            'isStarted'      => $this->isStarted,
+            'isStopped'      => $this->isStopped ? "true" : "false",
+            'isStarted'      => $this->isStarted ? "true" : "false",
             'jobQueueLength' => Queue::getJobQueueStatus()
         );
     }

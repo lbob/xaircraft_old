@@ -10,9 +10,7 @@ class SendEmail {
     public function fire($params)
     {
         var_dump('fire!!Send email..');
-        for ($i = 0; $i < 100000; $i++) {
-
-        }
+        \Xaircraft\Log::info('SendEmail.fire', 'fired!');
         var_dump('fire!!Send email..end');
     }
 

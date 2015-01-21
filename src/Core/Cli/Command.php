@@ -36,7 +36,7 @@ abstract class Command {
 
     protected function showMessage($message)
     {
-        echo "[" . Carbon::now()->format("Y-m-d-H:i:s") . "]" . $message . self::newLine();
+        echo "[" . Carbon::now()->format("Y-m-d H:i:s") . "]" . $message . self::newLine();
     }
 }
 

@@ -163,7 +163,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
     public function test_redis_brpop()
     {
         //\Xaircraft\Storage\Redis::getInstance()->subcribe();
-        $result = \Xaircraft\Storage\Redis::getInstance()->brpop(array('queue'), 60);
+        $result = \Xaircraft\Storage\Redis::getInstance()->brpop(array('queue'), 2);
         var_dump($result);
     }
 

@@ -43,20 +43,26 @@ class JobQueueSyncImpl extends JobQueue {
 
     /**
      * 从队列中取出作业集合（阻塞直到取出作业为止）
+     * @param int $timeout
      * @return \Iterator|void
      * @throws NotSupportedException
      */
-    public function waitPopAll()
+    public function waitPopAll($timeout = 0)
     {
         throw new NotSupportedException("任务队列为同步模式时不支持该方法。");
     }
 
     /**
      * @param Carbon $date
-     * @return \Iterator
+     * @return null
      * @throws NotSupportedException
      */
-    public function popTimeAll(Carbon $date = null)
+    public function popTimeQueueAndPushToJobQueue(Carbon $date = null)
+    {
+        throw new NotSupportedException("任务队列为同步模式时不支持该方法。");
+    }
+
+    public function getJobQueueStatus()
     {
         throw new NotSupportedException("任务队列为同步模式时不支持该方法。");
     }

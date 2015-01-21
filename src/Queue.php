@@ -13,10 +13,11 @@ use Xaircraft\JobQueue\JobQueueSyncImpl;
  * @package Xaircraft
  * @author lbob created at 2015/1/20 19:44
  */
-class Queue {
+class Queue
+{
 
     const JOB_QUEUE_TYPE_REDIS = 'redis';
-    const JOB_QUEUE_TYPE_SYNC  = 'sync';
+    const JOB_QUEUE_TYPE_SYNC = 'sync';
 
     /**
      * @var \Xaircraft\JobQueue\JobQueue
@@ -28,7 +29,7 @@ class Queue {
 
     }
 
-    public static function getInstance()
+    private static function getInstance()
     {
         if (!isset(self::$instance)) {
             self::$instance = self::make();
@@ -44,13 +45,11 @@ class Queue {
             throw new \InvalidArgumentException("Queue config missed [default : sync|redis].");
         }
 
-        $type = $config['default'];
+        $type   = $config['default'];
         $config = 'default';
         if (isset($config['config'])) {
             $config = $config['config'];
         }
-
-        var_dump($config);
 
         //WINDOWS系统下，任务队列必须采用同步模式（等有空有需要时再为WIN系统实现异步队列的扩展）
         if (App::getInstance()->getOS() === App::OS_WIN) {
@@ -91,25 +90,27 @@ class Queue {
 
     /**
      * 从队列中取出作业集合（阻塞直到取出作业为止）
-     * @return \Iterator
+     * @param int $timeout
+     * @return \Iterator|mixed|void
      */
-    public static function waitPopAll()
+    public static function waitPopAll($timeout = 0)
     {
-        return self::getInstance()->waitPopAll();
+        return self::getInstance()->waitPopAll($timeout);
     }
 
     /**
+     * 默认PUSH到中优先级的队列中
      * @param Carbon $date
-     * @return \Iterator
+     * @return null
      */
-    public static function popTimeAll(Carbon $date = null)
+    public static function popTimeQueueAndPushToJobQueue(Carbon $date = null)
     {
-        return self::getInstance()->popTimeAll();
+        return self::getInstance()->popTimeQueueAndPushToJobQueue($date);
     }
 
-    public static function failing($handler)
+    public static function getJobQueueStatus()
     {
-
+        return self::getInstance()->getJobQueueStatus();
     }
 }
 

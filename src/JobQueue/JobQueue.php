@@ -37,15 +37,19 @@ abstract class JobQueue {
 
     /**
      * 从队列中取出作业集合（阻塞直到取出作业为止）
-     * @return \Iterator
+     * @param int $timeout
+     * @return mixed
      */
-    public abstract function waitPopAll();
+    public abstract function waitPopAll($timeout = 0);
 
     /**
+     * 默认PUSH到中优先级的队列中
      * @param Carbon $date
-     * @return \Iterator
+     * @return null
      */
-    public abstract function popTimeAll(Carbon $date = null);
+    public abstract function popTimeQueueAndPushToJobQueue(Carbon $date = null);
+
+    public abstract function getJobQueueStatus();
 
     /**
      * @param null $level

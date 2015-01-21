@@ -45,28 +45,41 @@ class JobQueueRedisImpl extends JobQueue {
 
     /**
      * 从队列中取出作业集合（阻塞直到取出作业为止）
-     * @return \Iterator
+     * @param int $timeout
+     * @return \Iterator|void
      */
     public function waitPopAll($timeout = 0)
     {
         $keys = $this->getQueueKey();
         while (true) {
             $values = $this->driver->brpop($keys, $timeout);
-            yield unserialize($values[1]);
+            if (!isset($values)) {
+                yield;
+            } else {
+                yield unserialize($values[1]);
+            }
         }
     }
 
     /**
      * @param Carbon $date
-     * @return \Iterator
+     * @return null
      */
-    public function popTimeAll(Carbon $date = null)
+    public function popTimeQueueAndPushToJobQueue(Carbon $date = null)
     {
         $key = $this->getLaterQueueKey($date);
         while ($this->driver->llen($key) > 0) {
-            $value = unserialize($this->driver->rpop($key));
-            yield $value;
+            $this->driver->rpoplpush($key, JobQueue::JOB_QUEUE_LEVEL_NORMAL);
         }
+    }
+
+    public function getJobQueueStatus()
+    {
+        return array(
+            'high' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_HIGH)),
+            'normal' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_NORMAL)),
+            'low' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_LOW))
+        );
     }
 }
 

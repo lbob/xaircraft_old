@@ -10,7 +10,8 @@ use Carbon\Carbon;
  * @package Xaircraft\Storage
  * @author lbob created at 2015/1/20 10:06
  */
-abstract class JobQueue {
+abstract class JobQueue
+{
 
     const JOB_QUEUE_KEY = 'job_queue';
     const JOB_QUEUE_LEVEL_HIGH = 'job_queue_level_high';

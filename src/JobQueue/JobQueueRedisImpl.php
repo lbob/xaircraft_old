@@ -11,7 +11,8 @@ use Xaircraft\Storage\Redis;
  * @package Xaircraft\Storage
  * @author lbob created at 2015/1/20 14:38
  */
-class JobQueueRedisImpl extends JobQueue {
+class JobQueueRedisImpl extends JobQueue
+{
 
     /**
      * @var \Xaircraft\Storage\Redis
@@ -32,7 +33,7 @@ class JobQueueRedisImpl extends JobQueue {
      */
     public function push($job, array $params, $level = self::JOB_QUEUE_LEVEL_NORMAL)
     {
-        $job = Job::createJob($job, $params, $level);
+        $job  = Job::createJob($job, $params, $level);
         $keys = $this->getQueueKey($level);
         $this->driver->lpush($keys[0], serialize($job));
     }
@@ -76,9 +77,9 @@ class JobQueueRedisImpl extends JobQueue {
     public function getJobQueueStatus()
     {
         return array(
-            'high' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_HIGH)),
+            'high'   => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_HIGH)),
             'normal' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_NORMAL)),
-            'low' => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_LOW))
+            'low'    => Redis::getInstance()->llen($this->getQueueKey(self::JOB_QUEUE_LEVEL_LOW))
         );
     }
 }

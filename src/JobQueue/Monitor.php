@@ -11,7 +11,8 @@ use Xaircraft\Queue;
  * @package Xaircraft\JobQueue
  * @author lbob created at 2015/1/21 10:03
  */
-class Monitor {
+class Monitor
+{
 
     private $isStarted = false;
     private $isStopped = true;
@@ -64,9 +65,9 @@ class Monitor {
     public function status()
     {
         return array(
-            'jobPopCount' => $this->jobPopCount,
-            'isStopped' => $this->isStopped,
-            'isStarted' => $this->isStarted,
+            'jobPopCount'    => $this->jobPopCount,
+            'isStopped'      => $this->isStopped,
+            'isStarted'      => $this->isStarted,
             'jobQueueLength' => Queue::getJobQueueStatus()
         );
     }

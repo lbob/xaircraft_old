@@ -11,7 +11,8 @@ use Predis\NotSupportedException;
  * @package Xaircraft\JobQueue
  * @author lbob created at 2015/1/20 19:33
  */
-class JobQueueSyncImpl extends JobQueue {
+class JobQueueSyncImpl extends JobQueue
+{
 
     /**
      * 推送一个作业到队列中
@@ -22,7 +23,7 @@ class JobQueueSyncImpl extends JobQueue {
      */
     public function push($job, array $params, $level = self::JOB_QUEUE_LEVEL_NORMAL)
     {
-        $job = Job::createJob($job, $params, $level);
+        $job    = Job::createJob($job, $params, $level);
         $worker = new Worker($job);
         return $worker->run();
     }
@@ -36,7 +37,7 @@ class JobQueueSyncImpl extends JobQueue {
      */
     public function later($job, array $params, Carbon $date)
     {
-        $job = Job::createTimeJob($job, $params, $date);
+        $job    = Job::createTimeJob($job, $params, $date);
         $worker = new Worker($job);
         return $worker->run();
     }

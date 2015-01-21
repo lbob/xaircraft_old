@@ -10,7 +10,8 @@ use Carbon\Carbon;
  * @package Xaircraft\Storage
  * @author lbob created at 2015/1/20 10:21
  */
-class Job {
+class Job
+{
 
     const TIME_JOB = 'time_job';
     const ONCE_JOB = 'once_job';
@@ -32,9 +33,9 @@ class Job {
 
     private function __construct($type, $handler, array $params, Carbon $date = null, $level = null)
     {
-        $this->type = $type;
+        $this->type    = $type;
         $this->handler = $handler;
-        $this->params = $params;
+        $this->params  = $params;
         if (isset($date)) {
             $this->type = self::TIME_JOB;
             $this->date = $date;

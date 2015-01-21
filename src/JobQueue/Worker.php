@@ -48,7 +48,7 @@ class Worker
         if (!isset($sections[1])) {
             $sections[] = $this->defaultJobMethodName;
         }
-        $className = $sections[0];
+        $className  = $sections[0];
         $methodName = $sections[1];
         return array($className, $methodName);
     }

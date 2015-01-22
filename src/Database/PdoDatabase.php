@@ -84,7 +84,7 @@ class PdoDatabase implements Database {
                 $stmt = $this->getDriverInstance()->prepare($query);
                 $stmt->execute($params);
                 $this->recordError($stmt, $params);
-                return $stmt->fetchAll();
+                return $stmt->fetchAll(\PDO::FETCH_ASSOC);
             }
         }
         return null;

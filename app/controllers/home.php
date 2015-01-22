@@ -63,6 +63,8 @@ class home_controller extends \Xaircraft\Mvc\Controller {
             var_dump($query);
             var_dump($index);
         }
+
+        var_dump(DB::table('post')->select()->execute());
     }
 
     public function testwhere()

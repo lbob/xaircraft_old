@@ -161,10 +161,11 @@ class TableQuery
         $query = implode(' ', $query);
         $result = $this->getSelectResult($query, $this->getParams());
         if ($this->isCount) {
-            return $result[0][0] + '0';
+            return $result[0]['__TotalCount__'] + '0';
         }
         if ($this->isPluck) {
-            return isset($result[0][0]) ? $result[0][0] : null;
+            $firstColumn = isset($this->selectFields[0]) ? $this->selectFields[0] : null;
+            return isset($result[0][$firstColumn]) ? $result[0][$firstColumn] : null;
         }
         if ($this->isSingle) {
             if (count($this->selectFields) === 1) {
@@ -945,7 +946,7 @@ class TableQuery
             $column = func_get_args(0);
         }
 
-        $this->countColumnName = 'COUNT(' . $column . ')';
+        $this->countColumnName = 'COUNT(' . $column . ') AS __TotalCount__';
         return $this;
     }
 

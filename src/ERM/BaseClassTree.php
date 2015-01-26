@@ -90,7 +90,7 @@ class BaseClassTree {
                         'classNo' => $newClassNo
                     ))->execute();
                 DB::table($this->tableName)->where('classNo', 'LIKE', $classNo . '%')->update(array(
-                    'classNo' => DB::raw("CONCAT(" . $newClassNo . ", SUBSTRING(classNo, " . strlen($newClassNo) + 1 . "))")
+                    'classNo' => DB::raw("CONCAT(" . $newClassNo . ", SUBSTRING(classNo, " . (strlen($newClassNo) + 1) . "))")
                 ))->execute();
             }
             if (isset($otherSaveHandler) && is_callable($otherSaveHandler)) {

@@ -94,7 +94,7 @@ class BaseClassTree {
                 ))->execute();
             }
             if (isset($otherSaveHandler) && is_callable($otherSaveHandler)) {
-                call_user_func($otherSaveHandler, $classNo, isset($newClassNo) ? $newClassNo : $classNo);
+                return call_user_func($otherSaveHandler, $classNo, isset($newClassNo) ? $newClassNo : $classNo);
             }
             DB::commit();
         } catch (\Exception $ex) {

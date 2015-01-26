@@ -72,6 +72,37 @@ class BaseClassTree {
 
         return $brothers;
     }
+
+    public function moveTreeNodeAndSave($classNo, $moveToParentClassNo, $otherSaveHandler = null)
+    {
+        try {
+            DB::beginTransaction();
+            $currentParentClassNo = substr($classNo, 0, strlen($classNo) - $this->classNoLength);
+            if (isset($moveToParentClassNo) && $moveToParentClassNo !== $currentParentClassNo) {
+                if ($classNo === $moveToParentClassNo) {
+                    throw new \Exception("节点不允许为自身的父节点");
+                }
+                if (strlen($classNo) < strlen($moveToParentClassNo) && substr($moveToParentClassNo, 0, strlen($classNo)) === $classNo) {
+                    throw new \Exception("节点自身的子节点不允许为父节点");
+                }
+                $newClassNo = $this->getNextClassNo($moveToParentClassNo);
+                DB::table($this->tableName)->where('classNo', $classNo)->update(array(
+                        'classNo',
+                        $newClassNo
+                    ))->execute();
+                DB::table($this->tableName)->where('classNo', 'LIKE', $classNo . '%')->update(array(
+                    'classNo' => DB::raw("CONCAT(" . $newClassNo . ", SUBSTRING(classNo, " . strlen($newClassNo) + 1 . "))")
+                ))->execute();
+            }
+            if (isset($otherSaveHandler) && is_callable($otherSaveHandler)) {
+                call_user_func($otherSaveHandler, $classNo, isset($newClassNo) ? $newClassNo : $classNo);
+            }
+            DB::commit();
+        } catch (\Exception $ex) {
+            DB::rollback();
+            throw new $ex;
+        }
+    }
 }
 
  

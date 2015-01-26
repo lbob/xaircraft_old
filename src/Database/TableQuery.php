@@ -364,7 +364,12 @@ class TableQuery
             $query[] = 'SET';
             $columns = array();
             foreach ($this->updates as $key => $value) {
-                $columns[] = $key . ' = ?';
+                if ($value instanceof Raw) {
+                    $columns[] = $key . ' = ' . $value->getValue();
+                    unset($this->updates[$key]);
+                } else {
+                    $columns[] = $key . ' = ?';
+                }
             }
             $query[] = implode(',', $columns);
             $wheres = $this->parseWheres();

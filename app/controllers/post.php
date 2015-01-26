@@ -21,7 +21,15 @@ class post_controller extends \Xaircraft\Mvc\Controller {
     {
         $query = DB::table('post')->whereExists(function(\Xaircraft\Database\WhereQuery $query) {
             $query->select()->from('post')->where('id', '>', 0);
-        })->page($this->req->param('p'), 3)->select()->remeber(1);
+        })->page($this->req->param('p'), 3)->select(array(
+            'id',
+            'title',
+            'author',
+            'keyword',
+            'content',
+            'update_at',
+            'create_at'
+        ))->remeber(1);
         $result = $query->execute();
         $this->posts = $result['data'];
         $this->pageIndex = $this->req->param('p');
@@ -221,6 +229,16 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         var_dump($ret);
         $ret = (yield 'yield2');
         var_dump($ret);
+    }
+
+    public function test_update()
+    {
+        var_dump(DB::table('post')->select('title')->single()->execute());
+        DB::table('post')->update(array(
+            'title' => DB::raw("CONCAT('0002', SUBSTRING(title, 5))")
+        ))->execute();
+        var_dump(DB::table('post')->select('title')->single()->execute());
+        var_dump(DB::getQueryLog());
     }
 }
 

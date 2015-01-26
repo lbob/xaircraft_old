@@ -1,6 +1,7 @@
 <?php
 namespace Xaircraft\ERM;
 use Xaircraft\DB;
+use Xaircraft\Exception\StatusException;
 
 /**
  * Class BaseClassTree
@@ -98,6 +99,9 @@ class BaseClassTree {
             }
             DB::commit();
             return $result;
+        } catch (StatusException $status) {
+            DB::rollback();
+            throw new $status;
         } catch (\Exception $ex) {
             DB::rollback();
             throw new $ex;

@@ -87,8 +87,7 @@ class BaseClassTree {
                 }
                 $newClassNo = $this->getNextClassNo($moveToParentClassNo);
                 DB::table($this->tableName)->where('classNo', $classNo)->update(array(
-                        'classNo',
-                        $newClassNo
+                        'classNo' => $newClassNo
                     ))->execute();
                 DB::table($this->tableName)->where('classNo', 'LIKE', $classNo . '%')->update(array(
                     'classNo' => DB::raw("CONCAT(" . $newClassNo . ", SUBSTRING(classNo, " . strlen($newClassNo) + 1 . "))")

@@ -101,10 +101,10 @@ class BaseClassTree {
             return $result;
         } catch (StatusException $status) {
             DB::rollback();
-            throw new $status;
+            throw $status;
         } catch (\Exception $ex) {
             DB::rollback();
-            throw new $ex;
+            throw $ex;
         }
     }
 }

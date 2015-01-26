@@ -161,7 +161,7 @@ class TableQuery
         $query = implode(' ', $query);
         $result = $this->getSelectResult($query, $this->getParams());
         if ($this->isCount) {
-            return $result[0]['__TotalCount__'] + '0';
+            return $result[0]['__TotalCount__'] + 0;
         }
         if ($this->isPluck) {
             $firstColumn = isset($this->selectFields[0]) ? $this->selectFields[0] : null;

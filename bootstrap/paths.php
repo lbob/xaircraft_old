@@ -14,5 +14,6 @@ return array(
     'schema'    => __DIR__.'/../app/cache/schema/',
     'log'       => __DIR__.'/../app/log',
     'autoload'  => __DIR__.'/../app/config/autoload.php',
-    'inject'    => __DIR__.'/../app/config/inject.php'
+    'inject'    => __DIR__.'/../app/config/inject.php',
+    'tests'     => __DIR__.'/../app/tests'
 );

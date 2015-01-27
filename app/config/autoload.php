@@ -7,5 +7,7 @@
  */
 return [
     '/service',
-    '/jobs'
+    '/jobs',
+    '/tests',
+    '/tests/Base'
 ];

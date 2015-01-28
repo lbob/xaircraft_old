@@ -240,6 +240,122 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         var_dump(DB::table('post')->select('title')->single()->execute());
         var_dump(DB::getQueryLog());
     }
+
+    public function test33()
+    {
+        $treeNodes = $this->getMenus();
+
+        $array = array();
+
+        for ($i = 0; $i < count($treeNodes); $i++) {
+            $node = $this->traceTree($treeNodes[$i]);
+            if (isset($node))
+                $array[] = $node;
+        }
+
+        echo(json_encode($array));
+    }
+
+    public function traceTree($node)
+    {
+        if (!isset($node)) {
+            return null;
+        }
+
+        if (isset($node->accessNo) && !$this->checkAccess($node->accessNo)) {
+            return null;
+        }
+
+        $result = $node;
+        $subArray = array();
+
+        if (isset($node->subMenu) && !empty($node->subMenu)) {
+            for ($i = 0; $i < count($node->subMenu); $i++) {
+                $temp = $this->traceTree($node->subMenu[$i]);
+                if (isset($temp))
+                    $subArray[] = $temp;
+            }
+        }
+        $result->subMenu = $subArray;
+
+        return $result;
+    }
+
+    private function checkAccess($accessNo)
+    {
+        if ($accessNo === '123') {
+            return true;
+        }
+        return false;
+    }
+
+    private function getMenus()
+    {
+        return json_decode('
+        [
+            {
+                "title": "我的首页",
+                "target": "_self",
+                "url": "#/home/index",
+                "accessNo": "1234",
+                "subMenu": null
+            },
+            {
+                "title": "用户管理",
+                "target": "_self",
+                "url": "#/account/index",
+                "accessNo": "123",
+                "subMenu": [
+                    {
+                        "title": "用户管理",
+                        "target": "_self",
+                        "url": "",
+                        "accessNo": "123",
+                        "subMenu": [
+                            {
+                                "title": "所有用户",
+                                "target": "_self",
+                                "url": "#/account/index",
+                                "accessNo": "1234",
+                                "subMenu": null
+                            }
+                        ]
+                    },
+                    {
+                        "title": "权限管理",
+                        "target": "_self",
+                        "url": "",
+                        "accessNo": "123",
+                        "subMenu": [
+                            {
+                                "title": "权限项列表",
+                                "target": "_self",
+                                "url": "#/access/index",
+                                "accessNo": "123",
+                                "subMenu": null
+                            }
+                        ]
+                    },
+                    {
+                        "title": "用户组",
+                        "target": "_self",
+                        "url": "",
+                        "accessNo": "123",
+                        "subMenu": [
+                            {
+                                "title": "用户组列表",
+                                "target": "_self",
+                                "url": "#/user/group/index",
+                                "accessNo": "123",
+                                "subMenu": null
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+        ');
+    }
 }
 
  

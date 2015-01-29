@@ -33,6 +33,9 @@ class TableMySQLImpl extends TableBase{
         if ($this->isHasColumn) {
             return $this->parseHasColumn();
         }
+        if ($this->isRenameTable) {
+            return $this->parseRenameTable();
+        }
     }
 
     /**
@@ -163,6 +166,11 @@ class TableMySQLImpl extends TableBase{
     private function parseHasColumn()
     {
         return "DESCRIBE $this->name $this->hasColumnName";
+    }
+
+    private function parseRenameTable()
+    {
+        return "RENAME TABLE `$this->name` TO `$this->renameTableNewName`";
     }
 }
 

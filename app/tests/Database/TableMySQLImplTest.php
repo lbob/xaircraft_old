@@ -103,6 +103,15 @@ class TableMySQLImplTest extends DbBaseTest {
         $this->assertEquals("ALTER TABLE `xaircraft`.`x_post` DROP COLUMN `id`,DROP COLUMN `title`,CHANGE COLUMN `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',CHANGE COLUMN `title` `title` VARCHAR(100) NOT NULL COMMENT '<!--RANGE:(1,50)-->',CHANGE COLUMN `keyword` `keywords` VARCHAR(100) NULL DEFAULT NULL COMMENT '',ADD COLUMN `view_count` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '查看次数' AFTER `update_at`", $query);
     }
 
+    public function testRenameTable()
+    {
+        $result = \Xaircraft\DB::schema()->rename("post", "posts")->execute();
+        $this->assertTrue($result !== false);
+
+        $result = \Xaircraft\DB::schema()->rename("posts", "post")->execute();
+        $this->assertTrue($result !== false);
+    }
+
     public function testExecute()
     {
         \Xaircraft\DB::schema()->dropIfExists("test_post")->execute();

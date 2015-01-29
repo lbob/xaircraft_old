@@ -21,6 +21,7 @@ abstract class TableBase implements Table {
     protected $columns = array();
     protected $isCreateTable = false;
     protected $isModifyTable = false;
+    protected $isRenameTable = false;
     protected $isHasTable = false;
     protected $isDropTable = false;
     protected $isDropTableIfExists = false;
@@ -31,6 +32,7 @@ abstract class TableBase implements Table {
     protected $uniqueColumns = array();
     protected $renames = array();
     protected $dropColumns = array();
+    protected $renameTableNewName;
     /**
      * @var TableSchema
      */
@@ -101,7 +103,15 @@ abstract class TableBase implements Table {
      */
     public function rename($from, $to)
     {
-        // TODO: Implement rename() method.
+        if (!isset($to)) {
+            throw new \InvalidArgumentException("Undefined argument new table name.");
+        }
+
+        $this->setTableName($from);
+        $this->renameTableNewName = isset($this->prefix) ? $this->prefix . $to : $to;
+        $this->isRenameTable = true;
+
+        return $this;
     }
 
     /**

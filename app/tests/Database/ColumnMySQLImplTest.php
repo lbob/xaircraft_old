@@ -32,7 +32,7 @@ class ColumnMySQLImplTest extends BaseTest {
     {
         $column = new \Xaircraft\Database\ColumnMySQLImpl();
         $column->bigInteger('id')->unsigned();
-        $this->assertEquals("`id` BIGINT(10) UNSIGNED NOT NULL DEFAULT NULL", $column->toString());
+        $this->assertEquals("`id` BIGINT(10) UNSIGNED NOT NULL", $column->toString());
     }
 
     public function testBinary()
@@ -167,7 +167,7 @@ class ColumnMySQLImplTest extends BaseTest {
     {
         $column = new \Xaircraft\Database\ColumnMySQLImpl();
         $column->time('id')->nullable()->after("name");
-        $this->assertEquals("`id` TIME NULL DEFAULT NULL AFTER 'name'", $column->toString());
+        $this->assertEquals("`id` TIME NULL DEFAULT NULL AFTER `name`", $column->toString());
     }
 }
 

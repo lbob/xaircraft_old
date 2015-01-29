@@ -9,7 +9,7 @@ namespace Xaircraft\Database;
  * @package Xaircraft\Database
  * @author lbob created at 2015/1/28 19:54
  */
-class ColumnMySQLImpl extends ColumnBaseImpl {
+class ColumnMySQLImpl extends ColumnBase {
 
     protected $INTEGER = 'INT';
     protected $BINARY = 'BINARY';
@@ -71,15 +71,24 @@ class ColumnMySQLImpl extends ColumnBaseImpl {
             $result[] = "AUTO_INCREMENT";
         }
         if (!$this->isAutoIncrement) {
-            $result[] = 'DEFAULT';
-            $result[] = isset($this->defaultValue) ?
-                (is_string($this->defaultValue) ? "'$this->defaultValue'" : $this->defaultValue) : 'NULL';
+            if (isset($this->defaultValue)) {
+                $result[] = 'DEFAULT';
+                if (is_string($this->defaultValue)) {
+                    $result[] = "'$this->defaultValue'";
+                } else {
+                    $result[] = $this->defaultValue;
+                }
+            } else {
+                if ($this->isNullable) {
+                    $result[] = 'DEFAULT NULL';
+                }
+            }
         }
         if (isset($this->comment)) {
             $result[] = "COMMENT '$this->comment'";
         }
         if (isset($this->afterColumnName)) {
-            $result[] = "AFTER '$this->afterColumnName'";
+            $result[] = "AFTER `$this->afterColumnName`";
         }
         return implode(' ', $result);
     }

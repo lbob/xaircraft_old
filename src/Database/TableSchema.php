@@ -42,6 +42,8 @@ class TableSchema
     private $fields = array();
     private $columnTypes = array();
     private $types = array();
+    private $dbTypes = array();
+    private $lengths = array();
     private $phpTypes = array();
     private $unsigned = array();
     private $collations = array();
@@ -137,6 +139,8 @@ class TableSchema
             $this->fields      = $meta->fields;
             $this->columnTypes = $meta->columnTypes;
             $this->types       = $meta->types;
+            $this->dbTypes     = $meta->dbTypes;
+            $this->lengths     = $meta->lengths;
             $this->phpTypes    = $meta->phpTypes;
             $this->collations  = $meta->collations;
             $this->nulls       = $meta->nulls;
@@ -211,6 +215,10 @@ class TableSchema
         } else if (preg_match('/^(\w+)\((.+?)\)(.*)$/', $type, $matches)) {
             if (isset($typeMaps[$matches[1]])) {
                 $this->unsigned[$field] = isset($matches[3]) && stripos($matches[3], 'unsigned') !== false;
+                $this->dbTypes[$field] = $matches[1];
+                if (isset($matches[2])) {
+                    $this->lengths[$field] = $matches[2] + 0;
+                }
                 return preg_replace('/\(.+\)/', '(' . $matches[2] . ')', $typeMaps[$matches[1]]);
             }
         } else if (preg_match('/^(\w+)\s+/', $type, $matches)) {
@@ -327,6 +335,33 @@ class TableSchema
     public function getFields()
     {
         return $this->fields;
+    }
+
+    public function getColumnInfo($columnName)
+    {
+        if (array_search($columnName, $this->fields) !== false) {
+            $name = $columnName;
+            $type = $this->dbTypes[$columnName];
+            $length = isset($this->lengths[$columnName]) ? $this->lengths[$columnName] : -1;
+            $isUnsigned = $this->unsigned[$columnName] ? true : false;
+            $isIncrements = isset($this->autoIncrementColumn) && $this->autoIncrementColumn === $columnName ? true : false;
+            $isNullable = $this->nulls[$columnName] === 'YES' ? true : false;
+            $isPrimaryKey = $this->keys[$columnName] === 'PRI' ? true : false;
+            $defaultValue = $this->defaults[$columnName];
+            $comments = $this->comments[$columnName];
+
+            return array(
+                'name' => $name,
+                'type' => strtoupper($type),
+                'length' => $length,
+                'isUnsigned' => $isUnsigned,
+                'isIncrements' => $isIncrements,
+                'isNullable' => $isNullable,
+                'isPrimaryKey' => $isPrimaryKey,
+                'default' => $defaultValue,
+                'comments' => $comments
+            );
+        }
     }
 }
 

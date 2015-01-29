@@ -69,9 +69,14 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function testwhere()
     {
-        $result = DB::table('user')->where(function(\Xaircraft\Database\WhereQuery $query) {
-            //$query->select()
-        });
+        $query = DB::query("SHOW COLUMNS FROM x_post");
+        foreach ($query as $item) {
+            var_dump($item);
+        }
+
+        var_dump(DB::query("SHOW COLUMNS FROM x_post"));
+        $schema = \Xaircraft\Database\TableSchema::load('x_post');
+        var_dump($schema->getColumnInfo('title'));
     }
 }
 

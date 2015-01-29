@@ -158,6 +158,12 @@ interface Column
     public function defaultValue($value);
 
     /**
+     * @param $comment
+     * @return Column
+     */
+    public function comment($comment);
+
+    /**
      * @return Column
      */
     public function unsigned();
@@ -175,9 +181,50 @@ interface Column
     public function length($length);
 
     /**
+     * 加入索引
+     * @return Column
+     */
+    public function unique();
+
+    /**
+     * 设为主键
+     * @return Column
+     */
+    public function primaryKey();
+
+    /**
      * @return string
      */
     public function toString();
+
+    /**
+     * @return boolean
+     */
+    public function isUnique();
+
+    /**
+     * @return boolean
+     */
+    public function isPrimaryKey();
+
+    /**
+     * @return string
+     */
+    public function getColumnName();
+
+    /**
+     * 设置类型
+     * @param string $type
+     * @return Column
+     */
+    public function setType($type);
+
+    /**
+     * 设置字段名称
+     * @param $name
+     * @return Column
+     */
+    public function setName($name);
 }
 
  

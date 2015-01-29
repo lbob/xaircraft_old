@@ -4,12 +4,12 @@ namespace Xaircraft\Database;
 
 
 /**
- * Class ColumnMySQLImpl
+ * Class ColumnMySQL
  *
  * @package Xaircraft\Database
  * @author lbob created at 2015/1/28 11:27
  */
-abstract class ColumnBaseImpl implements Column {
+abstract class ColumnBase implements Column {
 
     protected $INTEGER = 'INT';
     protected $BINARY = 'BINARY';
@@ -49,6 +49,8 @@ abstract class ColumnBaseImpl implements Column {
     protected $enumRanges;
     protected $isAutoIncrement = false;
     protected $isUnsigned = false;
+    protected $isUnique = false;
+    protected $isPrimaryKey = false;
 
     /**
      * @param $name
@@ -390,6 +392,19 @@ abstract class ColumnBaseImpl implements Column {
     public function defaultValue($value)
     {
         $this->defaultValue = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param $comment
+     * @return Column
+     */
+    public function comment($comment)
+    {
+        $this->comment = $comment;
+
+        return $this;
     }
 
     /**
@@ -412,6 +427,88 @@ abstract class ColumnBaseImpl implements Column {
         }
 
         $this->length = $length;
+
+        return $this;
+    }
+
+    /**
+     * 加入索引
+     * @return Column
+     */
+    public function unique()
+    {
+        if (!isset($this->type) || !isset($this->name)) {
+            throw new \InvalidArgumentException("Undefined name or type.");
+        }
+
+        $this->isUnique = true;
+
+        return $this;
+    }
+
+    /**
+     * 设为主键
+     * @return Column
+     */
+    public function primaryKey()
+    {
+        if (!isset($this->type) || !isset($this->name)) {
+            throw new \InvalidArgumentException("Undefined name or type.");
+        }
+
+        $this->isPrimaryKey = true;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isUnique()
+    {
+        return $this->isUnique;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isPrimaryKey()
+    {
+        return $this->isPrimaryKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getColumnName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * 设置类型
+     * @param string $type
+     * @return Column
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * 设置字段名称
+     * @param $name
+     * @return Column
+     */
+    public function setName($name)
+    {
+        if (!isset($name) && !is_string($name)) {
+            throw new \InvalidArgumentException("Invalid name.");
+        }
+
+        $this->name = $name;
 
         return $this;
     }

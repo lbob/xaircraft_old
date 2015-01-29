@@ -59,7 +59,7 @@ class DB {
         if (array_key_exists('prefix', $config) && isset($config['prefix']))
             $prefix = $config['prefix'];
 
-        $this->provider->connection($dsn, $username, $password, null, $prefix);
+        $this->provider->connection($dsn, $username, $password, null, $config['database'], $prefix);
     }
 
     private static function getInstance()
@@ -200,11 +200,13 @@ class DB {
      * @param $username
      * @param $password
      * @param $options
+     * @param $database
+     * @param $prefix
      * @return mixed
      */
-    public static function connection($dsn, $username, $password, $options, $prefix = null)
+    public static function connection($dsn, $username, $password, $options, $database = null, $prefix = null)
     {
-        self::getInstance()->provider->connection($dsn, $username, $password, $options, $prefix);
+        self::getInstance()->provider->connection($dsn, $username, $password, $options, $database, $prefix);
     }
 
     /**
@@ -222,11 +224,13 @@ class DB {
      * @param $username
      * @param $password
      * @param $options
+     * @param $database
+     * @param $prefix
      * @return mixed
      */
-    public static function reconnect($dsn, $username, $password, $options, $prefix = null)
+    public static function reconnect($dsn, $username, $password, $options, $database = null, $prefix = null)
     {
-        self::getInstance()->provider->reconnect($dsn, $username, $password, $options, $prefix);
+        self::getInstance()->provider->reconnect($dsn, $username, $password, $options, $database, $prefix);
     }
 
     /**
@@ -290,7 +294,16 @@ class DB {
      */
     public static function raw($value)
     {
-        return new \Xaircraft\Database\Raw($value);
+        return self::getInstance()->provider->raw($value);
+    }
+
+    /**
+     * 创建数据库表构造器
+     * @return \Xaircraft\Database\Table
+     */
+    public static function schema()
+    {
+        return self::getInstance()->provider->schema();
     }
 }
 

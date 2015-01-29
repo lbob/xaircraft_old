@@ -2,6 +2,7 @@
 
 namespace Xaircraft\Database;
 use Xaircraft\DB;
+use Xaircraft\Exception\InvalidColumnExecption;
 
 
 /**
@@ -23,6 +24,15 @@ class TableMySQLImpl extends TableBase{
         if ($this->isModifyTable) {
             return $this->parseModifyTable();
         }
+        if ($this->isHasTable) {
+            return $this->parseHasTable();
+        }
+        if ($this->isDropTable) {
+            return $this->parseDropTable();
+        }
+        if ($this->isHasColumn) {
+            return $this->parseHasColumn();
+        }
     }
 
     /**
@@ -34,7 +44,32 @@ class TableMySQLImpl extends TableBase{
         $query = $this->toString();
 
         if (isset($query)) {
-            return DB::statement($query);
+            if ($this->isHasTable) {
+                $result = false;
+                $query = DB::query($query);
+                foreach ($query as $item) {
+                    if (isset($item['TABLE_NAME']) && $item['TABLE_NAME'] === $this->name) {
+                        $result = true;
+                        break;
+                    }
+                }
+                return $result;
+            }
+            if ($this->isHasColumn) {
+                $result = false;
+                $query = DB::query($query);
+                foreach ($query as $item) {
+                    if (isset($item['Field']) && $item['Field'] === $this->hasColumnName) {
+                        $result = true;
+                        break;
+                    }
+                }
+                return $result;
+            }
+            $result = DB::statement($query);
+            if (isset($this->schema))
+                $this->schema->rewriteCache();
+            return $result;
         }
         return false;
     }
@@ -46,7 +81,7 @@ class TableMySQLImpl extends TableBase{
         }
 
         $result = array();
-        $result[] = "CREATE TABLE IF NOT EXISTS `" . $this->name . "` (";
+        $result[] = "CREATE TABLE IF NOT EXISTS `$this->dbName`.`" . $this->name . "` (";
         if (isset($this->columns)) {
             $columns = array();
             foreach ($this->columns as $item) {
@@ -84,9 +119,17 @@ class TableMySQLImpl extends TableBase{
         }
 
         $result = array();
-        $result[] = "ALTER TABLE `$this->name`";
+        $result[] = "ALTER TABLE `$this->dbName`.`$this->name`";
         if (isset($this->columns)) {
             $modifies = array();
+            if (isset($this->dropColumns) && !empty($this->dropColumns)) {
+                foreach ($this->dropColumns as $item) {
+                    if (array_search($item, $this->schema->getFields()) === false) {
+                        throw new \InvalidArgumentException("Undefined column [$item] in table [$this->name]");
+                    }
+                    $modifies[] = "DROP COLUMN `$item`";
+                }
+            }
             foreach ($this->columns as $item) {
                 $type = $item['type'];
                 $columnName = $item['name'];
@@ -102,6 +145,24 @@ class TableMySQLImpl extends TableBase{
         }
 
         return implode(' ', $result);
+    }
+
+    private function parseHasTable()
+    {
+        return "SELECT `TABLE_NAME` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = '$this->dbName' AND `TABLE_NAME` = '$this->name' LIMIT 1";
+    }
+
+    private function parseDropTable()
+    {
+        if ($this->isDropTableIfExists)
+            return "DROP TABLE IF EXISTS `$this->dbName`.`$this->name`;";
+        else
+            return "DROP TABLE `$this->dbName`.`$this->name`;";
+    }
+
+    private function parseHasColumn()
+    {
+        return "DESCRIBE $this->name $this->hasColumnName";
     }
 }
 

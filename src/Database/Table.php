@@ -73,7 +73,7 @@ interface Table {
     /**
      * 是否存在数据表
      * @param $name
-     * @return boolean
+     * @return Table
      */
     public function hasTable($name);
 
@@ -81,7 +81,7 @@ interface Table {
      * 数据表是否存在字段
      * @param $tableName
      * @param $columnName
-     * @return boolean
+     * @return Table
      */
     public function hasColumn($tableName, $columnName);
 

@@ -95,9 +95,11 @@ interface Database {
      * @param $username
      * @param $password
      * @param $options
+     * @param $database
+     * @param $prefix
      * @return mixed
      */
-    public function connection($dsn, $username, $password, $options, $prefix = null);
+    public function connection($dsn, $username, $password, $options, $database = null, $prefix = null);
 
     /**
      * 关闭现有连接
@@ -123,9 +125,11 @@ interface Database {
      * @param $username
      * @param $password
      * @param $options
+     * @param $database
+     * @param $prefix
      * @return mixed
      */
-    public function reconnect($dsn, $username, $password, $options, $prefix = null);
+    public function reconnect($dsn, $username, $password, $options, $database = null, $prefix = null);
 
     /**
      * 获得数据库驱动对象
@@ -157,6 +161,12 @@ interface Database {
      * @return Raw
      */
     public function raw($value);
+
+    /**
+     * 创建数据库表构造器
+     * @return Table
+     */
+    public function schema();
 }
 
  

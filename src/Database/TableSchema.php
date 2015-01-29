@@ -172,6 +172,11 @@ class TableSchema
         return file_exists($this->source);
     }
 
+    public function rewriteCache()
+    {
+        $this->writeCache();
+    }
+
     /**
      * 从数据库字段类型转化为抽象数据类型
      * @param $type

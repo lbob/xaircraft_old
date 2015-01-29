@@ -37,6 +37,7 @@ class PdoDatabase implements Database {
      */
     private $isLog = true;
     private $prefix;
+    private $dbName;
     private $isRollback = false;
     private $isFinishRollback = false;
     /**
@@ -266,13 +267,16 @@ class PdoDatabase implements Database {
      * @param $username
      * @param $password
      * @param $options
+     * @param $database
+     * @param $prefix
      * @return mixed
      */
-    public function connection($dsn, $username, $password, $options, $prefix = null)
+    public function connection($dsn, $username, $password, $options, $database = null, $prefix = null)
     {
         if (isset($dsn)) {
             $this->dbh = new \PDO($dsn, $username, $password, $options);
             $this->prefix = $prefix;
+            $this->dbName = $database;
         }
     }
 
@@ -291,11 +295,13 @@ class PdoDatabase implements Database {
      * @param $username
      * @param $password
      * @param $options
+     * @param $database
+     * @param $prefix
      * @return mixed
      */
-    public function reconnect($dsn, $username, $password, $options, $prefix = null)
+    public function reconnect($dsn, $username, $password, $options, $database = null, $prefix = null)
     {
-        $this->connection($dsn, $username, $password, $options, $prefix);
+        $this->connection($dsn, $username, $password, $options, $database, $prefix);
     }
 
     /**
@@ -386,6 +392,15 @@ class PdoDatabase implements Database {
                 $errorHandler->onError($this->errorCode, $this->errorInfo, $stmt->queryString, $params);
             }
         }
+    }
+
+    /**
+     * 创建数据库表构造器
+     * @return Table
+     */
+    public function schema()
+    {
+        return new TableMySQLImpl($this->dbName, $this->prefix);
     }
 }
 

@@ -17,21 +17,29 @@ abstract class TableBase implements Table {
     protected $name;
     protected $logicName;
     protected $prefix;
+    protected $dbName;
     protected $columns = array();
     protected $isCreateTable = false;
     protected $isModifyTable = false;
+    protected $isHasTable = false;
+    protected $isDropTable = false;
+    protected $isDropTableIfExists = false;
+    protected $isHasColumn = false;
+    protected $hasColumnName;
     protected $currentColumn;
     protected $primaryKeyColumns = array();
     protected $uniqueColumns = array();
     protected $renames = array();
+    protected $dropColumns = array();
     /**
      * @var TableSchema
      */
     protected $schema;
 
-    public function __construct($prefix = null)
+    public function __construct($dbName, $prefix = null)
     {
         $this->prefix = $prefix;
+        $this->dbName = $dbName;
     }
 
     /**
@@ -42,8 +50,7 @@ abstract class TableBase implements Table {
      */
     public function create($name, $handler)
     {
-        $this->logicName = $name;
-        $this->name = isset($this->prefix) ? $this->prefix . $name : $name;
+        $this->setTableName($name);
         $this->isCreateTable = true;
         $this->isModifyTable = false;
 
@@ -63,12 +70,11 @@ abstract class TableBase implements Table {
      */
     public function table($name, $handler)
     {
-        $this->logicName = $name;
-        $this->name = isset($this->prefix) ? $this->prefix . $name : $name;
+        $this->setTableName($name);
         $this->isCreateTable = false;
         $this->isModifyTable = true;
 
-        $this->schema = TableSchema::load($name);
+        $this->schema = TableSchema::load($this->name);
 
         if (isset($handler) && is_callable($handler)) {
             call_user_func($handler, $this);
@@ -76,6 +82,15 @@ abstract class TableBase implements Table {
         }
 
         return $this;
+    }
+
+    private function setTableName($name)
+    {
+        if (!isset($name)) {
+            throw new \InvalidArgumentException("Undefined table name.");
+        }
+        $this->logicName = $name;
+        $this->name = isset($this->prefix) ? $this->prefix . $name : $name;
     }
 
     /**
@@ -96,7 +111,10 @@ abstract class TableBase implements Table {
      */
     public function drop($name)
     {
-        // TODO: Implement drop() method.
+        $this->setTableName($name);
+        $this->isDropTable = true;
+
+        return $this;
     }
 
     /**
@@ -106,7 +124,11 @@ abstract class TableBase implements Table {
      */
     public function dropIfExists($name)
     {
-        // TODO: Implement dropIfExists() method.
+        $this->setTableName($name);
+        $this->isDropTable = true;
+        $this->isDropTableIfExists = true;
+
+        return $this;
     }
 
     /**
@@ -183,28 +205,47 @@ abstract class TableBase implements Table {
      */
     public function dropColumn($nameOrNames)
     {
-        // TODO: Implement dropColumn() method.
+        if ($this->isModifyTable && isset($nameOrNames)) {
+            if (is_string($nameOrNames)) {
+                $this->dropColumns[] = $nameOrNames;
+            }
+            if (is_array($nameOrNames)) {
+                $this->dropColumns = array_merge($this->dropColumns, $nameOrNames);
+            }
+        }
+        return $this;
     }
 
     /**
      * 是否存在数据表
      * @param $name
-     * @return boolean
+     * @return Table
      */
     public function hasTable($name)
     {
-        // TODO: Implement hasTable() method.
+        $this->setTableName($name);
+        $this->isHasTable = true;
+
+        return $this;
     }
 
     /**
      * 数据表是否存在字段
      * @param $tableName
      * @param $columnName
-     * @return boolean
+     * @return Table
      */
     public function hasColumn($tableName, $columnName)
     {
-        // TODO: Implement hasColumn() method.
+        if (!isset($columnName)) {
+            throw new \InvalidArgumentException("Undefined column name");
+        }
+
+        $this->setTableName($tableName);
+        $this->isHasColumn = true;
+        $this->hasColumnName = $columnName;
+
+        return $this;
     }
 
     /**

@@ -84,8 +84,9 @@ class TableMySQLImpl extends TableBase{
         }
 
         $result = array();
-        $result[] = "CREATE TABLE IF NOT EXISTS `$this->dbName`.`" . $this->name . "` (";
+        $result[] = "CREATE TABLE IF NOT EXISTS `$this->dbName`.`" . $this->name . "`";
         if (isset($this->columns)) {
+            $result[] = '(';
             $columns = array();
             foreach ($this->columns as $item) {
                 $column = $item['column'];
@@ -110,8 +111,8 @@ class TableMySQLImpl extends TableBase{
                 }
             }
             $result[] = implode(',', $columns);
+            $result[] = ")";
         }
-        $result[] = ")";
         return implode(' ', $result);
     }
 

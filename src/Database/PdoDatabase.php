@@ -189,6 +189,7 @@ class PdoDatabase implements Database {
             $this->commit();
         } catch (\Exception $ex) {
             $this->rollBack();
+            throw $ex;
         }
     }
 

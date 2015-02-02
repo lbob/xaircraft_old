@@ -179,7 +179,8 @@ class PdoDatabase implements Database {
     /**
      * 执行一个事务过程，在$handler中抛出异常则将自动执行回滚
      * @param callable $handler
-     * @return mixed
+     * @return mixed|void
+     * @throws \Exception
      */
     public function transaction(callable $handler)
     {

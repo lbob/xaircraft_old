@@ -59,7 +59,7 @@ class ColumnMySQLImpl extends ColumnBase {
             }
             $typeAndLength = $typeAndLength . "(" . implode(',', $ranges) . ")";
         }
-        if (isset($this->length) && $this->length > 0) {
+        if (isset($this->length)) {
             $typeAndLength = $typeAndLength . "($this->length)";
         }
         $result[] = $typeAndLength;

@@ -81,10 +81,10 @@ class TableMySQLImplTest extends DbBaseTest {
     public function testHasTable()
     {
         $result = \Xaircraft\DB::schema()->hasTable("post")->execute();
-        $this->assertTrue($result);
+        $this->assertTrue($result === true);
 
         $result = \Xaircraft\DB::schema()->hasTable("possfsdfsdft")->execute();
-        $this->assertTrue(!$result);
+        $this->assertTrue($result === false);
     }
 
     public function testHasColumn()

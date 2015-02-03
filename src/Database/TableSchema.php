@@ -102,6 +102,7 @@ class TableSchema
     {
         $columns = DB::query('SHOW FULL COLUMNS FROM ' . $this->tableName);
         if (isset($columns)) {
+            $this->clear();
             foreach ($columns as $row) {
                 $field                     = $row['Field'];
                 $this->fields[]            = $field;
@@ -180,6 +181,28 @@ class TableSchema
     {
         $this->loadFromDatabase();
         $this->writeCache();
+    }
+
+    private function clear()
+    {
+        unset($this->primaryKey);
+        unset($this->autoIncrementColumn);
+
+        $this->fields = array();
+        $this->columnTypes = array();
+        $this->types = array();
+        $this->dbTypes = array();
+        $this->lengths = array();
+        $this->phpTypes = array();
+        $this->unsigned = array();
+        $this->collations = array();
+        $this->nulls = array();
+        $this->keys = array();
+        $this->defaults = array();
+        $this->extras = array();
+        //private $privileges = array();
+        $this->comments = array();
+        $this->validations = array();
     }
 
     /**

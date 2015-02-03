@@ -137,6 +137,8 @@ class TableMySQLImplTest extends DbBaseTest {
         $this->assertTrue(\Xaircraft\DB::schema()->hasColumn("test_post", "content")->execute());
         var_dump(\Xaircraft\Database\TableSchema::load("x_test_post")->getFields());
         $this->assertTrue(array_search('content', \Xaircraft\Database\TableSchema::load("x_test_post")->getFields()) !== false);
+
+        $result = \Xaircraft\DB::schema()->rename("test_post", "test_post_new")->execute();
     }
 }
 

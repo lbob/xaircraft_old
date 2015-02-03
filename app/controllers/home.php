@@ -78,5 +78,14 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $schema = \Xaircraft\Database\TableSchema::load('x_post');
         var_dump($schema->getColumnInfo('title'));
     }
+
+    public function testarray()
+    {
+        $array = array(
+            '123', '234'
+        );
+        var_dump(is_array($array));
+        var_dump(is_callable($array));
+    }
 }
 

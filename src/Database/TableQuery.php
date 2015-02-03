@@ -545,8 +545,7 @@ class TableQuery
                 $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
                 $this->whereParams = array_merge($this->whereParams, $ranges);
             }
-        }
-        if (isset($params) && is_callable($params)) {
+        } else if (isset($params) && is_callable($params)) {
             $subQueryHandler = $params;
             $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
             call_user_func($subQueryHandler, $whereQuery);
@@ -576,8 +575,7 @@ class TableQuery
                 $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
                 $this->whereParams = array_merge($this->whereParams, $ranges);
             }
-        }
-        if (isset($params) && is_callable($params)) {
+        } else if (isset($params) && is_callable($params)) {
             $subQueryHandler = $params;
             $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
             call_user_func($subQueryHandler, $whereQuery);

@@ -82,10 +82,10 @@ class home_controller extends \Xaircraft\Mvc\Controller {
     public function testarray()
     {
         $array = array(
-            '123', '234'
+            '343', '234'
         );
         var_dump(is_array($array));
-        var_dump(is_callable($array));
+        var_dump(is_callable($array, true));
     }
 }
 

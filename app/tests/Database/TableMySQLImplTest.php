@@ -125,6 +125,7 @@ class TableMySQLImplTest extends DbBaseTest {
         })->execute();
 
         $this->assertTrue(\Xaircraft\DB::table("test_post")->count()->execute() === 0);
+        $this->assertTrue(\Xaircraft\DB::schema()->hasColumn("test_post", "title")->execute());
 
         $result = \Xaircraft\DB::schema()->table("test_post", function(\Xaircraft\Database\Table $table) {
             $table->column()->increments("id")->unsigned()->unique()->primaryKey();
@@ -133,6 +134,9 @@ class TableMySQLImplTest extends DbBaseTest {
 
         $this->assertTrue($result !== false);
         $this->assertTrue(\Xaircraft\DB::table("test_post")->select("titles")->count()->execute() === 0);
+        $this->assertTrue(\Xaircraft\DB::schema()->hasColumn("test_post", "content")->execute());
+        var_dump(\Xaircraft\Database\TableSchema::load("x_test_post")->getFields());
+        $this->assertTrue(array_search('content', \Xaircraft\Database\TableSchema::load("x_test_post")->getFields()) !== false);
     }
 }
 

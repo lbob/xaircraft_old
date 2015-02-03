@@ -70,8 +70,19 @@ class TableMySQLImpl extends TableBase{
                 return $result;
             }
             $result = DB::statement($query);
-            if (isset($this->schema))
+            if ($this->isCreateTable) {
+                TableSchema::load($this->name)->rewriteCache();
+            }
+            if ($this->isModifyTable) {
                 $this->schema->rewriteCache();
+            }
+            if ($this->isDropTable) {
+                $this->schema->removeCache();
+            }
+            if ($this->isRenameTable) {
+                $this->schema->removeCache();
+                TableSchema::load($this->renameTableNewName)->rewriteCache();
+            }
             return $result;
         }
         return false;

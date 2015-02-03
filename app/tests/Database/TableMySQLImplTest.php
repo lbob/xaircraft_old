@@ -118,6 +118,7 @@ class TableMySQLImplTest extends DbBaseTest {
     public function testExecute()
     {
         \Xaircraft\DB::schema()->dropIfExists("test_post")->execute();
+        var_dump(\Xaircraft\DB::getQueryLog());
 
         \Xaircraft\DB::schema()->create("test_post", function(\Xaircraft\Database\Table $table) {
             $table->column()->increments("id")->unsigned()->unique()->primaryKey();
@@ -139,6 +140,9 @@ class TableMySQLImplTest extends DbBaseTest {
         $this->assertTrue(array_search('content', \Xaircraft\Database\TableSchema::load("x_test_post")->getFields()) !== false);
 
         $result = \Xaircraft\DB::schema()->rename("test_post", "test_post_new")->execute();
+        var_dump($result);
+        $result = \Xaircraft\DB::schema()->rename("test_post_new", "test_post")->execute();
+        var_dump($result);
     }
 }
 

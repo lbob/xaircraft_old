@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\Database;
+use Xaircraft\DB;
 
 
 /**
@@ -52,9 +53,9 @@ abstract class TableBase implements Table {
      */
     public function create($name, $handler)
     {
-        $this->setTableName($name);
         $this->isCreateTable = true;
         $this->isModifyTable = false;
+        $this->setTableName($name);
 
         if (isset($handler) && is_callable($handler)) {
             call_user_func($handler, $this);
@@ -72,11 +73,9 @@ abstract class TableBase implements Table {
      */
     public function table($name, $handler)
     {
-        $this->setTableName($name);
         $this->isCreateTable = false;
         $this->isModifyTable = true;
-
-        $this->schema = TableSchema::load($this->name);
+        $this->setTableName($name);
 
         if (isset($handler) && is_callable($handler)) {
             call_user_func($handler, $this);
@@ -93,6 +92,16 @@ abstract class TableBase implements Table {
         }
         $this->logicName = $name;
         $this->name = isset($this->prefix) ? $this->prefix . $name : $name;
+
+        if (($this->isModifyTable || $this->isDropTable || $this->isRenameTable)) {
+            $this->schema = TableSchema::load($this->name);
+            $this->schema->rewriteCache();
+        }
+
+        if ($this->isModifyTable) {
+            var_dump($this->name);
+            var_dump($this->schema->getFields());
+        }
     }
 
     /**
@@ -107,9 +116,9 @@ abstract class TableBase implements Table {
             throw new \InvalidArgumentException("Undefined argument new table name.");
         }
 
+        $this->isRenameTable = true;
         $this->setTableName($from);
         $this->renameTableNewName = isset($this->prefix) ? $this->prefix . $to : $to;
-        $this->isRenameTable = true;
 
         return $this;
     }
@@ -121,8 +130,8 @@ abstract class TableBase implements Table {
      */
     public function drop($name)
     {
-        $this->setTableName($name);
         $this->isDropTable = true;
+        $this->setTableName($name);
 
         return $this;
     }
@@ -134,9 +143,9 @@ abstract class TableBase implements Table {
      */
     public function dropIfExists($name)
     {
-        $this->setTableName($name);
         $this->isDropTable = true;
         $this->isDropTableIfExists = true;
+        $this->setTableName($name);
 
         return $this;
     }

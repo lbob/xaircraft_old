@@ -103,31 +103,36 @@ class TableSchema
         $columns = DB::query('SHOW FULL COLUMNS FROM ' . $this->tableName);
         if (isset($columns)) {
             $this->clear();
-            foreach ($columns as $row) {
-                $field                     = $row['Field'];
-                $this->fields[]            = $field;
-                $this->columnTypes[$field] = $row['Type'];
-                $this->types[$field]       = $this->getColumnType($row['Type'], $field);
-                $phpType                   = $this->getColumnPhpType($this->types[$field], $field);
-                $this->phpTypes[$field]    = $phpType;
-                $this->collations[$field]  = $row['Collation'];
-                $this->nulls[$field]       = $row['Null'];
-                $this->keys[$field]        = $row['Key'];
-                $this->defaults[$field]    = $row['Default'];
-                $this->extras[$field]      = $row['Extra'];
-                //$this->privileges[$field] = $row['Privileges'];
-                $this->comments[$field] = $row['Comment'];
+            try {
+                foreach ($columns as $row) {
+                    $field                     = $row['Field'];
+                    $this->fields[]            = $field;
+                    $this->columnTypes[$field] = $row['Type'];
+                    $this->types[$field]       = $this->getColumnType($row['Type'], $field);
+                    $phpType                   = $this->getColumnPhpType($this->types[$field], $field);
+                    $this->phpTypes[$field]    = $phpType;
+                    $this->collations[$field]  = $row['Collation'];
+                    $this->nulls[$field]       = $row['Null'];
+                    $this->keys[$field]        = $row['Key'];
+                    $this->defaults[$field]    = $row['Default'];
+                    $this->extras[$field]      = $row['Extra'];
+                    //$this->privileges[$field] = $row['Privileges'];
+                    $this->comments[$field] = $row['Comment'];
 
-                $isNullable                = $row['Null'] === 'YES';
-                $enumDefine                = stripos($row['Type'], 'enum') !== false ? $row['Type'] : null;
-                $this->validations[$field] = new Validation($field, $phpType, $isNullable, $enumDefine, $row['Comment']);
+                    $isNullable = $row['Null'] === 'YES';
+                    $enumDefine = stripos($row['Type'], 'enum') !== false ? $row['Type'] : null;
+                    $this->validations[$field]
+                                = new Validation($field, $phpType, $isNullable, $enumDefine, $row['Comment']);
 
-                if ($row['Key'] === 'PRI') {
-                    $this->primaryKey[] = $field;
+                    if ($row['Key'] === 'PRI') {
+                        $this->primaryKey[] = $field;
+                    }
+                    if ($row['Extra'] === 'auto_increment') {
+                        $this->autoIncrementColumn = $field;
+                    }
                 }
-                if ($row['Extra'] === 'auto_increment') {
-                    $this->autoIncrementColumn = $field;
-                }
+            } catch (\Exception $ex) {
+                //throw new \Exception("Undefined table [$this->tableName].", $ex->getCode(), $ex);
             }
         } else {
             throw new \Exception("Table undefined [$this->tableName].");
@@ -181,6 +186,12 @@ class TableSchema
     {
         $this->loadFromDatabase();
         $this->writeCache();
+    }
+
+    public function removeCache()
+    {
+        if (file_exists($this->source))
+            unlink($this->source);
     }
 
     private function clear()

@@ -97,11 +97,6 @@ abstract class TableBase implements Table {
             $this->schema = TableSchema::load($this->name);
             $this->schema->rewriteCache();
         }
-
-        if ($this->isModifyTable) {
-            var_dump($this->name);
-            var_dump($this->schema->getFields());
-        }
     }
 
     /**

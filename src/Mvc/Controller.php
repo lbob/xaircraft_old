@@ -34,6 +34,10 @@ abstract class Controller
      * @var \Xaircraft\Mvc\Layout
      */
     private $layoutName;
+    /**
+     * @var bool 结束action执行并返回结果
+     */
+    private $isEnded = false;
 
     public function __construct()
     {
@@ -43,6 +47,11 @@ abstract class Controller
     public function onPageLoad()
     {
 
+    }
+
+    public function end()
+    {
+        $this->isEnded = true;
     }
 
     /**
@@ -137,8 +146,12 @@ abstract class Controller
          */
         $controller      = new $controller();
         $controller->req = App::getInstance()->req;
-        $controller->onPageLoad();
-        return call_user_func(array($controller, $action)); //返回ActionResult
+        $pageLoadResult = $controller->onPageLoad();
+        if (!$controller->isEnded) {
+            return call_user_func(array($controller, $action)); //返回ActionResult
+        } else {
+            return $pageLoadResult;
+        }
     }
 
     protected function layout($layoutName)

@@ -49,8 +49,12 @@ class StatusResult extends ActionResult
 
         if (isset($this->params)) {
             $json['data'] = array();
-            foreach ($this->params as $key => $value) {
-                $json['data'][$key] = $value;
+            if (is_array($this->params)) {
+                foreach ($this->params as $key => $value) {
+                    $json['data'][$key] = $value;
+                }
+            } else {
+                $json['data'] = $this->params;
             }
         }
 

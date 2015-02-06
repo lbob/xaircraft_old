@@ -87,5 +87,12 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         var_dump(is_array($array));
         var_dump(is_callable($array, true));
     }
+
+    public function test_status()
+    {
+        return $this->status('', 123, array(
+            '343', '234'
+        ));
+    }
 }
 

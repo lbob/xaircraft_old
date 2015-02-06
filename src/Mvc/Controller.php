@@ -40,6 +40,11 @@ abstract class Controller
 
     }
 
+    public function onPageLoad()
+    {
+
+    }
+
     /**
      * @param null $viewName string
      * @return ViewResult
@@ -127,8 +132,12 @@ abstract class Controller
         if (!method_exists($controller, $action)) {
             throw new \InvalidArgumentException("Can't find action [$action] in [$controller].");
         }
+        /**
+         * @var Controller $controller
+         */
         $controller      = new $controller();
         $controller->req = App::getInstance()->req;
+        $controller->onPageLoad();
         return call_user_func(array($controller, $action)); //返回ActionResult
     }
 

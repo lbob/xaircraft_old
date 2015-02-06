@@ -17,6 +17,25 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $this->layout('admin');
     }
 
+    /**
+     * 修改数据表名称
+     * @param string $from
+     * @param string $to
+     * @return array
+     */
+    public function ref_test()
+    {
+        if ($this->req->param('op') === '__api_test__') {
+            $class   = new ReflectionClass(__CLASS__);
+            $methods = $class->getMethods();
+            foreach ($methods as $item) {
+                var_dump($item->getName());
+                var_dump($item->getDocComment());
+            }
+            return $this->view('test.test');
+        }
+    }
+
     public function index()
     {
         $query = DB::table('post')->whereExists(function(\Xaircraft\Database\WhereQuery $query) {

@@ -21,9 +21,6 @@ class StatusResult extends ActionResult
      */
     public $message;
 
-    /**
-     * @var array
-     */
     public $params;
 
     /**
@@ -31,7 +28,7 @@ class StatusResult extends ActionResult
      * @param $statusCode int
      * @param $params array
      */
-    public function __construct($message, $statusCode, array $params = null) {
+    public function __construct($message, $statusCode, $params = null) {
         $this->statusCode = $statusCode;
         $this->message = $message;
         $this->params = $params;

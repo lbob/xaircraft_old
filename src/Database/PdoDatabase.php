@@ -1,7 +1,6 @@
 <?php
 
 namespace Xaircraft\Database;
-use Whoops\Example\Exception;
 use Xaircraft\App;
 use Xaircraft\ERM\Entity;
 

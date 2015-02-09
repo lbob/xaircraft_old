@@ -90,14 +90,15 @@ class BaseClassTree {
                         'classNo' => $newClassNo
                     ))->execute();
                 DB::table($this->tableName)->where('classNo', 'LIKE', $classNo . '%')->update(array(
-                    'classNo' => DB::raw("CONCAT('" . $newClassNo . "', SUBSTRING(classNo, " . (strlen($newClassNo) + 1) . "))")
+                    'classNo' => DB::raw("CONCAT('" . $newClassNo . "', SUBSTRING(classNo, " . (strlen($classNo) + 1) . "))")
                 ))->execute();
             }
             if (isset($otherSaveHandler) && is_callable($otherSaveHandler)) {
                 $result = call_user_func($otherSaveHandler, $classNo, isset($newClassNo) ? $newClassNo : $classNo);
             }
             DB::commit();
-            return $result;
+            if (isset($result))
+                return $result;
         } catch (StatusException $status) {
             DB::rollback();
             throw $status;

@@ -7,6 +7,12 @@
  */
 class BaseClassTreeTest extends BaseTest {
 
+    protected function setUp()
+    {
+        parent::setUp();
+        \Xaircraft\DB::table('category')->truncate()->execute();
+    }
+
     public function testGetNextClassNo()
     {
         $tree = new \Xaircraft\ERM\BaseClassTree('category', 'classNo');

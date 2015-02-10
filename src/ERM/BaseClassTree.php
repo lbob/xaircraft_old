@@ -85,12 +85,15 @@ class BaseClassTree {
                 if (strlen($classNo) < strlen($moveToParentClassNo) && substr($moveToParentClassNo, 0, strlen($classNo)) === $classNo) {
                     throw new \Exception("节点自身的子节点不允许为父节点");
                 }
+                if (DB::table($this->tableName)->where($this->classColumnName, $moveToParentClassNo)->count()->execute() <= 0) {
+                    throw new \Exception("找不到移动的目标父节点");
+                }
                 $newClassNo = $this->getNextClassNo($moveToParentClassNo);
-                DB::table($this->tableName)->where('classNo', $classNo)->update(array(
-                        'classNo' => $newClassNo
+                DB::table($this->tableName)->where($this->classColumnName, $classNo)->update(array(
+                    $this->classColumnName => $newClassNo
                     ))->execute();
-                DB::table($this->tableName)->where('classNo', 'LIKE', $classNo . '%')->update(array(
-                    'classNo' => DB::raw("CONCAT('" . $newClassNo . "', SUBSTRING(classNo, " . (strlen($classNo) + 1) . "))")
+                DB::table($this->tableName)->where($this->classColumnName, 'LIKE', $classNo . '%')->update(array(
+                    $this->classColumnName => DB::raw("CONCAT('" . $newClassNo . "', SUBSTRING(" . $this->classColumnName .", " . (strlen($classNo) + 1) . "))")
                 ))->execute();
             }
             if (isset($otherSaveHandler) && is_callable($otherSaveHandler)) {

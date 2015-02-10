@@ -85,7 +85,7 @@ class BaseClassTree {
                 if (strlen($classNo) < strlen($moveToParentClassNo) && substr($moveToParentClassNo, 0, strlen($classNo)) === $classNo) {
                     throw new \Exception("节点自身的子节点不允许为父节点");
                 }
-                if (DB::table($this->tableName)->where($this->classColumnName, $moveToParentClassNo)->count()->execute() <= 0) {
+                if (isset($moveToParentClassNo) && $moveToParentClassNo !== '' && DB::table($this->tableName)->where($this->classColumnName, $moveToParentClassNo)->count()->execute() <= 0) {
                     throw new \Exception("找不到移动的目标父节点");
                 }
                 $newClassNo = $this->getNextClassNo($moveToParentClassNo);

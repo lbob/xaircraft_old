@@ -7,6 +7,12 @@
  */
 class TableMySQLImplTest extends DbBaseTest {
 
+    protected function setUp()
+    {
+        parent::setUp();
+        \Xaircraft\DB::database('default');
+    }
+
     public function testCreate()
     {
         $tableQuery = \Xaircraft\DB::schema()->create("post", function(\Xaircraft\Database\Table $table) {
@@ -75,7 +81,7 @@ class TableMySQLImplTest extends DbBaseTest {
             $table->column()->tinyInteger("view_count")->length(1)->unsigned()->defaultValue(0)->comment("查看次数")->after("update_at");
         });
         $query = $tableQuery->toString();
-        $this->assertEquals("ALTER TABLE `xaircraft`.`x_post` CHANGE COLUMN `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',CHANGE COLUMN `title` `title` VARCHAR(100) NOT NULL COMMENT '<!--RANGE:(1,50)-->',CHANGE COLUMN `keyword` `keywords` VARCHAR(100) NULL DEFAULT NULL COMMENT '',ADD COLUMN `view_count` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '查看次数' AFTER `update_at`", $query);
+        $this->assertEquals("ALTER TABLE `xaircraft`.`x_post` CHANGE COLUMN `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',CHANGE COLUMN `title` `title` VARCHAR(100) NOT NULL COMMENT '<!--RANGE:(1,50)-->',CHANGE COLUMN `keyword` `keywords` VARCHAR(100) NULL DEFAULT NULL COMMENT '',CHANGE COLUMN `view_count` `view_count` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '查看次数' AFTER `update_at`", $query);
     }
 
     public function testHasTable()
@@ -103,7 +109,7 @@ class TableMySQLImplTest extends DbBaseTest {
             $table->dropColumn(array("id", "title"));
         });
         $query = $tableQuery->toString();
-        $this->assertEquals("ALTER TABLE `xaircraft`.`x_post` DROP COLUMN `id`,DROP COLUMN `title`,CHANGE COLUMN `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',CHANGE COLUMN `title` `title` VARCHAR(100) NOT NULL COMMENT '<!--RANGE:(1,50)-->',CHANGE COLUMN `keyword` `keywords` VARCHAR(100) NULL DEFAULT NULL COMMENT '',ADD COLUMN `view_count` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '查看次数' AFTER `update_at`", $query);
+        $this->assertEquals("ALTER TABLE `xaircraft`.`x_post` DROP COLUMN `id`,DROP COLUMN `title`,CHANGE COLUMN `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',CHANGE COLUMN `title` `title` VARCHAR(100) NOT NULL COMMENT '<!--RANGE:(1,50)-->',CHANGE COLUMN `keyword` `keywords` VARCHAR(100) NULL DEFAULT NULL COMMENT '',CHANGE COLUMN `view_count` `view_count` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT '查看次数' AFTER `update_at`", $query);
     }
 
     public function testRenameTable()

@@ -403,6 +403,15 @@ class PdoDatabase implements Database {
     {
         return new TableMySQLImpl($this->dbName, $this->prefix);
     }
+
+    /**
+     * 获取数据库配置节点名称
+     * @return string
+     */
+    public function getDatabaseName()
+    {
+        return $this->dbName;
+    }
 }
 
  

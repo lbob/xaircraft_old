@@ -3,6 +3,7 @@
 namespace Xaircraft\Database;
 use Whoops\Example\Exception;
 use Xaircraft\App;
+use Xaircraft\Common\IO;
 use Xaircraft\DB;
 use Xaircraft\Exception\InvalidColumnExecption;
 
@@ -66,8 +67,8 @@ class TableSchema
             throw new \InvalidArgumentException("Invalid table name.");
 
         $this->tableName = $tableName;
-
-        $this->source = App::getInstance()->getPath('schema') . '/' . $this->tableName . '.dat';
+        $dir = IO::makeDir(App::getInstance()->getPath('schema') . '/' . DB::getDatabaseName());
+        $this->source = $dir . '/' . $this->tableName . '.dat';
 
         if (!$this->isLoad) {
             $this->isLoad = true;

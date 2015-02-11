@@ -13,69 +13,87 @@ use Xaircraft\Database\PdoDatabase;
 class DB {
 
     /**
-     * @var DB
+     * @var array
      */
-    private static $instance;
+    private static $instances;
+
+    private static $currentDatabase = 'default';
 
     /**
      * @var \Xaircraft\Database\Database
      */
     protected $provider;
 
-    private function __construct(\Xaircraft\Database\Database $provider)
+    private function __construct(\Xaircraft\Database\Database $provider, $database)
     {
         $this->provider = $provider;
 
-        $config = require App::getInstance()->getPath('config') . '/database.php';
+        $configs = require App::getInstance()->getPath('config') . '/database.php';
 
-        if (!isset($config) || !is_array($config) || empty($config))
-            throw new \InvalidArgumentException("Database config undefined.");
-        if (!array_key_exists('driver', $config) || !isset($config['driver']))
-            throw new \InvalidArgumentException("Database config must include driver.");
-        else
-            $dsn[] = $config['driver'] . ':';
-        if (!array_key_exists('database', $config) || !isset($config['database']))
-            throw new \InvalidArgumentException("Database config must include database name.");
-        else
-            $dsn[] = 'dbname=' . $config['database'] . ';';
-        if (!array_key_exists('host', $config) || !isset($config['host']))
-            throw new \InvalidArgumentException("Database config must include host.");
-        else
-            $dsn[] = 'host=' . $config['host'] . ';';
-        if (array_key_exists('charset', $config) && isset($config['charset']))
-            $dsn[] = 'charset=' . $config['charset'] . ';';
-        if (array_key_exists('collation', $config) && isset($config['collation']))
-            $dsn[] = 'collation=' . $config['collation'] . ';';
-        $dsn = implode('', $dsn);
-        if (!array_key_exists('username', $config) || !isset($config['username']))
-            throw new \InvalidArgumentException("Database config must include username.");
-        else
-            $username = $config['username'];
-        if (!array_key_exists('password', $config) || !isset($config['password']))
-            throw new \InvalidArgumentException("Database config must include password.");
-        else
-            $password = $config['password'];
-        $prefix = null;
-        if (array_key_exists('prefix', $config) && isset($config['prefix']))
-            $prefix = $config['prefix'];
+        if (isset($configs) && !empty($configs)) {
+            if (!array_key_exists($database, $configs)) {
+                throw new \Exception("找不到数据库配置 [$database]");
+            }
 
-        $this->provider->connection($dsn, $username, $password, null, $config['database'], $prefix);
+            $config = $configs[$database];
+
+            if (!isset($config) || !is_array($config) || empty($config))
+                throw new \InvalidArgumentException("Database config undefined.");
+            if (!array_key_exists('driver', $config) || !isset($config['driver']))
+                throw new \InvalidArgumentException("Database config must include driver.");
+            else
+                $dsn[] = $config['driver'] . ':';
+            if (!array_key_exists('database', $config) || !isset($config['database']))
+                throw new \InvalidArgumentException("Database config must include database name.");
+            else
+                $dsn[] = 'dbname=' . $config['database'] . ';';
+            if (!array_key_exists('host', $config) || !isset($config['host']))
+                throw new \InvalidArgumentException("Database config must include host.");
+            else
+                $dsn[] = 'host=' . $config['host'] . ';';
+            if (array_key_exists('charset', $config) && isset($config['charset']))
+                $dsn[] = 'charset=' . $config['charset'] . ';';
+            if (array_key_exists('collation', $config) && isset($config['collation']))
+                $dsn[] = 'collation=' . $config['collation'] . ';';
+            $dsn = implode('', $dsn);
+            if (!array_key_exists('username', $config) || !isset($config['username']))
+                throw new \InvalidArgumentException("Database config must include username.");
+            else
+                $username = $config['username'];
+            if (!array_key_exists('password', $config) || !isset($config['password']))
+                throw new \InvalidArgumentException("Database config must include password.");
+            else
+                $password = $config['password'];
+            $prefix = null;
+            if (array_key_exists('prefix', $config) && isset($config['prefix']))
+                $prefix = $config['prefix'];
+
+            $this->provider->connection($dsn, $username, $password, null, $config['database'], $prefix);
+        } else {
+            throw new \Exception("数据库配置错误");
+        }
     }
 
-    private static function getInstance()
+    /**
+     * @param string $database
+     * @return DB
+     */
+    private static function getInstance($database)
     {
-        if (!isset(self::$instance))
-            self::$instance = self::create(App::getInstance()->environment[App::ENV_DATABASE_PROVIDER]);
-        return self::$instance;
+        if (!isset(self::$instances) || !array_key_exists($database, self::$instances) || self::$currentDatabase !== $database) {
+            self::$instances[$database] = self::create(App::getInstance()->environment[App::ENV_DATABASE_PROVIDER], $database);
+            self::$currentDatabase = $database;
+        }
+        return self::$instances[$database];
     }
 
-    private static function create($provider)
+    private static function create($provider, $database)
     {
         switch (strtolower($provider)) {
             case 'pdo':
-                return new DB(new PdoDatabase());
+                return new DB(new PdoDatabase(), $database);
             default:
-                return new DB(new PdoDatabase());
+                return new DB(new PdoDatabase(), $database);
         }
     }
 
@@ -86,7 +104,7 @@ class DB {
      */
     public static function select($query, array $params = null)
     {
-        return self::getInstance()->provider->select($query, $params);
+        return self::getInstance(self::$currentDatabase)->provider->select($query, $params);
     }
 
     /**
@@ -96,7 +114,7 @@ class DB {
      */
     public static function insert($query, array $params = null)
     {
-        return self::getInstance()->provider->insert($query, $params);
+        return self::getInstance(self::$currentDatabase)->provider->insert($query, $params);
     }
 
     /**
@@ -106,7 +124,7 @@ class DB {
      */
     public static function delete($query, array $params = null)
     {
-        return self::getInstance()->provider->delete($query, $params);
+        return self::getInstance(self::$currentDatabase)->provider->delete($query, $params);
     }
 
     /**
@@ -116,7 +134,7 @@ class DB {
      */
     public static function update($query, array $params = null)
     {
-        return self::getInstance()->provider->update($query, $params);
+        return self::getInstance(self::$currentDatabase)->provider->update($query, $params);
     }
 
     /**
@@ -126,7 +144,7 @@ class DB {
      */
     public static function statement($query, array $params = null)
     {
-        return self::getInstance()->provider->statement($query, $params);
+        return self::getInstance(self::$currentDatabase)->provider->statement($query, $params);
     }
 
     /**
@@ -136,7 +154,7 @@ class DB {
      */
     public static function query($query, array $params = null)
     {
-        return self::getInstance()->provider->query($query, $params);
+        return self::getInstance(self::$currentDatabase)->provider->query($query, $params);
     }
 
     /**
@@ -146,7 +164,7 @@ class DB {
      */
     public static function transaction(callable $handler)
     {
-        self::getInstance()->provider->transaction($handler);
+        self::getInstance(self::$currentDatabase)->provider->transaction($handler);
     }
 
     /**
@@ -155,7 +173,7 @@ class DB {
      */
     public static function beginTransaction()
     {
-        self::getInstance()->provider->beginTransaction();
+        self::getInstance(self::$currentDatabase)->provider->beginTransaction();
     }
 
     /**
@@ -164,7 +182,7 @@ class DB {
      */
     public static function rollback()
     {
-        self::getInstance()->provider->rollback();
+        self::getInstance(self::$currentDatabase)->provider->rollback();
     }
 
     /**
@@ -173,7 +191,7 @@ class DB {
      */
     public static function commit()
     {
-        self::getInstance()->provider->commit();
+        self::getInstance(self::$currentDatabase)->provider->commit();
     }
 
     /**
@@ -182,7 +200,7 @@ class DB {
      */
     public static function disableQueryLog()
     {
-        self::getInstance()->provider->disableQueryLog();
+        self::getInstance(self::$currentDatabase)->provider->disableQueryLog();
     }
 
     /**
@@ -191,7 +209,13 @@ class DB {
      */
     public static function getQueryLog()
     {
-        return self::getInstance()->provider->getQueryLog();
+        $logs = array();
+        if (isset(self::$instances) && !empty(self::$instances)) {
+            foreach (self::$instances as $instance) {
+                $logs[$instance->provider->getDatabaseName()] = $instance->provider->getQueryLog();
+            }
+        }
+        return $logs;
     }
 
     /**
@@ -206,7 +230,7 @@ class DB {
      */
     public static function connection($dsn, $username, $password, $options, $database = null, $prefix = null)
     {
-        self::getInstance()->provider->connection($dsn, $username, $password, $options, $database, $prefix);
+        self::getInstance(self::$currentDatabase)->provider->connection($dsn, $username, $password, $options, $database, $prefix);
     }
 
     /**
@@ -215,7 +239,7 @@ class DB {
      */
     public static function disconnect()
     {
-        self::getInstance()->provider->disconnect();
+        self::getInstance(self::$currentDatabase)->provider->disconnect();
     }
 
     /**
@@ -230,7 +254,7 @@ class DB {
      */
     public static function reconnect($dsn, $username, $password, $options, $database = null, $prefix = null)
     {
-        self::getInstance()->provider->reconnect($dsn, $username, $password, $options, $database, $prefix);
+        self::getInstance(self::$currentDatabase)->provider->reconnect($dsn, $username, $password, $options, $database, $prefix);
     }
 
     /**
@@ -239,7 +263,7 @@ class DB {
      */
     public static function getDbDriver()
     {
-        return self::getInstance()->provider->getDbDriver();
+        return self::getInstance(self::$currentDatabase)->provider->getDbDriver();
     }
 
     /**
@@ -248,7 +272,7 @@ class DB {
      */
     public static function lastInsertId($name = null)
     {
-        return self::getInstance()->provider->lastInsertId($name);
+        return self::getInstance(self::$currentDatabase)->provider->lastInsertId($name);
     }
 
     /**
@@ -258,7 +282,7 @@ class DB {
      */
     public static function table($tableName)
     {
-        return self::getInstance()->provider->table($tableName);
+        return self::getInstance(self::$currentDatabase)->provider->table($tableName);
     }
 
     /**
@@ -267,7 +291,7 @@ class DB {
      */
     public static function entity($query)
     {
-        return self::getInstance()->provider->entity($query);
+        return self::getInstance(self::$currentDatabase)->provider->entity($query);
     }
 
     /**
@@ -276,7 +300,7 @@ class DB {
      */
     public static function errorCode()
     {
-        return self::getInstance()->provider->errorCode();
+        return self::getInstance(self::$currentDatabase)->provider->errorCode();
     }
 
     /**
@@ -285,7 +309,7 @@ class DB {
      */
     public static function errorInfo()
     {
-        return self::getInstance()->provider->errorInfo();
+        return self::getInstance(self::$currentDatabase)->provider->errorInfo();
     }
 
     /**
@@ -294,7 +318,7 @@ class DB {
      */
     public static function raw($value)
     {
-        return self::getInstance()->provider->raw($value);
+        return self::getInstance(self::$currentDatabase)->provider->raw($value);
     }
 
     /**
@@ -303,7 +327,25 @@ class DB {
      */
     public static function schema()
     {
-        return self::getInstance()->provider->schema();
+        return self::getInstance(self::$currentDatabase)->provider->schema();
+    }
+
+    /**
+     * @param $database
+     * @return Database\Database
+     */
+    public static function database($database)
+    {
+        return self::getInstance($database)->provider;
+    }
+
+    /**
+     * 获取数据库配置节点名称
+     * @return string
+     */
+    public static function getDatabaseName()
+    {
+        return self::getInstance(self::$currentDatabase)->provider->getDatabaseName();
     }
 }
 

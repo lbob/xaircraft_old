@@ -167,6 +167,12 @@ interface Database {
      * @return Table
      */
     public function schema();
+
+    /**
+     * 获取数据库配置节点名称
+     * @return string
+     */
+    public function getDatabaseName();
 }
 
  

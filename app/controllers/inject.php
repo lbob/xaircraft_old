@@ -21,11 +21,18 @@ class inject_controller extends \Xaircraft\Mvc\Controller {
                 return new UserSessionImpl();
             }
         );
-        $instance = $this->get('inject_controller', array('userID' => 3));
+        $this->instanceParams = array(
+            'inject_controller' => array('userID' => 4),
+            'Post' => array('userName' => 'name test')
+        );
+
+
+        $instance = $this->get('inject_controller', array('userID' => 23));
         var_dump($instance);
     }
 
     private $instances = array();
+    private $instanceParams = array();
 
     /**
      * @param $name
@@ -49,11 +56,16 @@ class inject_controller extends \Xaircraft\Mvc\Controller {
             foreach ($paramPrototypes as $item) {
                 $paramPrototypeClass = $item->getClass();
                 if (isset($paramPrototypeClass)) {
-                    $injectParams[] = $this->get($paramPrototypeClass->getName(), $params);
+                    $injectParams[] = $this->get($paramPrototypeClass->getName());
                 } else {
                     if (isset($params) && !empty($params) && array_key_exists($item->name, $params)) {
                         $injectParams[] = $params[$item->name];
-                    } else if (!$item->allowsNull()) {
+                    } else if (array_key_exists($name, $this->instanceParams)) {
+                        $innerParams = $this->instanceParams[$name];
+                        if (isset($innerParams) && is_array($innerParams) && !empty($innerParams) && array_key_exists($item->name, $innerParams)) {
+                            $injectParams[] = $innerParams[$item->name];
+                        }
+                    } if (!$item->allowsNull()) {
                         throw new \Exception("缺少参数 [$item->name]");
                     }
                 }

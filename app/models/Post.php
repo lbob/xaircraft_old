@@ -8,9 +8,9 @@
 class Post {
     protected $table = 'post';
 
-    public function __construct(\Xaircraft\Session\UserSession $session, $userID)
+    public function __construct(\Xaircraft\Session\UserSession $session, $userName)
     {
-        var_dump($userID);
+        var_dump($userName);
     }
 }
 

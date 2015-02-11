@@ -10,6 +10,11 @@ class TestModel {
     public $id = 1;
     public $title = 'title';
     public $content = 'content';
+
+    public function __construct(Post $post)
+    {
+
+    }
 }
 
  

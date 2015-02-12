@@ -388,7 +388,7 @@ class PdoDatabase implements Database {
             /**
              * $errorHandler \Xaircraft\Database\DatabaseErrorHandler
              */
-            $errorHandler = App::getInstance()->getInjectImplement('DatabaseErrorHandler');
+            $errorHandler = App::get('DatabaseErrorHandler');
             if (isset($errorHandler)) {
                 $errorHandler->onError($this->errorCode, $this->errorInfo, $stmt->queryString, $params);
             }

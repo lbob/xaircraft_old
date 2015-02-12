@@ -236,7 +236,7 @@ class App extends Container {
     public function getUserSession()
     {
         if (!isset($this->userSession)) {
-            $this->userSession = $this->getInjectImplement('UserSession');
+            $this->userSession = self::get('UserSession');
         }
 
         if (isset($this->userSession)) {

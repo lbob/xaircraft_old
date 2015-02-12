@@ -87,9 +87,8 @@ class DI {
                 return call_user_func($instance);
             }
             return $instance;
-        } else {
-            throw new \Exception("找不到类的定义 [$name]");
         }
+        return null;
     }
 }
 

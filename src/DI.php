@@ -1,56 +1,59 @@
 <?php
 
-use \Xaircraft\Session\UserSession;
+namespace Xaircraft;
+
 
 /**
- * Class inject_controller
+ * Class DI
  *
- * @author lbob created at 2015/2/11 19:24
+ * @package Xaircraft
+ * @author lbob created at 2015/2/12 9:34
  */
-class inject_controller extends \Xaircraft\Mvc\Controller {
+class DI {
 
-    public function __construct(TestModel $model = null, UserSession $session = null, $userID = null)
-    {
-        var_dump($userID);
-    }
-
-    public function index()
-    {
-        $this->instances = array(
-            'Xaircraft\Session\UserSession' => function() {
-                return new UserSessionImpl();
-            }
-        );
-        $this->instanceParams = array(
-            'inject_controller' => array('userID' => 4),
-            'Post' => array('userName' => 'name test')
-        );
-
-        \Xaircraft\App::bind('Xaircraft\Session\UserSession', function() {
-            return new UserSessionImpl();
-        });
-        \Xaircraft\App::bindParam('inject_controller', array('userID' => 4));
-        \Xaircraft\App::bindParam('Post', array('userName' => 'name test'));
-
-
-        $instance = \Xaircraft\App::get('inject_controller');
-        var_dump($instance);
-        var_dump(\Xaircraft\DI::getInstance());
-    }
+    /**
+     * @var DI
+     */
+    private static $instance;
 
     private $instances = array();
     private $instanceParams = array();
+
+    public static function getInstance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new DI();
+        }
+        return self::$instance;
+    }
+
+    public function bind($interface, $implement, array $params = null)
+    {
+        $this->instances[$interface] = $implement;
+        if (isset($params)) {
+            $this->instanceParams[$interface] = $params;
+        }
+    }
+
+    public function bindParam($interface, array $params)
+    {
+        if (array_key_exists($interface, $this->instanceParams)) {
+            $params = array_merge($this->instanceParams[$interface], $params);
+        }
+
+        $this->instanceParams[$interface] = $params;
+    }
 
     /**
      * @param $name
      * @param array $params
      * @return mixed
-     * @throws Exception
+     * @throws \Exception
      */
-    private function get($name, array $params = null)
+    public function get($name, array $params = null)
     {
         if (class_exists($name)) {
-            $class = new ReflectionClass($name);
+            $class = new \ReflectionClass($name);
             $constructor = $class->getConstructor();
             if (!isset($constructor)) {
                 return $class->newInstance();

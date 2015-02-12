@@ -61,11 +61,6 @@ class App extends Container {
      */
     private $userSession;
 
-    /**
-     * 依赖注入容器
-     * @var array
-     */
-    private $injectMappings = array();
     private $runtimeMode;
     /**
      * @var string 当前操作系统类型
@@ -286,27 +281,24 @@ class App extends Container {
         }
     }
 
-    public function bind($interface, $implement)
+    public static function bind($interface, $implement, array $params = null)
     {
-        $this->injectMappings[$interface] = $implement;
+        DI::getInstance()->bind($interface, $implement, $params);
+    }
+
+    public static function bindParam($interface, array $params)
+    {
+        DI::getInstance()->bindParam($interface, $params);
     }
 
     public function getInjectImplement($interface, array $params = null)
     {
-        if (isset($interface)) {
-            if (array_key_exists($interface, $this->injectMappings)) {
-                $implement = $this->injectMappings[$interface];
+        return $this->get($interface, $params);
+    }
 
-                if (isset($implement)) {
-                    if (is_callable($implement)) {
-                        return call_user_func($implement, $params);
-                    } else {
-                        return $implement;
-                    }
-                }
-            }
-        }
-        return null;
+    public static function get($interface, array $params = null)
+    {
+        return DI::getInstance()->get($interface, $params);
     }
 
     public function getRuntimeMode()

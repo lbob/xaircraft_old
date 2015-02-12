@@ -7,12 +7,12 @@
  * @var $this \Xaircraft\App
  */
 
-$this->bind('UserSession', function() {
+\Xaircraft\App::bind('UserSession', function() {
     return new UserSessionImpl();
 });
 
-$this->bind('DatabaseErrorHandler', function() {
+\Xaircraft\App::bind('DatabaseErrorHandler', function() {
     return new DatabaseErrorHandlerImpl();
 });
 
-$this->bind('CacheDriver', new \Xaircraft\Cache\RedisCacheDriverImpl());
+\Xaircraft\App::bind('CacheDriver', new \Xaircraft\Cache\RedisCacheDriverImpl());

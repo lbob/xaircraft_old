@@ -7,7 +7,7 @@
  * @var $this \Xaircraft\App
  */
 
-\Xaircraft\App::bind('UserSession', function() {
+\Xaircraft\App::bind('Xaircraft\Session\UserSession', function() {
     return new UserSessionImpl();
 });
 
@@ -16,3 +16,10 @@
 });
 
 \Xaircraft\App::bind('CacheDriver', new \Xaircraft\Cache\RedisCacheDriverImpl());
+
+\Xaircraft\App::bindSingleton('Xaircraft\Session\UserSession', function() {
+    return new UserSessionImpl();
+});
+\Xaircraft\App::bindSingleton('inject_controller');
+\Xaircraft\App::bindParam('inject_controller', array('userID' => 4));
+\Xaircraft\App::bindParam('Post', array('userName' => 'name test'));

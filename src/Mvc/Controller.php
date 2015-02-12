@@ -39,11 +39,6 @@ abstract class Controller
      */
     private $isEnded = false;
 
-    public function __construct()
-    {
-
-    }
-
     public function onPageLoad()
     {
 
@@ -144,7 +139,7 @@ abstract class Controller
         /**
          * @var Controller $controller
          */
-        $controller      = new $controller();
+        $controller      = App::get($controller);
         $controller->req = App::getInstance()->req;
         $pageLoadResult = $controller->onPageLoad();
         if (!$controller->isEnded) {

@@ -29,18 +29,8 @@ class Session
     private static function getInstance()
     {
         if (!isset(self::$instance))
-            self::$instance = self::create(App::getInstance()->environment[App::ENV_SESSION_PROVIDER]);
+            self::$instance = App::get('Xaircraft\Session\SessionProvider');
         return self::$instance;
-    }
-
-    private static function create($provider)
-    {
-        switch (strtolower($provider)) {
-            case 'file':
-                return new Session(new FileSessionProvider());
-            default:
-                return new Session(new FileSessionProvider());
-        }
     }
 
     public static function put($key, $value)

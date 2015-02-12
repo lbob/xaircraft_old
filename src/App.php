@@ -286,6 +286,11 @@ class App extends Container {
         DI::getInstance()->bind($interface, $implement, $params);
     }
 
+    public static function bindSingleton($interface, $implement = null, array $params = null)
+    {
+        DI::getInstance()->bindSingleton($interface, $implement, $params);
+    }
+
     public static function bindParam($interface, array $params)
     {
         DI::getInstance()->bindParam($interface, $params);

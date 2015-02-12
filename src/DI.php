@@ -18,6 +18,7 @@ class DI {
 
     private $instances = array();
     private $instanceParams = array();
+    private $singletons = array();
 
     public static function getInstance()
     {
@@ -32,6 +33,14 @@ class DI {
         $this->instances[$interface] = $implement;
         if (isset($params)) {
             $this->instanceParams[$interface] = $params;
+        }
+    }
+
+    public function bindSingleton($interface, $implement = null, array $params = null)
+    {
+        $this->singletons[$interface] = true;
+        if (isset($implement)) {
+            $this->bind($interface, $implement, $params);
         }
     }
 
@@ -52,15 +61,21 @@ class DI {
      */
     public function get($name, array $params = null)
     {
-        if (class_exists($name)) {
+        if (array_key_exists($name, $this->instances)) {
+            $instance = $this->instances[$name];
+            if (is_callable($instance)) {
+                return $this->createInstance($name, call_user_func($instance));
+            }
+            return $instance;
+        } else if (class_exists($name)) {
             $class = new \ReflectionClass($name);
             $constructor = $class->getConstructor();
             if (!isset($constructor)) {
-                return $class->newInstance();
+                return $this->createInstance($name, $class->newInstance());
             }
             $paramPrototypes = $class->getConstructor()->getParameters();
             if (empty($paramPrototypes)) {
-                return $class->newInstance();
+                return $this->createInstance($name, $class->newInstance());
             }
             $injectParams = array();
             foreach ($paramPrototypes as $item) {
@@ -80,15 +95,17 @@ class DI {
                     }
                 }
             }
-            return $class->newInstanceArgs($injectParams);
-        } else if (array_key_exists($name, $this->instances)) {
-            $instance = $this->instances[$name];
-            if (is_callable($instance)) {
-                return call_user_func($instance);
-            }
-            return $instance;
+            return $this->createInstance($name, $class->newInstanceArgs($injectParams));
         }
         return null;
+    }
+
+    private function createInstance($name, $instance)
+    {
+        if (array_key_exists($name, $this->singletons)) {
+            $this->instances[$name] = $instance;
+        }
+        return $instance;
     }
 }
 

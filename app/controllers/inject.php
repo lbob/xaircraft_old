@@ -26,14 +26,16 @@ class inject_controller extends \Xaircraft\Mvc\Controller {
             'Post' => array('userName' => 'name test')
         );
 
-        \Xaircraft\App::bind('Xaircraft\Session\UserSession', function() {
+        \Xaircraft\App::bindSingleton('Xaircraft\Session\UserSession', function() {
             return new UserSessionImpl();
         });
+        \Xaircraft\App::bindSingleton('inject_controller');
         \Xaircraft\App::bindParam('inject_controller', array('userID' => 4));
         \Xaircraft\App::bindParam('Post', array('userName' => 'name test'));
 
 
         $instance = \Xaircraft\App::get('inject_controller');
+        \Xaircraft\App::get('inject_controller');
         var_dump($instance);
         var_dump(\Xaircraft\DI::getInstance());
     }

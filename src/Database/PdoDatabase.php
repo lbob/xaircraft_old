@@ -401,7 +401,7 @@ class PdoDatabase implements Database {
      */
     public function schema()
     {
-        return new TableMySQLImpl($this->dbName, $this->prefix);
+        return App::get('Xaircraft\Database\Table', array('dbName' => $this->dbName, 'prefix' => $this->prefix));
     }
 
     /**

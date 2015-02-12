@@ -61,14 +61,26 @@ class DI {
      */
     public function get($name, array $params = null)
     {
+        $className = $name;
         if (array_key_exists($name, $this->instances)) {
             $instance = $this->instances[$name];
-            if (is_callable($instance)) {
-                return $this->createInstance($name, call_user_func($instance));
+            if (isset($instance)) {
+                if (is_callable($instance)) {
+                    return $this->createInstance($name, call_user_func($instance));
+                }
+                if (is_string($instance)) {
+                    if ($instance !== '') {
+                        $className = $instance;
+                    } else {
+                        throw new \Exception("绑定的对象为空 [$name]");
+                    }
+                } else {
+                    return $instance;
+                }
             }
-            return $instance;
-        } else if (class_exists($name)) {
-            $class = new \ReflectionClass($name);
+        }
+        if (class_exists($className)) {
+            $class = new \ReflectionClass($className);
             $constructor = $class->getConstructor();
             if (!isset($constructor)) {
                 return $this->createInstance($name, $class->newInstance());

@@ -9,19 +9,17 @@ use \Xaircraft\Session\UserSession;
  */
 class inject_controller extends \Xaircraft\Mvc\Controller {
 
+    private $model;
+
     public function __construct(TestModel $model = null, UserSession $session = null, $userID = null)
     {
+        $this->model = $model;
         var_dump($userID);
     }
 
     public function index()
     {
-        \Xaircraft\App::bindParam('Post', array('userName' => 'name testsss'));
-
-        $instance = \Xaircraft\App::get('inject_controller');
-        \Xaircraft\App::get('inject_controller');
-        var_dump($instance);
-        var_dump(\Xaircraft\DI::getInstance());
+        var_dump($this->model);
     }
 }
 

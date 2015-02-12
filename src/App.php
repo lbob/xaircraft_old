@@ -2,6 +2,7 @@
 
 namespace Xaircraft;
 use Xaircraft\Common\Net;
+use Xaircraft\Config\Inject;
 use Xaircraft\Http\Response;
 
 
@@ -133,6 +134,7 @@ class App extends Container {
 
     private function inject()
     {
+        Inject::load();
         $path = App::path('inject');
         if (isset($path)) {
             if (is_file($path) && is_readable($path)) {
@@ -294,11 +296,6 @@ class App extends Container {
     public static function bindParam($interface, array $params)
     {
         DI::getInstance()->bindParam($interface, $params);
-    }
-
-    public function getInjectImplement($interface, array $params = null)
-    {
-        return $this->get($interface, $params);
     }
 
     public static function get($interface, array $params = null)

@@ -98,8 +98,12 @@ class Monitor
         $this->jobPopCount++;
 
         if (isset($this->jobHandlers) && !empty($this->jobHandlers)) {
-            foreach ($this->jobHandlers as $handler) {
-                call_user_func($handler, $job);
+            try {
+                foreach ($this->jobHandlers as $handler) {
+                    call_user_func($handler, $job);
+                }
+            } catch (\Exception $ex) {
+                //TODO: Should catch the exception.
             }
         }
     }

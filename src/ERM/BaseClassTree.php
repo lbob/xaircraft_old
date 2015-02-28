@@ -23,6 +23,12 @@ class BaseClassTree {
 
     public function getNextClassNo($parentClassNo = '')
     {
+        if (isset($parentClassNo) && $parentClassNo !== '') {
+            if (strlen($parentClassNo) % $this->classNoLength !== 0) {
+                throw new \Exception("编号错误");
+            }
+        }
+
         $lastClassNo = \Xaircraft\DB::table($this->tableName)
             ->where($this->classColumnName, 'LIKE', $parentClassNo . "%")
             ->where('LENGTH(' . $this->classColumnName . ')', strlen($parentClassNo) + 4)
@@ -75,6 +81,12 @@ class BaseClassTree {
 
     public function moveTreeNodeAndSave($classNo, $moveToParentClassNo, $otherSaveHandler = null)
     {
+        if (isset($moveToParentClassNo) && $moveToParentClassNo !== '') {
+            if (strlen($moveToParentClassNo) % $this->classNoLength !== 0) {
+                throw new \Exception("编号错误");
+            }
+        }
+
         try {
             DB::beginTransaction();
             $currentParentClassNo = substr($classNo, 0, strlen($classNo) - $this->classNoLength);

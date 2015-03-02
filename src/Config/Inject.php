@@ -16,7 +16,6 @@ class Inject {
     {
         App::bind('Xaircraft\Database\Table', 'Xaircraft\Database\TableMySQLImpl');
         App::bind('Xaircraft\Log\Logger', 'Xaircraft\Log\MonoLogger');
-
         App::bind('Xaircraft\Session\SessionProvider', function() {
             switch (strtolower(App::getInstance()->environment[App::ENV_SESSION_PROVIDER])) {
                 case 'file':

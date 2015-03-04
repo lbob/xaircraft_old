@@ -199,7 +199,7 @@ class TableQuery
 
     private function isCanReadFromCached()
     {
-        $driver = App::get('CacheDriver');
+        $driver = App::get('Xaircraft\Cache\CacheDriver');
         if (isset($driver)) {
             $this->cacheDriver = $driver;
             return true;

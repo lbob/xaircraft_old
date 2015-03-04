@@ -10,7 +10,7 @@ class Post {
 
     public function __construct(\Xaircraft\Session\UserSession $session, $userName)
     {
-        var_dump($userName);
+        var_dump('Post.__construct');
     }
 }
 

@@ -10,16 +10,23 @@ use \Xaircraft\Session\UserSession;
 class inject_controller extends \Xaircraft\Mvc\Controller {
 
     private $model;
+    /**
+     * @var UserSession
+     */
+    private $session;
 
     public function __construct(TestModel $model = null, UserSession $session = null, $userID = null)
     {
         $this->model = $model;
         var_dump($userID);
+        var_dump('inject_controller.__construct');
     }
 
     public function index()
     {
         var_dump($this->model);
+        var_dump($this->session);
+        var_dump('inject_controller.index');
     }
 }
 

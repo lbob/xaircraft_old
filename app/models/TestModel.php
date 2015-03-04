@@ -13,7 +13,7 @@ class TestModel {
 
     public function __construct(Post $post)
     {
-
+        var_dump('TestModel.__construct');
     }
 }
 

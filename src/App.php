@@ -238,7 +238,7 @@ class App extends Container {
     public function getUserSession()
     {
         if (!isset($this->userSession)) {
-            $this->userSession = self::get('UserSession');
+            $this->userSession = self::get(\Xaircraft\Session\UserSession::class);
         }
 
         if (isset($this->userSession)) {

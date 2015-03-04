@@ -34,7 +34,7 @@ class Log {
     private static function getInstance()
     {
         if (!isset(self::$instance))
-            self::$instance = new Log(App::get('Xaircraft\Log\Logger'));
+            self::$instance = new Log(App::get(\Xaircraft\Log\Logger::class));
         return self::$instance;
     }
 

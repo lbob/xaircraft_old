@@ -29,7 +29,7 @@ class Session
     private static function getInstance()
     {
         if (!isset(self::$instance))
-            self::$instance = new Session(App::get('Xaircraft\Session\SessionProvider'));
+            self::$instance = new Session(App::get(\Xaircraft\Session\SessionProvider::class));
         return self::$instance;
     }
 

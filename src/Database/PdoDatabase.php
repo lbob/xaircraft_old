@@ -378,7 +378,7 @@ class PdoDatabase implements Database {
         return new Raw($value);
     }
 
-    private function recordError(\PDOStatement $stmt, array $params)
+    private function recordError(\PDOStatement $stmt, array $params = null)
     {
         $errorCode = $stmt->errorCode();
         if (isset($errorCode) && $errorCode !== '00000') {
@@ -388,7 +388,7 @@ class PdoDatabase implements Database {
             /**
              * $errorHandler \Xaircraft\Database\DatabaseErrorHandler
              */
-            $errorHandler = App::get('DatabaseErrorHandler');
+            $errorHandler = App::get(DatabaseErrorHandler::class);
             if (isset($errorHandler)) {
                 $errorHandler->onError($this->errorCode, $this->errorInfo, $stmt->queryString, $params);
             }

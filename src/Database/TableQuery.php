@@ -343,14 +343,15 @@ class TableQuery
             $paramsLen = count($this->inserts);
             $values = array();
             $inserts = array();
-            for ($i = 0; $i < $paramsLen; $i++) {
-                if (is_a($this->inserts[$i], Raw::class)) {
-                    $values[] = $this->inserts[$i]->getValue();
+            foreach ($this->inserts as $key => $value) {
+                if ($value instanceof Raw) {
+                    $values[] = $value->getValue();
                 } else {
                     $values[] = '?';
-                    $inserts[] = $this->inserts[$i];
+                    $inserts[] = $value;
                 }
             }
+
             $query[] = implode(',', $values) . ')';
             $params = array_values($inserts);
             $query = implode(' ', $query);

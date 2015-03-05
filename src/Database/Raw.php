@@ -24,11 +24,6 @@ class Raw {
     {
         return $this->value;
     }
-
-    function __toString()
-    {
-        return $this->value;
-    }
 }
 
  

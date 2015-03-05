@@ -342,11 +342,17 @@ class TableQuery
             $query[] = '(';
             $paramsLen = count($this->inserts);
             $values = array();
+            $inserts = array();
             for ($i = 0; $i < $paramsLen; $i++) {
-                $values[] = '?';
+                if (is_a($this->inserts[$i], Raw::class)) {
+                    $values[] = $this->inserts[$i]->getValue();
+                } else {
+                    $values[] = '?';
+                    $inserts[] = $this->inserts[$i];
+                }
             }
             $query[] = implode(',', $values) . ')';
-            $params = array_values($this->inserts);
+            $params = array_values($inserts);
             $query = implode(' ', $query);
             $isSuccess = $this->driver->insert($query, $params);
             if ($isSuccess && $this->isInsertGetId) {

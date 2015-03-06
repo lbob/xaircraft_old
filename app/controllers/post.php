@@ -48,15 +48,44 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             'content',
             'update_at',
             'create_at'
-        ))->remeber(1);
+        ))->format(array(
+            'id' => \Xaircraft\Database\ColumnFormat::Integer,
+            'update_at' => \Xaircraft\Database\ColumnFormat::DateTime,
+            'create_at' => \Xaircraft\Database\ColumnFormat::DateTime
+        ));
         $result = $query->execute();
         $this->posts = $result['data'];
         $this->pageIndex = $this->req->param('p');
         $this->pageCount = $result['pageCount'];
         $this->recordCount = $result['recordCount'];
         $query = DB::table('post')->pluck('title')->remeber(1)->execute();
-        var_dump($query);
+        var_dump($result);
         var_dump(DB::getQueryLog());
+
+
+        $query = DB::table('post')->count();
+        $result = $query->execute();
+        var_dump($result);
+
+        $query = DB::table('post')->pluck('id');
+        $result = $query->execute();
+        var_dump($result);
+
+        $query = DB::table('post')->select('id')->single()->format(array(
+            'id' => \Xaircraft\Database\ColumnFormat::Integer
+        ));
+        $result = $query->execute();
+        var_dump($result);
+
+        $query = DB::table('post')->select()->format(array(
+            'id' => \Xaircraft\Database\ColumnFormat::Integer,
+            'update_at' => \Xaircraft\Database\ColumnFormat::DateTime,
+            'create_at' => \Xaircraft\Database\ColumnFormat::DateTime,
+            'view_count' => \Xaircraft\Database\ColumnFormat::Integer
+        ));
+        $result = $query->execute();
+        var_dump($result);
+
         return $this->view();
     }
 

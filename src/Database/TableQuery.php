@@ -49,6 +49,7 @@ class TableQuery
     private $inserts;
     private $isInsertGetId = false;
     private $updates;
+    private $formats;
     private $isCount = false;
     private $isPluck = false;
     private $isSingle = false;
@@ -182,6 +183,30 @@ class TableQuery
         return $result;
     }
 
+    private function formatSelectResult($result)
+    {
+        if (!isset($this->formats) || empty($this->formats)) {
+            return $result;
+        }
+        if (is_array($result)) {
+            $formattedResult = array();
+            foreach ($result as $row) {
+                $formattedRow = array();
+                foreach ($row as $key => $value) {
+                    if (array_key_exists($key, $this->formats)) {
+                        $formattedRow[$key] = ColumnFormat::getFormatValue($this->formats[$key], $value);
+                    } else {
+                        $formattedRow[$key] = $value;
+                    }
+                }
+                $formattedResult[] = $formattedRow;
+            }
+            $result = $formattedResult;
+        }
+
+        return $result;
+    }
+
     private function getSelectResult($query, $params)
     {
         $result = array();
@@ -189,10 +214,12 @@ class TableQuery
             $result = $this->readFromCache($query, $params);
             if (!isset($result)) {
                 $result = $this->driver->select($query, $params);
+                $result = $this->formatSelectResult($result);
                 $this->writeToCache($query, $params, $result);
             }
         } else {
             $result = $this->driver->select($query, $params);
+            $result = $this->formatSelectResult($result);
         }
         return $result;
     }
@@ -972,6 +999,18 @@ class TableQuery
     {
         $this->isRemeber = true;
         $this->remeberMinutes = $minutes;
+
+        return $this;
+    }
+
+    /**
+     * 设置返回结果集的列的类型，可设置类型有DateTime\Integer\Float\String三种
+     * @param array $formats
+     * @return TableQuery $this
+     */
+    public function format(array $formats = null)
+    {
+        $this->formats = $formats;
 
         return $this;
     }

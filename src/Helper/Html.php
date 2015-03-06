@@ -273,7 +273,11 @@ class Html {
                     if (isset($item[$key])) {
                         $tdContent = $item[$key];
                         if ($key === 'update_at' || $key === 'create_at') {
-                            $tdContent = date("Y-m-d h:i:s", $item[$key]);
+                            if (is_numeric($item[$key])) {
+                                $tdContent = date("Y-m-d h:i:s", $item[$key]);
+                            } else {
+                                $tdContent = $item[$key];
+                            }
                         }
                     }
                     $result[] = '<td>' . $tdContent . '</td>';

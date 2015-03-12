@@ -7,7 +7,7 @@ use \Xaircraft\Session\UserSession;
  *
  * @author lbob created at 2015/2/11 19:24
  */
-class inject_controller extends \Xaircraft\Mvc\Controller {
+class inject_controller extends ub_controller {
 
     private $model;
     /**

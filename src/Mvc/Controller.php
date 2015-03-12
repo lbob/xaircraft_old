@@ -142,10 +142,11 @@ abstract class Controller
         $controller      = App::get($controller);
         $controller->req = App::getInstance()->req;
         $pageLoadResult = $controller->onPageLoad();
+        if (isset($pageLoadResult)) {
+            return $pageLoadResult;
+        }
         if (!$controller->isEnded) {
             return call_user_func(array($controller, $action)); //返回ActionResult
-        } else {
-            return $pageLoadResult;
         }
     }
 

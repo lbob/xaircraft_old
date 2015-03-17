@@ -1,6 +1,8 @@
 <?php
 
 namespace Xaircraft\Exception;
+use Xaircraft\App;
+use Xaircraft\Log;
 
 
 /**
@@ -17,6 +19,8 @@ class StatusException extends \Exception {
     {
         parent::__construct($message, $code, $previous);
         $this->params = $params;
+
+        Log::error('StatusException', $message . '[' . $previous->getTraceAsString() . ']', $params);
     }
 
     public function getParams()

@@ -122,6 +122,28 @@ class BaseClassTree {
             throw $ex;
         }
     }
+
+    public function getSimpleList($titleColumnName, array $showColumns = null, $levelIndentCharacter = null)
+    {
+        $data = DB::table($this->tableName)->select($showColumns)->orderBy($this->classColumnName, 'ASC')->execute();
+
+        if (isset($levelIndentCharacter)) {
+            $list = array();
+            foreach ($data as $row) {
+                $title = $row[$titleColumnName];
+                $level = strlen($row[$this->classColumnName]) / $this->classNoLength;
+                if ($level > 1) {
+                    for ($i = 0; $i < $level; $i++) {
+                        $title = $levelIndentCharacter . $title;
+                    }
+                }
+                $row[$titleColumnName] = $title;
+                $list[] = $row;
+            }
+            $data = $list;
+        }
+        return $data;
+    }
 }
 
  

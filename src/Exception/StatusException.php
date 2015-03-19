@@ -20,7 +20,7 @@ class StatusException extends \Exception {
         parent::__construct($message, $code, $previous);
         $this->params = $params;
 
-        Log::error('StatusException', $message . '[' . $previous->getTraceAsString() . ']', $params);
+        Log::error('StatusException', $message . '[' . $previous->getTraceAsString() . ']');
     }
 
     public function getParams()

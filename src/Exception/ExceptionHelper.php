@@ -32,6 +32,25 @@ class ExceptionHelper {
             throw new \Exception($message);
         }
     }
+
+    public static function ThrowIfNotID($id, $message = null)
+    {
+        if (!isset($id) || $id <= 0) {
+            throw new \Exception($message);
+        }
+    }
+
+    public static function ThrowIfNotIds($ids, $message = null)
+    {
+        if (!isset($ids) || !is_array($ids) || empty($ids)) {
+            throw new \Exception($message);
+        }
+        foreach ($ids as $id) {
+            if (!isset($id) || $id <= 0) {
+                throw new \Exception($message);
+            }
+        }
+    }
 }
 
  

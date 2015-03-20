@@ -20,7 +20,8 @@ class StatusException extends \Exception {
         parent::__construct($message, $code, $previous);
         $this->params = $params;
 
-        Log::error('StatusException', $message . '[' . $previous->getTraceAsString() . ']');
+        //TODO: 不应该默认写入日志
+        Log::error('StatusException', $message);
     }
 
     public function getParams()

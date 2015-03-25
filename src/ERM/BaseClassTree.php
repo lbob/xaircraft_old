@@ -13,14 +13,21 @@ class BaseClassTree {
     private $tableName;
     private $classColumnName;
     private $classNoLength;
+    private $primaryKeyColumnName;
 
-    public function __construct($tableName, $classColumnName, $classNoLength = 4)
+    public function __construct($tableName, $classColumnName, $classNoLength = 4, $primaryKeyColumnName = null)
     {
         $this->tableName = $tableName;
         $this->classColumnName = $classColumnName;
         $this->classNoLength = $classNoLength;
+        $this->primaryKeyColumnName = $primaryKeyColumnName;
     }
 
+    /**
+     * @param string $parentClassNo
+     * @return string
+     * @throws \Exception
+     */
     public function getNextClassNo($parentClassNo = '')
     {
         if (isset($parentClassNo) && $parentClassNo !== '') {
@@ -50,6 +57,13 @@ class BaseClassTree {
         return $parentClassNo . $nextClassNo;
     }
 
+    /**
+     * @param array $showColumns
+     * @param string $parentClassNo
+     * @param bool $isSort
+     * @param string $sortColumnName
+     * @return array
+     */
     public function getTree(array $showColumns = null, $parentClassNo = '', $isSort = false, $sortColumnName = 'sort')
     {
         $brothers = array();
@@ -79,6 +93,14 @@ class BaseClassTree {
         return $brothers;
     }
 
+    /**
+     * @param $classNo
+     * @param $moveToParentClassNo
+     * @param null $otherSaveHandler
+     * @throws StatusException
+     * @throws \Exception
+     * @return mixed
+     */
     public function moveTreeNodeAndSave($classNo, $moveToParentClassNo, $otherSaveHandler = null)
     {
         if (isset($moveToParentClassNo) && $moveToParentClassNo !== '') {
@@ -123,9 +145,20 @@ class BaseClassTree {
         }
     }
 
-    public function getSimpleList($titleColumnName, array $showColumns = null, $levelIndentCharacter = null)
+    /**
+     * @param $titleColumnName
+     * @param array $showColumns
+     * @param null $levelIndentCharacter
+     * @param array $primaryKeyValueRange
+     * @return array|mixed
+     */
+    public function getSimpleList($titleColumnName, array $showColumns = null, $levelIndentCharacter = null, array $primaryKeyValueRange = null)
     {
-        $data = DB::table($this->tableName)->select($showColumns)->orderBy($this->classColumnName, 'ASC')->execute();
+        $query = DB::table($this->tableName)->select($showColumns)->orderBy($this->classColumnName, 'ASC');
+        if (isset($this->primaryKeyColumnName) && isset($primaryKeyValueRange) && !empty($primaryKeyValueRange)) {
+            $query = $query->whereIn($this->primaryKeyColumnName, $primaryKeyValueRange);
+        }
+        $data = $query->execute();
 
         if (isset($levelIndentCharacter)) {
             $list = array();

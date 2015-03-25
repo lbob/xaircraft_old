@@ -41,7 +41,9 @@ class CommandFactory {
         $command = strtolower($command);
 
         if (array_key_exists($command, $factory->commands)) {
-            return App::get($factory->commands[$command], array('params' => $params));
+            $command = App::get($factory->commands[$command], array('params' => $params));
+            ExceptionHelper::ThrowIfNotTrue($command instanceof Command, 'Is not Cli\Command.');
+            return $command;
         }
     }
 

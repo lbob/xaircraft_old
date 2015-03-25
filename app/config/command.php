@@ -7,3 +7,4 @@
  */
 
 \Xaircraft\App::registerCommand("hello", HelloCommand::class);
+\Xaircraft\App::registerCommand("test", TestCommand::class);

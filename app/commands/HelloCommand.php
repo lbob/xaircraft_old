@@ -9,7 +9,7 @@ class HelloCommand extends \Xaircraft\Core\Cli\Command {
 
     public function execute()
     {
-        $this->showMessage('hello');
+        $this->showMessage('hello world');
     }
 }
 

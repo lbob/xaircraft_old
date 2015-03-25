@@ -16,6 +16,10 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
+        $array1 = array(0, 1, 2, 3);
+        $array2 = array(2, 3);
+        var_dump(array_intersect($array1, $array2));
+
         $userSession = \Xaircraft\App::getInstance()->getUserSession();
         $current = new \Xaircraft\Session\CurrentUser(1, 'liub');
         $userSession->setCurrentUser($current);

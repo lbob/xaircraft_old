@@ -15,5 +15,6 @@ return array(
     'log'       => __DIR__.'/../app/log',
     'autoload'  => __DIR__.'/../app/config/autoload.php',
     'inject'    => __DIR__.'/../app/config/inject.php',
+    'command'    => __DIR__.'/../app/config/command.php',
     'tests'     => __DIR__.'/../app/tests'
 );

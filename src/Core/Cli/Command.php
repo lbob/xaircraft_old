@@ -19,14 +19,6 @@ abstract class Command {
         $this->params = $params;
     }
 
-    public static function create($command, array $params = null)
-    {
-        switch (strtolower($command)) {
-            case 'queue':
-                return new QueueCommand($params);
-        }
-    }
-
     public abstract function execute();
 
     public static function newLine()

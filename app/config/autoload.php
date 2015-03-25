@@ -9,5 +9,6 @@ return [
     '/service',
     '/jobs',
     '/tests',
-    '/tests/Base'
+    '/tests/Base',
+    '/commands'
 ];

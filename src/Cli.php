@@ -48,10 +48,10 @@ if (isset($args[1])) {
             $parameters[] = $item;
         }
     }
-    $command = \Xaircraft\Core\Cli\Command::create($command, $parameters);
+    $command = \Xaircraft\Core\Cli\CommandFactory::create($command, $parameters);
     if (isset($command)) {
         $command->execute();
     } else {
-        echo "What do you want to do?";
+        echo "What's up?";
     }
 }

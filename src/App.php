@@ -2,7 +2,9 @@
 
 namespace Xaircraft;
 use Xaircraft\Common\Net;
+use Xaircraft\Config\Command;
 use Xaircraft\Config\Inject;
+use Xaircraft\Core\Cli\CommandFactory;
 use Xaircraft\Http\Response;
 
 
@@ -108,6 +110,7 @@ class App extends Container {
             $this->onStart();
             $this->autoload();
             $this->inject();
+            $this->loadCommand();
             $this->routing();
             $this->onEnd();
         } catch (\Exception $ex) {
@@ -139,6 +142,19 @@ class App extends Container {
         if (isset($path)) {
             if (is_file($path) && is_readable($path)) {
                 require $path;
+            }
+        }
+    }
+
+    private function loadCommand()
+    {
+        if (App::getRuntimeMode() === self::APP_RUNTIME_MODE_CLI) {
+            Command::load();
+            $path = App::path('command');
+            if (isset($path)) {
+                if (is_file($path) && is_readable($path)) {
+                    require $path;
+                }
             }
         }
     }
@@ -301,6 +317,11 @@ class App extends Container {
     public static function get($interface, array $params = null)
     {
         return DI::getInstance()->get($interface, $params);
+    }
+
+    public static function registerCommand($command, $implement)
+    {
+        CommandFactory::getInstance()->register($command, $implement);
     }
 
     public function getRuntimeMode()

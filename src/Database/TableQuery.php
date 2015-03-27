@@ -54,6 +54,7 @@ class TableQuery
     private $isPluck = false;
     private $isSingle = false;
     private $isRemeber = false;
+    private $isDetail = false;
     private $remeberMinutes = 1;
     /**
      * @var \Xaircraft\Cache\CacheDriver
@@ -170,14 +171,19 @@ class TableQuery
         }
         if ($this->isSingle) {
             if (count($this->selectFields) === 1) {
-                $colunmName = $this->selectFields[0];
+                $columnName = $this->selectFields[0];
                 $data = array();
                 if (isset($result)) {
                     foreach ($result as $row) {
-                        $data[] = $row[$colunmName];
+                        $data[] = $row[$columnName];
                     }
                 }
                 $result = $data;
+            }
+        }
+        if ($this->isDetail) {
+            if (isset($result) && isset($result[0])) {
+                $result = $result[0];
             }
         }
         return $result;
@@ -1011,6 +1017,14 @@ class TableQuery
     public function format(array $formats = null)
     {
         $this->formats = $formats;
+
+        return $this;
+    }
+
+    public function detail()
+    {
+        $this->isDetail = true;
+        $this->isSingle = false;
 
         return $this;
     }

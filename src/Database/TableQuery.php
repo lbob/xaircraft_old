@@ -370,7 +370,7 @@ class TableQuery
     {
         if (isset($this->inserts) && !empty($this->inserts)) {
             $query[] = 'INSERT INTO ' . $this->tableName;
-            $query[] = '(' . implode(',', array_keys($this->inserts)) . ')';
+            $query[] = '(`' . implode('`,`', array_keys($this->inserts)) . '`)';
             $query[] = 'VALUES';
             $query[] = '(';
             $paramsLen = count($this->inserts);
@@ -405,10 +405,10 @@ class TableQuery
             $columns = array();
             foreach ($this->updates as $key => $value) {
                 if ($value instanceof Raw) {
-                    $columns[] = $key . ' = ' . $value->getValue();
+                    $columns[] = '`' . $key . '` = ' . $value->getValue();
                     unset($this->updates[$key]);
                 } else {
-                    $columns[] = $key . ' = ?';
+                    $columns[] = '`' . $key . '` = ?';
                 }
             }
             $query[] = implode(',', $columns);

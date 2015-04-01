@@ -43,6 +43,7 @@ abstract class BaseModel {
     {
         $data = get_object_vars($this);
         unset($data['properties']);
+        unset($data['propertyTypePattern']);
         return $this->clear($data);
     }
 

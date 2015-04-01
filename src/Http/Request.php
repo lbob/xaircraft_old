@@ -119,6 +119,7 @@ class Request
                 }
                 $files[] = $fileInfo;
             }
+            return $files;
         }
     }
 }

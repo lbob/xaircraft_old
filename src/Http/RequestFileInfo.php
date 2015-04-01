@@ -47,7 +47,9 @@ class RequestFileInfo extends BaseModel {
         }
         if ($this->error == UPLOAD_ERR_OK) {
             $destinationFolder = dirname($destinationPath);
-            IO::makeDir($destinationFolder);
+            if (!\Xaircraft\Common\IO::makeDir($destinationFolder)) {
+                throw new \Exception("创建文件夹失败", 600);
+            }
             return move_uploaded_file($this->tmp_name, $destinationPath);
         }
         throw new \Exception("文件[$this->name]上传错误，错误代码：" . $this->error);

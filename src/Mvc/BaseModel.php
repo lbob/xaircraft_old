@@ -18,13 +18,18 @@ abstract class BaseModel {
 
     private $propertyTypePattern = '#\@var[ ]+([a-zA-Z]+)#i';
 
-    public function fromArray(array $data)
+    public function fromArray(array $data, $strongType = false)
     {
         if (isset($data)) {
             $feilds = get_object_vars($this);
             foreach ($data as $key => $value) {
-                if (array_key_exists($key, $feilds))
-                    $this->{$key} = $this->getPrototypeValue($key, $value);
+                if (array_key_exists($key, $feilds)) {
+                    if ($strongType) {
+                        $this->{$key} = $this->getPrototypeValue($key, $value);
+                    } else {
+                        $this->{$key} = $value;
+                    }
+                }
             }
         }
     }

@@ -122,7 +122,7 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $post->fromArray(array(
             'title' => 'test',
             'view_count' => '1234'
-        ));
+        ), true);
         var_dump($post);
     }
 }

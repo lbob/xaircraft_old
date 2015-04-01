@@ -25,7 +25,7 @@ abstract class BaseModel {
             foreach ($data as $key => $value) {
                 if (array_key_exists($key, $feilds)) {
                     if ($strongType) {
-                        $this->{$key} = $this->getPrototypeValue($key, $value);
+                        $this->{$key} = $this->getPropertyValue($key, $value);
                     } else {
                         $this->{$key} = $value;
                     }
@@ -42,6 +42,7 @@ abstract class BaseModel {
     public function toArray()
     {
         $data = get_object_vars($this);
+        unset($data['properties']);
         return $this->clear($data);
     }
 
@@ -50,11 +51,9 @@ abstract class BaseModel {
         return $data;
     }
 
-    private function getPrototypeValue($key, $value)
+    private function getPropertyValue($key, $value)
     {
-        $reflection = new \ReflectionClass(static::class);
-        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
-        foreach ($properties as $property) {
+        foreach ($this->getProperties() as $property) {
             if ($property->getName() === $key) {
                 $docComment = $property->getDocComment();
                 if (preg_match($this->propertyTypePattern, $docComment, $matches)) {
@@ -67,6 +66,15 @@ abstract class BaseModel {
             }
         }
         return $value;
+    }
+
+    private function getProperties()
+    {
+        if (!isset($this->properties)) {
+            $reflection = new \ReflectionClass(static::class);
+            $this->properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
+        }
+        return $this->properties;
     }
 
     private function convert($propertyType, $value)

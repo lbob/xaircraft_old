@@ -111,13 +111,14 @@ class Request
                 $fileInfo  = new RequestFileInfo();
                 $fileCount = count($filesMeta['name']);
                 for ($i = 0; $i < $fileCount; $i++) {
+                    $fileInfo = new RequestFileInfo();
                     $fileInfo->name     = $filesMeta['name'][$i];
                     $fileInfo->type     = $filesMeta['type'][$i];
                     $fileInfo->tmp_name = $filesMeta['tmp_name'][$i];
                     $fileInfo->error    = $filesMeta['error'][$i];
                     $fileInfo->size     = $filesMeta['size'][$i];
+                    $files[] = $fileInfo;
                 }
-                $files[] = $fileInfo;
             }
             return $files;
         }

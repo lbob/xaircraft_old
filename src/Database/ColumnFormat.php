@@ -11,10 +11,10 @@ namespace Xaircraft\Database;
  */
 class ColumnFormat {
 
-    const DateTime = 1;
-    const String = 2;
-    const Integer = 3;
-    const Float = 4;
+    const DateTime = 'datetime';
+    const String = 'string';
+    const Integer = 'integer';
+    const Float = 'float';
 
     public static function getFormatValue($format, $value)
     {

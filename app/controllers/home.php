@@ -98,5 +98,32 @@ class home_controller extends \Xaircraft\Mvc\Controller {
             '343', '234'
         ));
     }
+
+    public function test_insert()
+    {
+        $id = DB::table('post')->insertGetId(array(
+            'title' => 'test'
+        ))->execute();
+
+        DB::table('post')->where('id - 1', $id - 1)->update(array(
+            'content' => 'test'
+        ))->execute();
+
+        var_dump(DB::getQueryLog());
+        var_dump(DB::table('post')->orderBy('id', 'DESC')->select()->execute());
+    }
+
+    public function test_base_model()
+    {
+        /**
+         * @var Post $post
+         */
+        $post = \Xaircraft\App::get(Post::class);
+        $post->fromArray(array(
+            'title' => 'test',
+            'view_count' => '1234'
+        ));
+        var_dump($post);
+    }
 }
 

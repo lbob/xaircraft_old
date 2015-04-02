@@ -108,7 +108,6 @@ class Request
                 if (isset($key) && !strtolower($keyword) === strtolower($formKeyword)) {
                     continue;
                 }
-                $fileInfo  = new RequestFileInfo();
                 $fileCount = count($filesMeta['name']);
                 for ($i = 0; $i < $fileCount; $i++) {
                     $fileInfo = new RequestFileInfo();

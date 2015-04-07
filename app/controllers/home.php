@@ -16,6 +16,10 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
+        var_dump(DB::table('post')->whereIn('id', function(\Xaircraft\Database\WhereQuery $whereQuery) {
+            $whereQuery->select('id')->from('post')->where('id', '>', 1);
+        })->select()->execute());
+
         $array1 = array(0, 1, 2, 3);
         $array2 = array(2, 3);
         var_dump(array_intersect($array1, $array2));
@@ -124,6 +128,19 @@ class home_controller extends \Xaircraft\Mvc\Controller {
             'view_count' => '1234'
         ), true);
         var_dump($post);
+    }
+
+    public function test_array()
+    {
+        var_dump(time());
+        $a = 0;
+        $list = array();
+
+        for ($i = 0; $i < 10; $i++) {
+            $a = $i;
+            $list[] = $a;
+        }
+        var_dump($list);
     }
 }
 

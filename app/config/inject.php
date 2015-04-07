@@ -23,3 +23,5 @@
 \Xaircraft\App::bindSingleton('inject_controller');
 \Xaircraft\App::bindParam('inject_controller', array('userID' => 4));
 \Xaircraft\App::bindParam('Post', array('userName' => 'name test'));
+
+\Xaircraft\App::bindSingleton(Transport::class, TransportTCPImpl::class);

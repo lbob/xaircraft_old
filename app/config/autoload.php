@@ -10,5 +10,6 @@ return [
     '/jobs',
     '/tests',
     '/tests/Base',
-    '/commands'
+    '/commands',
+    '/commands/airkey'
 ];

@@ -8,3 +8,4 @@
 
 \Xaircraft\App::registerCommand("hello", HelloCommand::class);
 \Xaircraft\App::registerCommand("test", TestCommand::class);
+\Xaircraft\App::registerCommand("airkey", AirkeyHost::class);

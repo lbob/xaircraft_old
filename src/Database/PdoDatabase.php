@@ -185,8 +185,9 @@ class PdoDatabase implements Database {
     {
         try {
             $this->beginTransaction();
-            call_user_func($handler, $this);
+            $result = call_user_func($handler, $this);
             $this->commit();
+            return $result;
         } catch (\Exception $ex) {
             $this->rollBack();
             throw $ex;

@@ -16,6 +16,9 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
+        var_dump(DB::table('post')->pluck('create_at')->execute());
+        var_dump(DB::getQueryLog());
+
         var_dump(DB::table('post')->whereIn('id', function(\Xaircraft\Database\WhereQuery $whereQuery) {
             $whereQuery->select('id')->from('post')->where('id', '>', 1);
         })->select()->execute());

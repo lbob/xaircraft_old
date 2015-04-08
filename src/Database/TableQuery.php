@@ -166,8 +166,12 @@ class TableQuery
             return $result[0]['__TotalCount__'] + 0;
         }
         if ($this->isPluck) {
-            $firstColumn = isset($this->selectFields[0]) ? $this->selectFields[0] : null;
-            return isset($result[0][$firstColumn]) ? $result[0][$firstColumn] : null;
+            if (isset($result[0]) && !empty($result[0])) {
+                foreach ($result[0] as $key => $value) {
+                    return $value;
+                }
+            }
+            return null;
         }
         if ($this->isSingle) {
             if (count($this->selectFields) === 1) {

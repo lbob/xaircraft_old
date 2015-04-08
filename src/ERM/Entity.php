@@ -80,7 +80,7 @@ class Entity {
                     $this->assigments[$key] = true;
                 }
             }
-            if (isset($this->columns[$autoIncrementColumn])) {
+            if (isset($this->columns[$autoIncrementColumn]) && $this->columns[$autoIncrementColumn] > 0) {
                 $updateColumns = $this->columns;
                 unset($updateColumns[$autoIncrementColumn]);
                 foreach ($updateColumns as $key => $value) {

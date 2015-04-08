@@ -164,7 +164,7 @@ class DB {
      */
     public static function transaction(callable $handler)
     {
-        self::getInstance(self::$currentDatabase)->provider->transaction($handler);
+        return self::getInstance(self::$currentDatabase)->provider->transaction($handler);
     }
 
     /**

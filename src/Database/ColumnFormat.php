@@ -20,7 +20,7 @@ class ColumnFormat {
     {
         switch ($format) {
             case self::DateTime:
-                return date("Y-m-d h:i:s", $value);
+                return date("Y-m-d H:i:s", $value);
             case self::String:
                 return $value . '';
             case self::Integer:

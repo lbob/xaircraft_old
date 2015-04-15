@@ -93,7 +93,11 @@ class DI {
             foreach ($paramPrototypes as $item) {
                 $paramPrototypeClass = $item->getClass();
                 if (isset($paramPrototypeClass)) {
-                    $injectParams[] = $this->get($paramPrototypeClass->getName());
+                    if (isset($params) && !empty($params) && array_key_exists($item->name, $params)) {
+                        $injectParams[] = $params[$item->name];
+                    } else {
+                        $injectParams[] = $this->get($paramPrototypeClass->getName());
+                    }
                 } else {
                     if (isset($params) && !empty($params) && array_key_exists($item->name, $params)) {
                         $injectParams[] = $params[$item->name];

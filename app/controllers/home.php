@@ -145,5 +145,17 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         }
         var_dump($list);
     }
+
+    public function test_entity()
+    {
+        $nowDate = \Carbon\Carbon::now();
+        $date = new \Carbon\Carbon('2015-4-11 14:20');
+        var_dump($date->diffInMinutes($nowDate));
+
+        $post = DB::entity(DB::table('post')->where('id', 1000)->select());
+        var_dump($post->isExist());
+        var_dump($post->getData());
+        var_dump(DB::getQueryLog());
+    }
 }
 

@@ -579,19 +579,23 @@ class TableQuery
     {
         if (isset($params) && is_array($params)) {
             $ranges = $params;
+
+            $where  = $columnName . ' IN (';
+            $values = array();
             if (count($ranges) > 0) {
-                $where      = $columnName . ' IN (';
-                $values     = array();
                 foreach ($ranges as $item) {
                     $values[] = "?";
                 }
-                $where             = $where . implode(',', $values) . ')';
-                $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
-                $this->whereParams = array_merge($this->whereParams, $ranges);
+            } else {
+                $values[] = 'NULL';
             }
+            $where             = $where . implode(',', $values) . ')';
+            $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
+            $this->whereParams = array_merge($this->whereParams, $ranges);
+
         } else if (isset($params) && is_callable($params)) {
             $subQueryHandler = $params;
-            $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+            $whereQuery      = new WhereQuery($this->logicTableName, $this->prefix);
             call_user_func($subQueryHandler, $whereQuery);
             $this->wheres[] = array(
                 (count($this->wheres) > 0 ? 'AND ' : ' ') . $columnName . ' IN ',

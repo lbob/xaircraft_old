@@ -107,9 +107,9 @@ class App extends Container {
     public function run()
     {
         try {
-            $this->onStart();
             $this->autoload();
             $this->inject();
+            $this->onStart();
             $this->loadCommand();
             $this->routing();
             $this->onEnd();

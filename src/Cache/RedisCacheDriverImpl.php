@@ -22,7 +22,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function put($key, $value, $minutes)
     {
-        Redis::setex($key, $minutes * 60, $value);
+        Redis::getInstance()->setex($key, $minutes * 60, $value);
     }
 
     /**
@@ -32,7 +32,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function has($key)
     {
-        return Redis::exists($key);
+        return Redis::getInstance()->exists($key);
     }
 
     /**
@@ -43,7 +43,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function get($key, $defaultValue = null)
     {
-        $value = Redis::get($key);
+        $value = Redis::getInstance()->get($key);
 
         if (!isset($value)) {
             if (is_callable($defaultValue)) {
@@ -64,7 +64,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function forever($key, $value)
     {
-        Redis::set($key, $value);
+        Redis::getInstance()->set($key, $value);
     }
 
     /**
@@ -76,7 +76,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function remember($key, $minutes, $defaultValue)
     {
-        $value = Redis::get($key);
+        $value = Redis::getInstance()->get($key);
 
         if (!isset($value)) {
             if (is_callable($defaultValue)) {
@@ -84,7 +84,7 @@ class RedisCacheDriverImpl implements CacheDriver {
             } else {
                 $value = $defaultValue;
             }
-            Redis::setex($key, $minutes * 60, $value);
+            Redis::getInstance()->setex($key, $minutes * 60, $value);
         }
 
         return $value;
@@ -98,7 +98,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function rememberForever($key, $defaultValue)
     {
-        $value = Redis::get($key);
+        $value = Redis::getInstance()->get($key);
 
         if (!isset($value)) {
             if (is_callable($defaultValue)) {
@@ -106,7 +106,7 @@ class RedisCacheDriverImpl implements CacheDriver {
             } else {
                 $value = $defaultValue;
             }
-            Redis::set($key, $value);
+            Redis::getInstance()->set($key, $value);
         }
 
         return $value;
@@ -119,8 +119,8 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function pull($key)
     {
-        $value = Redis::get($key);
-        Redis::del(array($key));
+        $value = Redis::getInstance()->get($key);
+        Redis::getInstance()->del(array($key));
         return $value;
     }
 
@@ -131,7 +131,7 @@ class RedisCacheDriverImpl implements CacheDriver {
      */
     public function forget($key)
     {
-        Redis::del(array($key));
+        Redis::getInstance()->del(array($key));
     }
 
     /**

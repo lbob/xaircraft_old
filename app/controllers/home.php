@@ -176,5 +176,21 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         var_dump(DB::getQueryLog());
         var_dump(DB::errorInfo());
     }
+
+    public function test_api()
+    {
+        var_dump($this->test_args("https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s", "wx8dac98c9d0274be4", "7GCUVLjcPaYxcc2iKxZwBwkr50AT9SDKVBOZz9OTlqhdTtT1Ar27dN5G82Klu4Yd"));
+    }
+
+    private function test_args()
+    {
+        $args    = func_get_args();
+        $url     = call_user_func_array('sprintf', $args);
+        $content = json_decode(file_get_contents($url), true);
+        if (isset($content['errcode'])) {
+            throw new \Exception($content['errmsg'], $content['errcode']);
+        }
+        return $content;
+    }
 }
 

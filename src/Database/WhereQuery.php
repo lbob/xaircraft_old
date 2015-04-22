@@ -101,7 +101,7 @@ class WhereQuery {
     }
 
     /**
-     * @param $count
+     * @param $count int
      * @return WhereQuery
      */
     public function take($count)
@@ -144,16 +144,15 @@ class WhereQuery {
                 $query[] = 'FROM `' . $this->subQueryTableName . '`';
             }
 
-            $query[] = 'WHERE';
-
             if (isset($this->wheres) && count($this->wheres) > 0) {
+                $query[] = 'WHERE';
                 foreach ($this->wheres as $item) {
                     $query[] = implode(' ', $item);
                 }
             }
 
             if ($this->isLimit && $this->limitCount > 0) {
-                $query[] = 'LIMIT 0 ' . $this->limitCount;
+                $query[] = 'LIMIT 0, ' . $this->limitCount;
             }
 
             $query[] = ')';

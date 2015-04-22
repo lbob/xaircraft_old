@@ -19,6 +19,8 @@ class WhereQuery {
     private $isSubQueryMode = false;
     private $selectFields;
     private $subQueryTableName;
+    private $isLimit = false;
+    private $limitCount = 0;
 
     public function __construct($tableName, $prefix)
     {
@@ -98,6 +100,18 @@ class WhereQuery {
         return $this;
     }
 
+    /**
+     * @param $count
+     * @return WhereQuery
+     */
+    public function take($count)
+    {
+        $this->isLimit = true;
+        $this->limitCount = $count;
+
+        return $this;
+    }
+
     public function from($tableName)
     {
         $this->isSubQueryMode = true;
@@ -136,6 +150,10 @@ class WhereQuery {
                 foreach ($this->wheres as $item) {
                     $query[] = implode(' ', $item);
                 }
+            }
+
+            if ($this->isLimit && $this->limitCount > 0) {
+                $query[] = 'LIMIT 0 ' . $this->limitCount;
             }
 
             $query[] = ')';

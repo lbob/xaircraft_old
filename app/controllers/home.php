@@ -160,15 +160,17 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function test_take()
     {
-        $list = DB::table('post')->select(array('id' => function(\Xaircraft\Database\WhereQuery $whereQuery) {
-            $whereQuery->select('id')->from('category')->where('id', 1)->take(1);
-        }))->execute();
+        $list = DB::table('post')->select(array(
+            'id' => function(\Xaircraft\Database\WhereQuery $whereQuery) {
+                $whereQuery->select('id')->from('category')->where('id', 1)->top();
+            }
+        ))->execute();
         var_dump($list);
         var_dump(DB::getQueryLog());
         var_dump(DB::errorInfo());
 
         $list = DB::table('post')->whereIn('id', function(\Xaircraft\Database\WhereQuery $whereQuery) {
-            $whereQuery->select('id')->from('category')->where('id', 1)->take(1);
+            $whereQuery->select('id')->from('category')->where('id', 1)->top();
         })->select()->execute();
         var_dump($list);
         var_dump(DB::getQueryLog());

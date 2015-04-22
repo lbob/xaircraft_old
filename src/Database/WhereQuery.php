@@ -101,13 +101,13 @@ class WhereQuery {
     }
 
     /**
-     * @param $count int
+     * @notify 注意，在子查询中，不支持该函数
      * @return WhereQuery
      */
-    public function take($count)
+    public function top()
     {
         $this->isLimit = true;
-        $this->limitCount = $count;
+        $this->limitCount = 1;
 
         return $this;
     }

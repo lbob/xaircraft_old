@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\Http;
+use Xaircraft\App;
 
 
 /**
@@ -78,6 +79,13 @@ class Request
     {
         $namespace = $this->param('namespace');
         return (isset($namespace) ? $namespace . '/' : '') . $this->param('controller') . '/' . $this->param('action');
+    }
+
+    public function fullUri()
+    {
+        $host = App::getInstance()->environment[App::HOST];
+        $queryString = $_SERVER['QUERY_STRING'];
+        return (isset($host) ? $host . '/' : '') . $this->url() . (isset($queryString) ? '/?' . $queryString : '');
     }
 
     public function posts($prefix = null)

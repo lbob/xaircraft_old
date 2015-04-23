@@ -15,8 +15,9 @@ class inject_controller extends ub_controller {
      */
     private $session;
 
-    public function __construct(TestModel $model = null, UserSession $session = null, $userID = null)
+    public function __construct($id = null, TestModel $model = null, UserSession $session = null, $userID = null)
     {
+        var_dump($id);
         $this->model = $model;
         var_dump($userID);
         var_dump('inject_controller.__construct');

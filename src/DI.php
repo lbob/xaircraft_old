@@ -106,7 +106,12 @@ class DI {
                         if (isset($innerParams) && is_array($innerParams) && !empty($innerParams) && array_key_exists($item->name, $innerParams)) {
                             $injectParams[] = $innerParams[$item->name];
                         }
-                    } if (!$item->allowsNull()) {
+                    } else if ($item->isDefaultValueAvailable()) {
+                        $defaultValue = $item->getDefaultValue();
+                        $injectParams[] = $defaultValue;
+                    } if ($item->allowsNull()) {
+                        $injectParams[] = null;
+                    } else {
                         throw new \Exception("缺少参数 [$item->name]");
                     }
                 }

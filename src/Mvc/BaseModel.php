@@ -41,10 +41,16 @@ abstract class BaseModel {
 
     public function toArray()
     {
+        $this->validate();
         $data = get_object_vars($this);
         unset($data['properties']);
         unset($data['propertyTypePattern']);
         return $this->clear($data);
+    }
+
+    public function validate()
+    {
+
     }
 
     protected function clear(array &$data)

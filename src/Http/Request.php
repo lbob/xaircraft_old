@@ -84,8 +84,7 @@ class Request
     public function fullUri()
     {
         $host = App::getInstance()->environment[App::HOST];
-        $queryString = $_SERVER['QUERY_STRING'];
-        return (isset($host) ? $host . '/' : '') . $this->url() . (isset($queryString) ? '/?' . $queryString : '');
+        return (isset($host) ? $host : '') . $_SERVER['REQUEST_URI'];
     }
 
     public function posts($prefix = null)

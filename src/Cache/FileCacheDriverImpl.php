@@ -108,7 +108,6 @@ class FileCacheDriverImpl implements CacheDriver {
     public function get($key, $default = null)
     {
         $value = $this->read($key);
-        var_dump($value);
         return isset($value) ? $value->value : (is_callable($default) ? call_user_func($default) : $default);
     }
 

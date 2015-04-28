@@ -87,6 +87,14 @@ class ClassLoader extends Container
     {
         $className = str_replace('_', DIRECTORY_SEPARATOR, $className);
 
+        $namespaceSeparatorIndex = strrpos($className, '\\');
+        if ($namespaceSeparatorIndex !== false) {
+            $namespace = substr($className, 0, $namespaceSeparatorIndex + 1);
+            $class = substr($className, $namespaceSeparatorIndex + 1, (strlen($className) - $namespaceSeparatorIndex - 1));
+            $className = strtolower($namespace) . $class;
+            $className = str_replace('\\', '/', $className);
+        }
+
         foreach ($this->paths as $path) {
             $file = $path . '/' . $className . '.php';
             if (is_file($file) && is_readable($file)) {

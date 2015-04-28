@@ -192,5 +192,17 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         }
         return $content;
     }
+
+    public function test_cache()
+    {
+        /**
+         * @var \Xaircraft\Cache\CacheDriver $cache
+         */
+        $cache = \Xaircraft\App::get(\Xaircraft\Cache\CacheDriver::class);
+        if (!$cache->has('test')) {
+            $cache->put('test', 'teststsdfsdfsdf', 1);
+        }
+        var_dump($cache->get('test'));
+    }
 }
 

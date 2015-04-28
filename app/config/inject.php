@@ -15,7 +15,8 @@
     return new DatabaseErrorHandlerImpl();
 });
 
-\Xaircraft\App::bind(\Xaircraft\Cache\CacheDriver::class, new \Xaircraft\Cache\RedisCacheDriverImpl());
+//\Xaircraft\App::bind(\Xaircraft\Cache\CacheDriver::class, new \Xaircraft\Cache\RedisCacheDriverImpl());
+\Xaircraft\App::bind(\Xaircraft\Cache\CacheDriver::class, new \Xaircraft\Cache\FileCacheDriverImpl());
 
 \Xaircraft\App::bindSingleton('Xaircraft\Session\UserSession', function() {
     return new UserSessionImpl();

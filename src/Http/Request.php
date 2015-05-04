@@ -118,11 +118,11 @@ class Request
                 $fileCount = count($filesMeta['name']);
                 for ($i = 0; $i < $fileCount; $i++) {
                     $fileInfo = new RequestFileInfo();
-                    $fileInfo->name     = $filesMeta['name'][$i];
-                    $fileInfo->type     = $filesMeta['type'][$i];
-                    $fileInfo->tmp_name = $filesMeta['tmp_name'][$i];
-                    $fileInfo->error    = $filesMeta['error'][$i];
-                    $fileInfo->size     = $filesMeta['size'][$i];
+                    $fileInfo->name     = $fileCount > 1 ? $filesMeta['name'][$i] : $filesMeta['name'];
+                    $fileInfo->type     = $fileCount > 1 ? $filesMeta['type'][$i] : $filesMeta['type'];
+                    $fileInfo->tmp_name = $fileCount > 1 ? $filesMeta['tmp_name'][$i] : $filesMeta['tmp_name'];
+                    $fileInfo->error    = $fileCount > 1 ? $filesMeta['error'][$i] : $filesMeta['error'];
+                    $fileInfo->size     = $fileCount > 1 ? $filesMeta['size'][$i] : $filesMeta['size'];
                     $files[] = $fileInfo;
                 }
             }

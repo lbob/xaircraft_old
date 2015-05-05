@@ -18,10 +18,10 @@ class PdoDatabase implements Database {
      */
     private $dbh;
 
-    private $patternSelectStatement = '#select[ a-zA-Z][ \*\_a-zA-Z0-9\,\(\)\.]+[ ]from#i';
+    private $patternSelectStatement = '#select[ a-zA-Z][ \*\_a-zA-Z0-9\,\(\)\.\/\-\+]+[ ]from#i';
     private $patternInsertStatement = '#insert[ ]+into#i';
     private $patternDeleteStatement = '#delete[ ]+from#i';
-    private $patternUpdateStatement = '#update[ a-zA-Z][ \*\_a-zA-Z0-9\[\]\,\.]+[ ]set#i';
+    private $patternUpdateStatement = '#update[ a-zA-Z][ \*\_a-zA-Z0-9\[\]\,\.\/\-\+]+[ ]set#i';
 
     private $errorState = false;
     private $errorCode;
@@ -85,6 +85,8 @@ class PdoDatabase implements Database {
                 $stmt->execute($params);
                 $this->recordError($stmt, $params);
                 return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            } else {
+                throw new \Exception("Not SELECT Query.");
             }
         }
         return null;
@@ -104,6 +106,8 @@ class PdoDatabase implements Database {
                 $result = $stmt->execute($params);
                 $this->recordError($stmt, $params);
                 return $result;
+            } else {
+                throw new \Exception("Not INSERT Query.");
             }
         }
         return $this->errorState;
@@ -123,6 +127,8 @@ class PdoDatabase implements Database {
                 $result = $stmt->execute($params);
                 $this->recordError($stmt, $params);
                 return $result;
+            } else {
+                throw new \Exception("Not DELETE Query.");
             }
         }
         return $this->errorState;
@@ -142,6 +148,8 @@ class PdoDatabase implements Database {
                 $result = $stmt->execute($params);
                 $this->recordError($stmt, $params);
                 return $result;
+            } else {
+                throw new \Exception("Not UPDATE Query.");
             }
         }
         return $this->errorState;

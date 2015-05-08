@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\JobQueue;
+use Xaircraft\App;
 
 
 /**
@@ -31,8 +32,8 @@ class Worker
         if (!method_exists($className, $methodName)) {
             throw new \InvalidArgumentException("Can't find action [$methodName] in [$className].");
         }
-        $job = new $className;
-        return call_user_func(array($className, $methodName), $this->job->getParams());
+        $job = App::get($className);
+        return $job->$methodName($this->job->getParams());
     }
 
     private function parseJobHandler()

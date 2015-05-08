@@ -15,6 +15,8 @@ class ColumnFormat {
     const String = 'string';
     const Integer = 'integer';
     const Float = 'float';
+    const JsonObject = 'json_object';
+    const JsonArray = 'json_array';
 
     public static function getFormatValue($format, $value)
     {
@@ -27,6 +29,10 @@ class ColumnFormat {
                 return intval($value);
             case self::Float:
                 return floatval($value);
+            case self::JsonObject:
+                return json_decode($value);
+            case self::JsonArray:
+                return json_decode($value, true);
             default:
                 return $value;
         }

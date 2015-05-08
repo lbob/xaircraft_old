@@ -115,14 +115,15 @@ class Request
                 if (isset($key) && !strtolower($keyword) === strtolower($formKeyword)) {
                     continue;
                 }
+                $isArr = is_array($filesMeta['name']);
                 $fileCount = count($filesMeta['name']);
                 for ($i = 0; $i < $fileCount; $i++) {
                     $fileInfo = new RequestFileInfo();
-                    $fileInfo->name     = $fileCount > 1 ? $filesMeta['name'][$i] : $filesMeta['name'];
-                    $fileInfo->type     = $fileCount > 1 ? $filesMeta['type'][$i] : $filesMeta['type'];
-                    $fileInfo->tmp_name = $fileCount > 1 ? $filesMeta['tmp_name'][$i] : $filesMeta['tmp_name'];
-                    $fileInfo->error    = $fileCount > 1 ? $filesMeta['error'][$i] : $filesMeta['error'];
-                    $fileInfo->size     = $fileCount > 1 ? $filesMeta['size'][$i] : $filesMeta['size'];
+                    $fileInfo->name     = $isArr ? $filesMeta['name'][$i] : $filesMeta['name'];
+                    $fileInfo->type     = $isArr ? $filesMeta['type'][$i] : $filesMeta['type'];
+                    $fileInfo->tmp_name = $isArr ? $filesMeta['tmp_name'][$i] : $filesMeta['tmp_name'];
+                    $fileInfo->error    = $isArr ? $filesMeta['error'][$i] : $filesMeta['error'];
+                    $fileInfo->size     = $isArr ? $filesMeta['size'][$i] : $filesMeta['size'];
                     $files[] = $fileInfo;
                 }
             }

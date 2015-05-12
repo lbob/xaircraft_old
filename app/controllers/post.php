@@ -49,10 +49,12 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             'update_at',
             'create_at'
         ))->format(array(
-            'id' => \Xaircraft\Database\ColumnFormat::Integer,
+            'id' => function ($value) {
+                return 'a:' . ($value);
+            },
             'update_at' => \Xaircraft\Database\ColumnFormat::DateTime,
             'create_at' => \Xaircraft\Database\ColumnFormat::DateTime
-        ))->remeber(10);
+        ));
         $result = $query->execute();
         $this->posts = $result['data'];
         $this->pageIndex = $this->req->param('p');

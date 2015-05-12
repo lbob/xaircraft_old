@@ -204,5 +204,61 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         }
         var_dump($cache->get('test'));
     }
+
+    public function test_array_item()
+    {
+        $list = array();
+        $item = new Test();
+        $item->title = 'test';
+        $list[] = $item;
+        $item = new Test();
+        $item->title = 'test22';
+        $list[] = $item;
+
+        //var_dump($list);
+
+        foreach ($list as &$item) {
+            //var_dump($item);
+        }
+
+        foreach ($list as &$item) {
+            var_dump($item);
+            break;
+        }
+
+        var_dump($list);
+
+        $test = $item;
+        var_dump($test);
+
+        unset($item);
+
+
+        var_dump($list);
+
+        foreach ($list as $item) {
+            //var_dump($item);
+        }
+
+        foreach ($list as $row) {
+
+        }
+
+        $row2 = &$row;
+        var_dump($row);
+
+        var_dump($list);
+    }
+
+    public function test_convert()
+    {
+        $total_length = 600;
+        $hspace = 3;
+        $areaSize = doubleval(intval(doubleval($total_length) * 100) * intval(doubleval($hspace) * 100)) / 10000;
+        var_dump($areaSize);
+        $areaSize = (doubleval($areaSize) * 100 + (doubleval($areaSize) * 100) / 2) / 100000;
+        $total_area_size = $areaSize;
+        var_dump($total_area_size);
+    }
 }
 

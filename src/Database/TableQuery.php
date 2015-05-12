@@ -135,7 +135,7 @@ class TableQuery
             $pageResult  = $this->parsePageQuery($query);
             $queryResult = array();
             if ($pageResult['recordCount'] > 0) {
-                $queryResult = $this->getSelectResult($pageResult['query'], $this->joinParams);
+                $queryResult = $this->getSelectResult($pageResult['query'], $this->joinParams, true);
             }
             return array(
                 'recordCount' => $pageResult['recordCount'],
@@ -161,7 +161,7 @@ class TableQuery
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
         }
         $query = implode(' ', $query);
-        $result = $this->getSelectResult($query, $this->getParams());
+        $result = $this->getSelectResult($query, $this->getParams(), true);
         if ($this->isCount) {
             return $result[0]['__TotalCount__'] + 0;
         }
@@ -204,7 +204,12 @@ class TableQuery
                 $formattedRow = array();
                 foreach ($row as $key => $value) {
                     if (array_key_exists($key, $this->formats)) {
-                        $formattedRow[$key] = ColumnFormat::getFormatValue($this->formats[$key], $value);
+                        $formatValue = $this->formats[$key];
+                        if (is_callable($formatValue)) {
+                            $formattedRow[$key] = call_user_func($formatValue, $value);
+                        } else {
+                            $formattedRow[$key] = ColumnFormat::getFormatValue($this->formats[$key], $value);
+                        }
                     } else {
                         $formattedRow[$key] = $value;
                     }
@@ -217,19 +222,23 @@ class TableQuery
         return $result;
     }
 
-    private function getSelectResult($query, $params)
+    private function getSelectResult($query, $params, $isFormat = false)
     {
         $result = array();
         if ($this->isRemeber && $this->isCanReadFromCached()) {
             $result = $this->readFromCache($query, $params);
             if (!isset($result)) {
                 $result = $this->driver->select($query, $params);
-                $result = $this->formatSelectResult($result);
+                if ($isFormat) {
+                    $result = $this->formatSelectResult($result);
+                }
                 $this->writeToCache($query, $params, $result);
             }
         } else {
             $result = $this->driver->select($query, $params);
-            $result = $this->formatSelectResult($result);
+            if ($isFormat) {
+                $result = $this->formatSelectResult($result);
+            }
         }
         return $result;
     }

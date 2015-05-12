@@ -36,6 +36,15 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         }
     }
 
+    public function test_tree()
+    {
+        $tree = new \Xaircraft\ERM\BaseClassTree('category', 'classNo', 4, 'id');
+        $result = $tree->getTree(null, '', false, null, function (\Xaircraft\Database\TableQuery $query) {
+            return $query->where('id', '>', 0)->where('id', '>', 1);
+        });
+        var_dump($result);
+    }
+
     public function index()
     {
         $query = DB::table('post')->whereExists(function(\Xaircraft\Database\WhereQuery $query) {
@@ -50,7 +59,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             'create_at'
         ))->format(array(
             'id' => function ($value) {
-                return 'a:' . ($value);
+                return DB::table('post')->where('id', $value)->pluck('title')->execute();
             },
             'update_at' => \Xaircraft\Database\ColumnFormat::DateTime,
             'create_at' => \Xaircraft\Database\ColumnFormat::DateTime

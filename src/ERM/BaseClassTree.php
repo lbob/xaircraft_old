@@ -62,20 +62,29 @@ class BaseClassTree {
      * @param string $parentClassNo
      * @param bool $isSort
      * @param string $sortColumnName
+     * @param null $queryHandler
      * @return array
      */
-    public function getTree(array $showColumns = null, $parentClassNo = '', $isSort = false, $sortColumnName = 'sort')
+    public function getTree(array $showColumns = null, $parentClassNo = '', $isSort = false, $sortColumnName = 'sort', callable $queryHandler = null)
     {
         $brothers = array();
         $query = DB::table($this->tableName)
             ->where($this->classColumnName, 'LIKE', $parentClassNo . "%")
-            ->where('LENGTH(' . $this->classColumnName . ')', strlen($parentClassNo) + 4)
-            ->select($showColumns);
+            ->where('LENGTH(' . $this->classColumnName . ')', strlen($parentClassNo) + 4);
+        if (isset($showColumns) && !empty($showColumns)) {
+            $query = $query->select($showColumns);
+        } else {
+            $query = $query->select();
+        }
 
         if ($isSort) {
             $query = $query->orderBy($sortColumnName, 'ASC')->orderBy($this->classColumnName, 'ASC');
         } else {
             $query = $query->orderBy($this->classColumnName, 'ASC');
+        }
+
+        if (isset($queryHandler) && is_callable($queryHandler)) {
+            $query = $queryHandler($query);
         }
 
         $result = $query->execute();

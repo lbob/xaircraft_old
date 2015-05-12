@@ -118,7 +118,7 @@ class TableQuery
         if (isset($this->countColumnName)) {
             $query[] = $this->countColumnName;
         } else {
-            if (isset($this->selectFields) && count($this->selectFields) > 0) {
+            if (!empty($this->selectFields)) {
                 $query[] = implode(',', $this->selectFields);
             } else {
                 $query[] = '*';

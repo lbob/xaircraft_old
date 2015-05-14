@@ -1003,7 +1003,7 @@ class TableQuery
             $column = $this->primaryKey;
         }
         if (func_num_args() > 0) {
-            $column = func_get_args(0);
+            $column = func_get_arg(0);
         }
 
         $this->countColumnName = 'COUNT(' . $column . ') AS __TotalCount__';

@@ -418,6 +418,11 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function test_single()
     {
+        $list = DB::table('post AS post')->join('category', function (\Xaircraft\Database\JoinQuery $joinQuery) {
+            $joinQuery->on('post.id', 'x_category.id');
+        })->select('post.title')->single()->execute();
+        var_dump($list);
+
         $list = DB::table('post AS post')->select(array(
             'title' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
                 $whereQuery->select('title')->from('post')->where('id', DB::raw('post.id'));

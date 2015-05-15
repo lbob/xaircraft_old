@@ -181,6 +181,13 @@ class TableQuery
                     if (count($matches) > 0) {
                         $columnName = $matches[1];
                     }
+                } else {
+                    $tableNameAndColumnPattern = '#([a-zA-Z][a-zA-Z0-9\_]*)\.([a-zA-Z][a-zA-Z0-9\_]*)#i';
+                    if (preg_match($tableNameAndColumnPattern, $columnName, $matches)) {
+                        if (count($matches) > 0) {
+                            $columnName = $matches[2];
+                        }
+                    }
                 }
                 $data = array();
                 if (isset($result)) {

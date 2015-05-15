@@ -176,6 +176,12 @@ class TableQuery
         if ($this->isSingle) {
             if (count($this->selectFields) === 1) {
                 $columnName = $this->selectFields[0];
+                $subQueryPattern = '#[ ]+AS[ ]+([a-zA-Z][a-zA-Z0-9\_]*)#i';
+                if (preg_match($subQueryPattern, $columnName, $matches)) {
+                    if (count($matches) > 0) {
+                        $columnName = $matches[1];
+                    }
+                }
                 $data = array();
                 if (isset($result)) {
                     foreach ($result as $row) {

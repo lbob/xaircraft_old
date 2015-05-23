@@ -35,7 +35,7 @@ class ExceptionHelper {
 
     public static function ThrowIfNotID($id, $message = null)
     {
-        if (!isset($id) || $id <= 0) {
+        if (!(isset($id) && intval($id) > 0)) {
             throw new \Exception($message);
         }
     }

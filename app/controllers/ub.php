@@ -11,6 +11,15 @@ class ub_controller extends \Xaircraft\Mvc\Controller {
     {
         //return $this->text('onPageLoad');
     }
+
+    public function test_url()
+    {
+        var_dump($this->req->fullUri());
+        var_dump($this->req->param('anchor'));
+        $url = $this->req->fullUri();
+        $url = str_replace("?anchor=", '#', $url);
+        var_dump($url);
+    }
 }
 
  

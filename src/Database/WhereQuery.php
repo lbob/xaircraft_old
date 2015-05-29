@@ -62,6 +62,40 @@ class WhereQuery {
         return $this;
     }
 
+    public function whereIn($columnName, $params)
+    {
+        if (isset($params) && is_array($params)) {
+            $ranges = $params;
+
+            $where  = $columnName . ' IN (';
+            $values = array();
+            if (count($ranges) > 0) {
+                foreach ($ranges as $item) {
+                    $values[] = "?";
+                }
+            } else {
+                $values[] = 'NULL';
+            }
+            $where             = $where . implode(',', $values) . ')';
+            $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
+            $this->params = array_merge($this->params, $ranges);
+
+        } else if (isset($params) && is_callable($params)) {
+            $subQueryHandler = $params;
+            $whereQuery      = new WhereQuery($this->logicTableName, $this->prefix);
+            call_user_func($subQueryHandler, $whereQuery);
+            $this->wheres[] = array(
+                (count($this->wheres) > 0 ? 'AND ' : ' ') . $columnName . ' IN ',
+                $whereQuery->getQuery()
+            );
+            $params         = $whereQuery->getParams();
+            if (isset($params))
+                $this->params = array_merge($this->params, $params);
+        }
+
+        return $this;
+    }
+
     /**
      * @return WhereQuery
      */

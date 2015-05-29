@@ -434,6 +434,18 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         var_dump($list);
         var_dump(DB::getQueryLog());
     }
+
+    public function test_wherein()
+    {
+        $list = DB::table('post')->where(function (\Xaircraft\Database\WhereQuery $whereQuery) {
+            $whereQuery->whereIn('id', function (\Xaircraft\Database\WhereQuery $whereQuery2) {
+                $whereQuery2->select('id')->from('post')->whereIn('id', array(1, 2, 3, 4, 5));
+            });
+        })->select()->execute();
+
+        var_dump($list);
+        var_dump(DB::getQueryLog());
+    }
 }
 
  

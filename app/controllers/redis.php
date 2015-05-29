@@ -9,8 +9,9 @@ class redis_controller extends \Xaircraft\Mvc\Controller {
 
     public function sub()
     {
-        $client = new \Predis\Client();
-        $client->publi
+        \Xaircraft\Storage\Redis::getInstance()->set('test', time());
+        $time = \Xaircraft\Storage\Redis::getInstance()->get('test');
+        var_dump($time);
     }
 }
 

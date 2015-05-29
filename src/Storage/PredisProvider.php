@@ -168,6 +168,9 @@ class PredisProvider {
             $this->configs = $this->defaultConfig;
         }
         $this->driver = new Client($this->configs);
+        if (array_key_exists('password', $this->configs)) {
+            $this->driver->auth($this->configs['password']);
+        }
     }
 
     public function __call($method, $params)

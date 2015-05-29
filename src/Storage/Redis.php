@@ -157,15 +157,15 @@ class Redis {
      */
     private static $driver;
 
-    public static function getInstance()
+    public static function getInstance($hostName = 'default')
     {
         if (!isset(self::$driver)) {
-            self::$driver = self::createInstance();
+            self::$driver = self::createInstance($hostName);
         }
         return self::$driver;
     }
 
-    private static function createInstance($hostName = null)
+    private static function createInstance($hostName = 'default')
     {
         $config = require App::getInstance()->getPath('config') . '/redis.php';
 

@@ -20,6 +20,11 @@ class ub_controller extends \Xaircraft\Mvc\Controller {
         $url = str_replace("?anchor=", '#', $url);
         var_dump($url);
     }
+
+    public function test_crc()
+    {
+
+    }
 }
 
  

@@ -12,6 +12,7 @@ namespace Xaircraft\Database;
 class ColumnFormat {
 
     const DateTime = 'datetime';
+    const ShortDateTime = 'shortdatetime';
     const String = 'string';
     const Integer = 'integer';
     const Float = 'float';
@@ -23,6 +24,8 @@ class ColumnFormat {
         switch ($format) {
             case self::DateTime:
                 return date("Y-m-d H:i:s", $value);
+            case self::ShortDateTime:
+                return date("Y年m月d日 H:i", $value);
             case self::String:
                 return $value . '';
             case self::Integer:

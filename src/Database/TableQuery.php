@@ -20,10 +20,15 @@ class TableQuery
     const QUERY_UPDATE = 'update';
     const QUERY_DELETE = 'delete';
     const QUERY_TRUNCATE = 'truncate';
+    const SoftDeletedColumnName = 'deleted_at';
 
     public $tableName;
     public $logicTableName;
+    public $realTableName;
+    public $anotherName;
     public $primaryKey;
+
+    const TABLE_NAME_PATTERN = '#(?<realName>^[a-zA-Z][a-zA-Z0-9\_]*)([ ]*[aA][sS][ ]*(?<anotherName>[a-zA-Z]*))?#i';
 
     /**
      * @var Database
@@ -55,6 +60,8 @@ class TableQuery
     private $isSingle = false;
     private $isRemeber = false;
     private $isDetail = false;
+    private $isSoftDeleted = false;
+    private $isSoftDeleteLess = false;
     private $remeberMinutes = 1;
     /**
      * @var \Xaircraft\Cache\CacheDriver
@@ -78,11 +85,25 @@ class TableQuery
         $this->logicTableName = $tableName;
         $this->prefix         = $prefix;
 
-        if (isset($this->prefix)) $this->tableName = $this->prefix . $tableName;
+        if (preg_match(self::TABLE_NAME_PATTERN, $tableName, $matches)) {
+            $this->realTableName = $matches['realName'];
+            if (array_key_exists('anotherName', $matches)) {
+                $this->anotherName = $matches['anotherName'];
+            }
+        }
+
+        if (isset($this->prefix)) {
+            $this->tableName = $this->prefix . $tableName;
+            $this->realTableName = $this->prefix . $this->realTableName;
+        }
         else $this->tableName = $tableName;
 
-        $this->meta = TableSchema::load($this->tableName);
+        $this->meta = TableSchema::load($this->realTableName);
         if (isset($this->meta)) {
+            $fields = $this->meta->getFields();
+            if (array_search(self::SoftDeletedColumnName, $fields)) {
+                $this->isSoftDeleted = true;
+            }
             $this->primaryKey = isset($this->meta->primaryKey[0]) ? $this->meta->primaryKey[0] : null;
         }
     }
@@ -126,6 +147,15 @@ class TableQuery
         }
 
         $query[] = 'FROM ' . $this->tableName;
+
+        if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
+            if (isset($this->anotherName)) {
+                $this->where($this->anotherName . '.' . self::SoftDeletedColumnName, 0);
+            } else {
+                $this->where($this->realTableName . '.' . self::SoftDeletedColumnName, 0);
+            }
+        }
+
         if (isset($this->joins) && count($this->joins) > 0) {
             foreach ($this->joins as $item) {
                 $query[] = $item;
@@ -160,7 +190,7 @@ class TableQuery
         if (!$this->isPaged && $this->isLimited) {
             $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
         }
-        $query = implode(' ', $query);
+        $query  = implode(' ', $query);
         $result = $this->getSelectResult($query, $this->getParams(), true);
         if ($this->isCount) {
             return $result[0]['__TotalCount__'] + 0;
@@ -175,7 +205,7 @@ class TableQuery
         }
         if ($this->isSingle) {
             if (count($this->selectFields) === 1) {
-                $columnName = $this->selectFields[0];
+                $columnName      = $this->selectFields[0];
                 $subQueryPattern = '#[ ]+AS[ ]+([a-zA-Z][a-zA-Z0-9\_]*)#i';
                 if (preg_match($subQueryPattern, $columnName, $matches)) {
                     if (count($matches) > 0) {
@@ -280,7 +310,7 @@ class TableQuery
         } catch (ConnectionException $ex) {
             Log::error('TableQuery', 'readFromCache error', array(
                 'error_message' => $ex->getMessage(),
-                'error_code' => $ex->getCode()
+                'error_code'    => $ex->getCode()
             ));
             return null;
         }
@@ -360,11 +390,11 @@ class TableQuery
         if (isset($this->orders) && count($this->orders) > 0) {
             $query[] = 'ORDER BY ' . implode(',', $this->orders);
         }
-        $limitStartIndex      = ($this->pageIndex - 1) * $this->pageSize;
-        $limitTakeLength      = $this->pageSize;
-        $query[]              = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
-        $query                = implode(' ', $query);
-        $primaryKeyValues     = $this->getSelectResult($query, $this->getParams());
+        $limitStartIndex  = ($this->pageIndex - 1) * $this->pageSize;
+        $limitTakeLength  = $this->pageSize;
+        $query[]          = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
+        $query            = implode(' ', $query);
+        $primaryKeyValues = $this->getSelectResult($query, $this->getParams());
         if (!isset($primaryKeyValues) || empty($primaryKeyValues)) {
             return array(
                 'query'       => $preQuery,
@@ -395,25 +425,25 @@ class TableQuery
     private function parseInsertQuery()
     {
         if (isset($this->inserts) && !empty($this->inserts)) {
-            $query[] = 'INSERT INTO ' . $this->tableName;
-            $query[] = '(`' . implode('`,`', array_keys($this->inserts)) . '`)';
-            $query[] = 'VALUES';
-            $query[] = '(';
+            $query[]   = 'INSERT INTO ' . $this->tableName;
+            $query[]   = '(`' . implode('`,`', array_keys($this->inserts)) . '`)';
+            $query[]   = 'VALUES';
+            $query[]   = '(';
             $paramsLen = count($this->inserts);
-            $values = array();
-            $inserts = array();
+            $values    = array();
+            $inserts   = array();
             foreach ($this->inserts as $key => $value) {
                 if ($value instanceof Raw) {
                     $values[] = $value->getValue();
                 } else {
-                    $values[] = '?';
+                    $values[]  = '?';
                     $inserts[] = $value;
                 }
             }
 
-            $query[] = implode(',', $values) . ')';
-            $params = array_values($inserts);
-            $query = implode(' ', $query);
+            $query[]   = implode(',', $values) . ')';
+            $params    = array_values($inserts);
+            $query     = implode(' ', $query);
             $isSuccess = $this->driver->insert($query, $params);
             if ($isSuccess && $this->isInsertGetId) {
                 return $this->driver->getDbDriver()->lastInsertId();
@@ -438,11 +468,11 @@ class TableQuery
                 }
             }
             $query[] = implode(',', $columns);
-            $wheres = $this->parseWheres();
+            $wheres  = $this->parseWheres();
             if (isset($wheres))
                 $query[] = $wheres;
             $params = array_values($this->updates);
-            $query = implode(' ', $query);
+            $query  = implode(' ', $query);
             return $this->driver->update($query, array_merge($params, $this->whereParams));
         }
         return false;
@@ -451,7 +481,7 @@ class TableQuery
     private function parseDeleteQuery()
     {
         $query[] = 'DELETE FROM ' . $this->tableName;
-        $wheres = $this->parseWheres();
+        $wheres  = $this->parseWheres();
         if (isset($wheres))
             $query[] = $wheres;
         $query = implode(' ', $query);
@@ -514,17 +544,26 @@ class TableQuery
             $columnName = $args[0];
             if ($argsLen === 2) {
                 if (is_a($args[1], Raw::RAW)) {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ' . $args[1]->getValue());
+                    $this->wheres[] = array(
+                        count($this->wheres) > 0 ? 'AND' : '',
+                        $columnName . ' = ' . $args[1]->getValue()
+                    );
                 } else {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
+                    $this->wheres[]      = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
                     $this->whereParams[] = $args[1];
                 }
             }
             if ($argsLen === 3) {
                 if (is_a($args[2], Raw::RAW)) {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ' . $args[2]->getValue());
+                    $this->wheres[] = array(
+                        count($this->wheres) > 0 ? 'AND' : '',
+                        $columnName . ' ' . $args[1] . ' ' . $args[2]->getValue()
+                    );
                 } else {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ? ');
+                    $this->wheres[]      = array(
+                        count($this->wheres) > 0 ? 'AND' : '',
+                        $columnName . ' ' . $args[1] . ' ? '
+                    );
                     $this->whereParams[] = $args[2];
                 }
             }
@@ -555,17 +594,26 @@ class TableQuery
             $columnName = $args[0];
             if ($argsLen === 2) {
                 if (is_a($args[1], Raw::RAW)) {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ' . $args[1]->getValue());
+                    $this->wheres[] = array(
+                        count($this->wheres) > 0 ? 'OR' : '',
+                        $columnName . ' = ' . $args[1]->getValue()
+                    );
                 } else {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
+                    $this->wheres[]      = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
                     $this->whereParams[] = $args[1];
                 }
             }
             if ($argsLen === 3) {
                 if (is_a($args[2], Raw::RAW)) {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ' . $args[2]->getValue());
+                    $this->wheres[] = array(
+                        count($this->wheres) > 0 ? 'OR' : '',
+                        $columnName . ' ' . $args[1] . ' ' . $args[2]->getValue()
+                    );
                 } else {
-                    $this->wheres[] = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ? ');
+                    $this->wheres[]      = array(
+                        count($this->wheres) > 0 ? 'OR' : '',
+                        $columnName . ' ' . $args[1] . ' ? '
+                    );
                     $this->whereParams[] = $args[2];
                 }
             }
@@ -647,7 +695,7 @@ class TableQuery
             }
         } else if (isset($params) && is_callable($params)) {
             $subQueryHandler = $params;
-            $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+            $whereQuery      = new WhereQuery($this->logicTableName, $this->prefix);
             call_user_func($subQueryHandler, $whereQuery);
             $this->wheres[] = array(
                 (count($this->wheres) > 0 ? 'AND ' : ' ') . $columnName . ' NOT IN ',
@@ -713,7 +761,7 @@ class TableQuery
         if ($argsLen === 0)
             throw new \InvalidArgumentException("Invalid group by columns.");
 
-        $columns = func_get_args();
+        $columns     = func_get_args();
         $this->group = implode(',', $columns);
 
         return $this;
@@ -766,12 +814,12 @@ class TableQuery
         if (!isset($columnName))
             throw new \InvalidArgumentException("Invalid column name.");
 
-        $this->queryType = self::QUERY_SELECT;
-        $this->isPluck = true;
-        $this->isLimited = true;
+        $this->queryType       = self::QUERY_SELECT;
+        $this->isPluck         = true;
+        $this->isLimited       = true;
         $this->limitStartIndex = 0;
         $this->limitTakeLength = 1;
-        $this->selectFields[] = $columnName;
+        $this->selectFields[]  = $columnName;
 
         $this->isPaged = false;
 
@@ -798,10 +846,10 @@ class TableQuery
                     } else {
                         if (is_callable($value)) {
                             $subQueryHandler = $value;
-                            $whereQuery = new WhereQuery($this->logicTableName, $this->prefix);
+                            $whereQuery      = new WhereQuery($this->logicTableName, $this->prefix);
                             call_user_func($subQueryHandler, $whereQuery);
                             $fields[] = $whereQuery->getQuery() . ' AS ' . $key;
-                            $params         = $whereQuery->getParams();
+                            $params   = $whereQuery->getParams();
                             if (isset($params))
                                 $this->whereParams = array_merge($this->whereParams, $params);
                         } else {
@@ -833,7 +881,7 @@ class TableQuery
             throw new \InvalidArgumentException("Invalid insert params.");
 
         $this->queryType = self::QUERY_INSERT;
-        $this->inserts = $params;
+        $this->inserts   = $params;
 
         return $this;
     }
@@ -862,7 +910,7 @@ class TableQuery
             throw new \InvalidArgumentException("Invalid update params.");
 
         $this->queryType = self::QUERY_UPDATE;
-        $this->updates = $params;
+        $this->updates   = $params;
 
         return $this;
     }
@@ -958,8 +1006,8 @@ class TableQuery
             $joinQuery->on($args[1], $args[2], $args[3]);
         }
 
-        $params        = $joinQuery->getParams();
         $this->joins[] = $joinQuery->getQuery();
+        $params        = $joinQuery->getParams();
         if (isset($params) && count($params) > 0)
             $this->joinParams = $params;
 
@@ -995,8 +1043,8 @@ class TableQuery
             $joinQuery->on($args[1], $args[2], $args[3]);
         }
 
-        $params        = $joinQuery->getParams();
         $this->joins[] = $joinQuery->getQuery();
+        $params        = $joinQuery->getParams();
         if (isset($params) && count($params) > 0)
             $this->joinParams = $params;
 
@@ -1010,7 +1058,7 @@ class TableQuery
     public function count()
     {
         $this->queryType = self::QUERY_SELECT;
-        $this->isCount = true;
+        $this->isCount   = true;
         $column          = '*';
         if (isset($this->primaryKey)) {
             $column = $this->primaryKey;
@@ -1033,7 +1081,7 @@ class TableQuery
 
     public function remeber($minutes = 1)
     {
-        $this->isRemeber = true;
+        $this->isRemeber      = true;
         $this->remeberMinutes = $minutes;
 
         return $this;
@@ -1055,6 +1103,13 @@ class TableQuery
     {
         $this->isDetail = true;
         $this->isSingle = false;
+
+        return $this;
+    }
+
+    public function softDeleteLess()
+    {
+        $this->isSoftDeleteLess = true;
 
         return $this;
     }

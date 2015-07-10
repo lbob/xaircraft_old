@@ -15,12 +15,16 @@ class WhereQuery {
     private $tableName;
     private $prefix;
     private $logicTableName;
+    private $realTableName;
+    private $anotherName;
     private $params = array();
     private $isSubQueryMode = false;
     private $selectFields;
     private $subQueryTableName;
     private $isLimit = false;
     private $limitCount = 0;
+    private $isSoftDeleted = false;
+    private $isSoftDeleteLess = false;
 
     public function __construct($tableName, $prefix)
     {
@@ -153,6 +157,35 @@ class WhereQuery {
             $this->subQueryTableName = $tableName;
         }
 
+        if (preg_match(TableQuery::TABLE_NAME_PATTERN, $tableName, $matches)) {
+            $this->realTableName = $matches['realName'];
+            if (array_key_exists('anotherName', $matches)) {
+                $this->anotherName = $matches['anotherName'];
+            }
+        }
+
+        if (isset($this->prefix)) {
+            $this->tableName = $this->prefix . $tableName;
+            $this->realTableName = $this->prefix . $this->realTableName;
+        }
+        else $this->tableName = $tableName;
+
+        $this->meta = TableSchema::load($this->realTableName);
+        if (isset($this->meta)) {
+            $fields = $this->meta->getFields();
+            if (array_search(TableQuery::SoftDeletedColumnName, $fields)) {
+                $this->isSoftDeleted = true;
+            }
+        }
+
+        if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
+            if (isset($this->anotherName)) {
+                $this->where($this->anotherName . '.' . TableQuery::SoftDeletedColumnName, 0);
+            } else {
+                $this->where($this->realTableName . '.' . TableQuery::SoftDeletedColumnName, 0);
+            }
+        }
+
         return $this;
     }
 
@@ -212,6 +245,13 @@ class WhereQuery {
     public function getParams()
     {
         return $this->params;
+    }
+
+    public function softDeleteLess()
+    {
+        $this->isSoftDeleteLess = true;
+
+        return $this;
     }
 }
 

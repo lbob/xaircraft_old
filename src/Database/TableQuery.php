@@ -20,7 +20,7 @@ class TableQuery
     const QUERY_UPDATE = 'update';
     const QUERY_DELETE = 'delete';
     const QUERY_TRUNCATE = 'truncate';
-    const SoftDeletedColumnName = 'deleted_at';
+    const SoftDeletedColumnName = 'delete_at';
 
     public $tableName;
     public $logicTableName;

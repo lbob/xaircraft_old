@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\Database;
+use Xaircraft\DB;
 
 
 /**
@@ -108,12 +109,20 @@ class JoinQuery {
         $argsLen = func_num_args();
         $columnName = $args[0];
         if ($argsLen === 2) {
-            $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
-            $this->params[] = $args[1];
+            if (is_a($args[1], Raw::RAW)) {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ' . $args[1]->getValue());
+            } else {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
+                $this->params[] = $args[1];
+            }
         }
         if ($argsLen === 3) {
-            $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ? ');
-            $this->params[] = $args[2];
+            if (is_a($args[2], Raw::RAW)) {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ' . $args[1]->getValue());
+            } else {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'AND' : '', $columnName . ' ' . $args[1] . ' ? ');
+                $this->params[] = $args[2];
+            }
         }
 
         return $this;
@@ -128,12 +137,20 @@ class JoinQuery {
         $argsLen = func_num_args();
         $columnName = $args[0];
         if ($argsLen === 2) {
-            $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
-            $this->params[] = $args[1];
+            if (is_a($args[1], Raw::RAW)) {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ' . $args[1].getValue());
+            } else {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
+                $this->params[] = $args[1];
+            }
         }
         if ($argsLen === 3) {
-            $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ? ');
-            $this->params[] = $args[2];
+            if (is_a($args[2], Raw::RAW)) {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ' . $args[1].getValue());
+            } else {
+                $this->wheres[] = array(count($this->ons) > 0 || count($this->wheres) > 0 ? 'OR' : '', $columnName . ' ' . $args[1] . ' ? ');
+                $this->params[] = $args[2];
+            }
         }
 
         return $this;
@@ -143,9 +160,9 @@ class JoinQuery {
     {
         if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
             if (isset($this->anotherName)) {
-                $this->where($this->anotherName . '.' . TableQuery::SoftDeletedColumnName, 0);
+                $this->where($this->anotherName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
             } else {
-                $this->where($this->realTableName . '.' . TableQuery::SoftDeletedColumnName, 0);
+                $this->where($this->realTableName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
             }
         }
 

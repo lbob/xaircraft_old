@@ -1,6 +1,7 @@
 <?php
 
 namespace Xaircraft\Database;
+use Xaircraft\DB;
 
 
 /**
@@ -180,9 +181,9 @@ class WhereQuery {
 
         if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
             if (isset($this->anotherName)) {
-                $this->where($this->anotherName . '.' . TableQuery::SoftDeletedColumnName, 0);
+                $this->where($this->anotherName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
             } else {
-                $this->where($this->realTableName . '.' . TableQuery::SoftDeletedColumnName, 0);
+                $this->where($this->realTableName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
             }
         }
 

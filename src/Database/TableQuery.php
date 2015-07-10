@@ -3,6 +3,7 @@
 namespace Xaircraft\Database;
 use Predis\Connection\ConnectionException;
 use Xaircraft\App;
+use Xaircraft\DB;
 use Xaircraft\Log;
 
 
@@ -63,6 +64,8 @@ class TableQuery
     private $isSoftDeleted = false;
     private $isSoftDeleteLess = false;
     private $remeberMinutes = 1;
+    private $notSubQueryParams;
+    private $isHardDelete = false;
     /**
      * @var \Xaircraft\Cache\CacheDriver
      */
@@ -130,7 +133,14 @@ class TableQuery
 
     private function getParams()
     {
-        return array_merge($this->joinParams, $this->whereParams);
+        $params = array_merge($this->joinParams, $this->whereParams);
+        return $params;
+    }
+
+    private function getWithoutSubQueryParams()
+    {
+        $params = array_merge($this->joinParams, $this->notSubQueryParams);
+        return $params;
     }
 
     private function parseSelectQuery()
@@ -150,9 +160,9 @@ class TableQuery
 
         if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
             if (isset($this->anotherName)) {
-                $this->where($this->anotherName . '.' . self::SoftDeletedColumnName, 0);
+                $this->where($this->anotherName . '.' . self::SoftDeletedColumnName, DB::raw('0'));
             } else {
-                $this->where($this->realTableName . '.' . self::SoftDeletedColumnName, 0);
+                $this->where($this->realTableName . '.' . self::SoftDeletedColumnName, DB::raw('0'));
             }
         }
 
@@ -336,7 +346,7 @@ class TableQuery
 
         $primaryKey = $this->primaryKey;
         if (isset($this->joins) && count($this->joins) > 0)
-            $primaryKey = $this->tableName . '.' . $this->primaryKey;
+            $primaryKey = $this->anotherName . '.' . $this->primaryKey;
 
         //取得分页结果的primaryKey值集合
         $query[] = 'SELECT';
@@ -348,6 +358,7 @@ class TableQuery
                 $query[] = $item;
             }
         }
+
         $wheres = $this->parseWheres();
         if (isset($wheres)) {
             $query[] = $wheres;
@@ -361,7 +372,11 @@ class TableQuery
         }
         $query             = implode(' ', $query);
         $recordCount       = 0;
-        $recordCountResult = $this->getSelectResult($query, $this->getParams());
+        $params = $this->getParams();
+        if (isset($this->notSubQueryParams)) {
+            $params = $this->getWithoutSubQueryParams();
+        }
+        $recordCountResult = $this->getSelectResult($query, $params);
         foreach ($recordCountResult as $row) {
             $recordCount = $row['TotalCount'];
         }
@@ -394,7 +409,11 @@ class TableQuery
         $limitTakeLength  = $this->pageSize;
         $query[]          = 'LIMIT ' . $limitStartIndex . ', ' . $limitTakeLength;
         $query            = implode(' ', $query);
-        $primaryKeyValues = $this->getSelectResult($query, $this->getParams());
+        $params = $this->getParams();
+        if (isset($this->notSubQueryParams)) {
+            $params = $this->getWithoutSubQueryParams();
+        }
+        $primaryKeyValues = $this->getSelectResult($query, $params);
         if (!isset($primaryKeyValues) || empty($primaryKeyValues)) {
             return array(
                 'query'       => $preQuery,
@@ -480,12 +499,22 @@ class TableQuery
 
     private function parseDeleteQuery()
     {
-        $query[] = 'DELETE FROM ' . $this->tableName;
-        $wheres  = $this->parseWheres();
-        if (isset($wheres))
-            $query[] = $wheres;
-        $query = implode(' ', $query);
-        return $this->driver->delete($query, $this->whereParams);
+        if ($this->isSoftDeleted && !$this->isHardDelete) {
+            $query[] = 'UPDATE ' . $this->tableName;
+            $query[] = 'SET ' . self::SoftDeletedColumnName . ' = ' . time();
+            $wheres  = $this->parseWheres();
+            if (isset($wheres))
+                $query[] = $wheres;
+            $query = implode(' ', $query);
+            return $this->driver->update($query, $this->whereParams);
+        } else {
+            $query[] = 'DELETE FROM ' . $this->tableName;
+            $wheres  = $this->parseWheres();
+            if (isset($wheres))
+                $query[] = $wheres;
+            $query = implode(' ', $query);
+            return $this->driver->delete($query, $this->whereParams);
+        }
     }
 
     private function parseTruncateQuery()
@@ -494,11 +523,14 @@ class TableQuery
         return $this->driver->statement($query);
     }
 
-    private function parseWheres()
+    private function parseWheres(array $wheres = null)
     {
-        if (isset($this->wheres) && count($this->wheres) > 0) {
+        if (empty($wheres)) {
+            $wheres = $this->wheres;
+        }
+        if (isset($wheres) && count($wheres) > 0) {
             $query[] = 'WHERE';
-            foreach ($this->wheres as $item) {
+            foreach ($wheres as $item) {
                 $query[] = implode(' ', $item);
             }
             return implode(' ', $query);
@@ -537,8 +569,9 @@ class TableQuery
                     $whereQuery->getQuery()
                 );
                 $params         = $whereQuery->getParams();
-                if (isset($params))
+                if (isset($params)) {
                     $this->whereParams = array_merge($this->whereParams, $params);
+                }
             }
         } else {
             $columnName = $args[0];
@@ -587,8 +620,9 @@ class TableQuery
                     $whereQuery->getQuery()
                 );
                 $params         = $whereQuery->getParams();
-                if (isset($params))
-                    $this->whereParams = array_merge($this->whereParams, $params);
+                if (isset($params)) {
+                    $this->whereParams += $params;
+                }
             }
         } else {
             $columnName = $args[0];
@@ -850,8 +884,10 @@ class TableQuery
                             call_user_func($subQueryHandler, $whereQuery);
                             $fields[] = $whereQuery->getQuery() . ' AS ' . $key;
                             $params   = $whereQuery->getParams();
-                            if (isset($params))
-                                $this->whereParams = array_merge($this->whereParams, $params);
+                            $this->notSubQueryParams = $this->whereParams;
+                            if (isset($params)) {
+                                $this->whereParams = array_merge($params, $this->whereParams);
+                            }
                         } else {
                             $fields[] = $value . ' AS ' . $key;
                         }
@@ -922,6 +958,14 @@ class TableQuery
     public function delete()
     {
         $this->queryType = self::QUERY_DELETE;
+
+        return $this;
+    }
+
+    public function hardDelete()
+    {
+        $this->queryType = self::QUERY_DELETE;
+        $this->isHardDelete = true;
 
         return $this;
     }

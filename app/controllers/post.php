@@ -32,13 +32,13 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 //            'classNo' => '0001'
 //        ))->execute();
 
-        $list = DB::table('post AS a')->softDeleteLess()->join('category AS c', function (\Xaircraft\Database\JoinQuery $joinQuery) {
-            $joinQuery->on('a.id', 'c.id');
-        })->where('id', '>', 0)->select(array(
+        $list = DB::table('post')->softDeleteLess()->join('category AS c', function (\Xaircraft\Database\JoinQuery $joinQuery) {
+            $joinQuery->on('x_post.id', 'c.id');
+        })->select(array(
             'test' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select('id')->softDeleteLess()->from('post')->where('id', DB::raw('a.id'))->where('a.id', '>', 0);
+                $whereQuery->select('id')->softDeleteLess()->from('post')->where('id', DB::raw('x_post.id'))->where('x_post.id', '>', 0);
             }
-        ))->page(1, 1)->execute();
+        ))->page(1, 1)->where('id', '>', 0)->execute();
         var_dump(DB::getQueryLog());
         var_dump($list);
 

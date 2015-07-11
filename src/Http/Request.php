@@ -35,13 +35,18 @@ class Request
     public function param($key)
     {
         if (array_key_exists($key, $this->params)) {
-            return $this->params[$key];
+            return $this->getStringWithHtmlFilter($this->params[$key]);
         }
     }
 
     public function params()
     {
-        return $this->params;
+        $params = array();
+        foreach ($this->params as $key => $value) {
+            $params[$key] = $this->getStringWithHtmlFilter($value);
+        }
+
+        return $params;
     }
 
     public function isPost()
@@ -71,7 +76,7 @@ class Request
     public function post($key)
     {
         if (isset($key) && isset($_POST[$key])) {
-            return $_POST[$key];
+            return $this->getStringWithHtmlFilter($_POST[$key]);
         }
     }
 
@@ -94,11 +99,16 @@ class Request
             $items = \Xaircraft\Common\Util::fast_array_key_filter($_POST, $prefix . '_');
             foreach ($items as $key => $value) {
                 $key         = str_replace($prefix . '_', '', $key);
-                $posts[$key] = $value;
+                $posts[$key] = $this->getStringWithHtmlFilter($value);
             }
             return $posts;
         } else {
-            return $_POST;
+            $posts = array();
+            foreach ($_POST as $key => $value) {
+                $posts[$key] = $this->getStringWithHtmlFilter($value);
+            }
+
+            return $posts;
         }
     }
 
@@ -128,6 +138,15 @@ class Request
                 }
             }
             return $files;
+        }
+    }
+
+    private function getStringWithHtmlFilter($str)
+    {
+        if (is_null(json_decode($str))) {
+            return htmlspecialchars($str);
+        } else {
+            return $str;
         }
     }
 }

@@ -64,7 +64,7 @@ class TableQuery
     private $isSoftDeleted = false;
     private $isSoftDeleteLess = false;
     private $remeberMinutes = 1;
-    private $notSubQueryParams;
+    private $notSubQueryParams = array();
     private $isHardDelete = false;
     /**
      * @var \Xaircraft\Cache\CacheDriver
@@ -345,8 +345,13 @@ class TableQuery
             throw new \InvalidArgumentException("Page query must include primaryKey.");
 
         $primaryKey = $this->primaryKey;
-        if (isset($this->joins) && count($this->joins) > 0)
-            $primaryKey = $this->anotherName . '.' . $this->primaryKey;
+        if (isset($this->joins) && count($this->joins) > 0) {
+            if (isset($this->anotherName) && $this->anotherName !== '') {
+                $primaryKey = $this->anotherName . '.' . $this->primaryKey;
+            } else {
+                $primaryKey = $this->realTableName . '.' . $this->primaryKey;
+            }
+        }
 
         //取得分页结果的primaryKey值集合
         $query[] = 'SELECT';
@@ -570,6 +575,7 @@ class TableQuery
                 );
                 $params         = $whereQuery->getParams();
                 if (isset($params)) {
+                    $this->notSubQueryParams = array_merge($this->notSubQueryParams, $params);
                     $this->whereParams = array_merge($this->whereParams, $params);
                 }
             }
@@ -584,6 +590,7 @@ class TableQuery
                 } else {
                     $this->wheres[]      = array(count($this->wheres) > 0 ? 'AND' : '', $columnName . ' = ? ');
                     $this->whereParams[] = $args[1];
+                    $this->notSubQueryParams[] = $args[1];
                 }
             }
             if ($argsLen === 3) {
@@ -598,6 +605,7 @@ class TableQuery
                         $columnName . ' ' . $args[1] . ' ? '
                     );
                     $this->whereParams[] = $args[2];
+                    $this->notSubQueryParams[] = $args[2];
                 }
             }
         }
@@ -621,7 +629,8 @@ class TableQuery
                 );
                 $params         = $whereQuery->getParams();
                 if (isset($params)) {
-                    $this->whereParams += $params;
+                    $this->notSubQueryParams = array_merge($this->notSubQueryParams, $params);
+                    $this->whereParams = array_merge($this->whereParams, $params);
                 }
             }
         } else {
@@ -635,6 +644,7 @@ class TableQuery
                 } else {
                     $this->wheres[]      = array(count($this->wheres) > 0 ? 'OR' : '', $columnName . ' = ? ');
                     $this->whereParams[] = $args[1];
+                    $this->notSubQueryParams[] = $args[1];
                 }
             }
             if ($argsLen === 3) {
@@ -649,6 +659,7 @@ class TableQuery
                         $columnName . ' ' . $args[1] . ' ? '
                     );
                     $this->whereParams[] = $args[2];
+                    $this->notSubQueryParams[] = $args[2];
                 }
             }
         }
@@ -660,6 +671,7 @@ class TableQuery
     {
         if (count($ranges) === 2) {
             $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', '(' . $columnName . ' BETWEEN ? AND ?)');
+            $this->notSubQueryParams = array_merge($this->notSubQueryParams, $ranges);
             $this->whereParams = array_merge($this->whereParams, $ranges);
         }
 
@@ -673,6 +685,7 @@ class TableQuery
                 count($this->wheres) > 0 ? 'AND' : '',
                 '(' . $columnName . ' < ? OR ' . $columnName . ' > ?)'
             );
+            $this->notSubQueryParams = array_merge($this->notSubQueryParams, $ranges);
             $this->whereParams = array_merge($this->whereParams, $ranges);
         }
 
@@ -696,7 +709,7 @@ class TableQuery
             $where             = $where . implode(',', $values) . ')';
             $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
             $this->whereParams = array_merge($this->whereParams, $ranges);
-
+            $this->notSubQueryParams = array_merge($this->notSubQueryParams, $ranges);
         } else if (isset($params) && is_callable($params)) {
             $subQueryHandler = $params;
             $whereQuery      = new WhereQuery($this->logicTableName, $this->prefix);
@@ -706,8 +719,10 @@ class TableQuery
                 $whereQuery->getQuery()
             );
             $params         = $whereQuery->getParams();
-            if (isset($params))
+            if (isset($params)) {
+                $this->notSubQueryParams = array_merge($this->notSubQueryParams, $params);
                 $this->whereParams = array_merge($this->whereParams, $params);
+            }
         }
 
         return $this;
@@ -736,8 +751,10 @@ class TableQuery
                 $whereQuery->getQuery()
             );
             $params         = $whereQuery->getParams();
-            if (isset($params))
+            if (isset($params)) {
+                $this->notSubQueryParams = array_merge($this->notSubQueryParams, $params);
                 $this->whereParams = array_merge($this->whereParams, $params);
+            }
         }
 
         return $this;
@@ -753,8 +770,10 @@ class TableQuery
                 $whereQuery->getQuery()
             );
             $params         = $whereQuery->getParams();
-            if (isset($params))
+            if (isset($params)) {
+                $this->notSubQueryParams = array_merge($this->notSubQueryParams, $params);
                 $this->whereParams = array_merge($this->whereParams, $params);
+            }
         }
 
         return $this;
@@ -770,8 +789,10 @@ class TableQuery
                 $whereQuery->getQuery()
             );
             $params         = $whereQuery->getParams();
-            if (isset($params))
+            if (isset($params)) {
+                $this->notSubQueryParams = array_merge($this->notSubQueryParams, $params);
                 $this->whereParams = array_merge($this->whereParams, $params);
+            }
         }
 
         return $this;

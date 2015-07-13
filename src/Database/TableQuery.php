@@ -13,7 +13,7 @@ use Xaircraft\Log;
  * @package Xaircraft\Database
  * @author lbob created at 2014/12/19 10:05
  */
-class TableQuery
+class TableQuery implements QueryStringBuilder
 {
 
     const QUERY_SELECT = 'select';
@@ -66,6 +66,8 @@ class TableQuery
     private $remeberMinutes = 1;
     private $notSubQueryParams = array();
     private $isHardDelete = false;
+    private $queryString;
+    private $queryParameters;
     /**
      * @var \Xaircraft\Cache\CacheDriver
      */
@@ -244,6 +246,63 @@ class TableQuery
             }
         }
         return $result;
+    }
+
+    private function parseSelectQueryString()
+    {
+        $query[] = 'SELECT';
+        if (isset($this->countColumnName)) {
+            $query[] = $this->countColumnName;
+        } else {
+            if (!empty($this->selectFields)) {
+                $query[] = implode(',', $this->selectFields);
+            } else {
+                $query[] = '*';
+            }
+        }
+
+        $query[] = 'FROM ' . $this->tableName;
+
+        if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
+            if (isset($this->anotherName)) {
+                $this->where($this->anotherName . '.' . self::SoftDeletedColumnName, DB::raw('0'));
+            } else {
+                $this->where($this->realTableName . '.' . self::SoftDeletedColumnName, DB::raw('0'));
+            }
+        }
+
+        if (isset($this->joins) && count($this->joins) > 0) {
+            foreach ($this->joins as $item) {
+                $query[] = $item;
+            }
+        }
+        if ($this->isPaged) {
+            $pageResult  = $this->parsePageQuery($query);
+            if ($pageResult['recordCount'] > 0) {
+                return $pageResult['query'];
+            } else {
+                return null;
+            }
+        }
+        $wheres = $this->parseWheres();
+        if (isset($wheres)) {
+            $query[] = $wheres;
+        }
+        if (isset($this->group)) {
+            $query[] = 'GROUP BY ' . $this->group;
+        }
+        $havings = $this->parseHavings();
+        if (isset($havings)) {
+            $query[] = $havings;
+        }
+        if (isset($this->orders) && count($this->orders) > 0) {
+            $query[] = 'ORDER BY ' . implode(',', $this->orders);
+        }
+        if (!$this->isPaged && $this->isLimited) {
+            $query[] = 'LIMIT ' . $this->limitStartIndex . ', ' . $this->limitTakeLength;
+        }
+        $query  = implode(' ', $query);
+        return $query;
     }
 
     private function formatSelectResult($result)
@@ -1177,6 +1236,20 @@ class TableQuery
         $this->isSoftDeleteLess = true;
 
         return $this;
+    }
+
+    public function getQueryString()
+    {
+        return $this->parseSelectQueryString();
+    }
+
+    /**
+     * @return array
+     */
+    public function getQueryParameters()
+    {
+        if (!$this->isPaged)
+            return $this->whereParams;
     }
 }
 

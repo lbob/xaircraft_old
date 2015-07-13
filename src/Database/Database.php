@@ -157,6 +157,13 @@ interface Database {
     public function entity($query);
 
     /**
+     * @param $tempTableName
+     * @param callable $handler
+     * @return TempTableQuery
+     */
+    public function temptable($tempTableName, callable $handler);
+
+    /**
      * @param string $value
      * @return Raw
      */

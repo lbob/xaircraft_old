@@ -27,16 +27,16 @@ class WhereQuery {
     private $isSoftDeleted = false;
     private $isSoftDeleteLess = false;
 
-    public function __construct($tableName, $prefix)
+    public function __construct()
     {
-        if (!isset($tableName))
-            throw new \InvalidArgumentException("Invalid table name");
+        //if (!isset($tableName))
+        //    throw new \InvalidArgumentException("Invalid table name");
 
-        $this->logicTableName = $tableName;
-        $this->prefix = $prefix;
+        //$this->logicTableName = $tableName;
+        //$this->prefix = $prefix;
 
-        if (isset($this->prefix)) $this->tableName = $this->prefix . $tableName;
-        else $this->tableName = $tableName;
+        //if (isset($this->prefix)) $this->tableName = $this->prefix . $tableName;
+        //else $this->tableName = $tableName;
     }
 
     /**

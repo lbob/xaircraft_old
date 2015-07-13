@@ -355,6 +355,20 @@ class PdoDatabase implements Database {
         return new Entity($query);
     }
 
+    /**
+     * @param $tempTableName
+     * @param callable $handler
+     * @return TempTableQuery
+     */
+    public function temptable($tempTableName, callable $handler)
+    {
+        if (isset($tempTableName) && isset($handler)) {
+            return new TempTableQuery($tempTableName, $handler, $this->prefix);
+        }
+
+        return null;
+    }
+
     function __destruct()
     {
         $this->disconnect();

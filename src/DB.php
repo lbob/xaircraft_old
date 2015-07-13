@@ -295,6 +295,16 @@ class DB {
     }
 
     /**
+     * @param $tempTableName
+     * @param callable $handler
+     * @return \Xaircraft\Database\TempTableQuery
+     */
+    public static function temptable($tempTableName, callable $handler)
+    {
+        return self::getInstance(self::$currentDatabase)->provider->temptable($tempTableName, $handler);
+    }
+
+    /**
      * 获得上一次执行产生的错误代码
      * @return string
      */

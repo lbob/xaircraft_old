@@ -14,8 +14,7 @@ class TempTableQuery implements QueryStringBuilder {
 
     private $tempTableName;
     private $query;
-    private $isGroup = false;
-    private $groupColumns;
+    private $group;
     private $isLimited = false;
     private $limitTakeLength = 0;
     private $orders;
@@ -38,9 +37,6 @@ class TempTableQuery implements QueryStringBuilder {
     public function execute()
     {
         $query = $this->parseQuery();
-        var_dump($query);
-        var_dump($this->params);
-        //exit;
         return DB::select($query, $this->params);
     }
 
@@ -203,8 +199,7 @@ class TempTableQuery implements QueryStringBuilder {
             throw new \InvalidArgumentException("Invalid group by columns.");
 
         $columns     = func_get_args();
-        $this->isGroup = true;
-        $this->groupColumns = implode(',', $columns);
+        $this->group = implode(',', $columns);
 
         return $this;
     }

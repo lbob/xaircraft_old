@@ -478,20 +478,26 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
     public function temp_table_query()
     {
-        $list = DB::table('temp_table', function (\Xaircraft\Database\WhereQuery $whereQuery) {
-            $whereQuery->select()->from('post');
-        })->select()->execute();
-
         $list = DB::temptable('temp_table', function () {
             return DB::table('post')->select()->where('id', '>', 0)->page(1, 2)->orderBy('id', 'DESC');
-        })->select('id', 'title')->orderBy('id')->orderBy('title')->where('id', 8)->execute();
+        })->select(array(
+            'id',
+            'test' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
+                $whereQuery->select('title')->from('post')->where('id', DB::raw('temp_table2.id'));
+            }
+        ))->orderBy('id')->orderBy('title')->where('id', 7)->execute();
         var_dump($list);
 
         $list = DB::temptable('temp_table', function () {
             return DB::temptable('temp_table2', function () {
                 return DB::table('post')->select()->orderBy('id', 'DESC');
-            })->orderBy('id', 'DESC')->where('id', 8);
-        })->select('id')->where('id', 8)->orderBy('id')->execute();
+            })->orderBy('id', 'DESC')->where('id', 7);
+        })->select(array(
+            'id',
+            'test' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
+                $whereQuery->select('title')->from('post')->where('id', DB::raw('temp_table2.id'));
+            }
+        ))->where('id', 7)->orderBy('id')->execute();
 
         var_dump($list);
     }

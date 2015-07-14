@@ -483,7 +483,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         })->select(array(
             'id',
             'test' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select('title')->from('post')->where('id', DB::raw('temp_table2.id'));
+                $whereQuery->select('title')->from('post')->where('id', DB::raw('temp_table.id'));
             }
         ))->orderBy('id')->orderBy('title')->where('id', 7)->execute();
         var_dump($list);
@@ -495,7 +495,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         })->select(array(
             'id',
             'test' => function (\Xaircraft\Database\WhereQuery $whereQuery) {
-                $whereQuery->select('title')->from('post')->where('id', DB::raw('temp_table2.id'));
+                $whereQuery->select('title')->from('post')->where('id', DB::raw('temp_table.id'));
             }
         ))->where('id', 7)->orderBy('id')->execute();
 

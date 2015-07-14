@@ -37,6 +37,8 @@ class TempTableQuery implements QueryStringBuilder {
     public function execute()
     {
         $query = $this->parseQuery();
+        var_dump($query);
+        var_dump($this->params);
         return DB::select($query, $this->params);
     }
 
@@ -145,7 +147,7 @@ class TempTableQuery implements QueryStringBuilder {
                     } else {
                         if (is_callable($value)) {
                             $subQueryHandler = $value;
-                            $whereQuery      = new WhereQuery();
+                            $whereQuery      = new WhereQuery(null, $this->prefix);
                             call_user_func($subQueryHandler, $whereQuery);
                             $fields[] = $whereQuery->getQuery() . ' AS ' . $key;
                             $params   = $whereQuery->getParams();

@@ -158,41 +158,41 @@ class WhereQuery {
             $this->subQueryTableName = $tableName;
         }
 
-        if (preg_match(TableQuery::TABLE_NAME_PATTERN, $tableName, $matches)) {
-            $this->realTableName = $matches['realName'];
-            if (array_key_exists('anotherName', $matches)) {
-                $this->anotherName = $matches['anotherName'];
-            }
-        }
-
-        if (isset($this->prefix)) {
-            $this->tableName = $this->prefix . $tableName;
-            $this->realTableName = $this->prefix . $this->realTableName;
-        }
-        else $this->tableName = $tableName;
-
-        $this->meta = TableSchema::load($this->realTableName);
-        if (isset($this->meta)) {
-            $fields = $this->meta->getFields();
-            if (array_search(TableQuery::SoftDeletedColumnName, $fields)) {
-                $this->isSoftDeleted = true;
-            }
-        }
-
-        if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
-            if (isset($this->anotherName)) {
-                $this->where($this->anotherName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
-            } else {
-                $this->where($this->realTableName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
-            }
-        }
-
         return $this;
     }
 
     public function getQuery()
     {
         if ($this->isSubQueryMode && isset($this->subQueryTableName)) {
+            if (preg_match(TableQuery::TABLE_NAME_PATTERN, $this->subQueryTableName, $matches)) {
+                $this->realTableName = $matches['realName'];
+                if (array_key_exists('anotherName', $matches)) {
+                    $this->anotherName = $matches['anotherName'];
+                }
+            }
+
+            if (isset($this->prefix)) {
+                $this->tableName = $this->prefix . $this->subQueryTableName;
+                $this->realTableName = $this->prefix . $this->realTableName;
+            }
+            else $this->tableName = $this->subQueryTableName;
+
+            $this->meta = TableSchema::load($this->realTableName);
+            if (isset($this->meta)) {
+                $fields = $this->meta->getFields();
+                if (array_search(TableQuery::SoftDeletedColumnName, $fields)) {
+                    $this->isSoftDeleted = true;
+                }
+            }
+
+            if ($this->isSoftDeleted && !$this->isSoftDeleteLess) {
+                if (isset($this->anotherName)) {
+                    $this->where($this->anotherName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
+                } else {
+                    $this->where($this->realTableName . '.' . TableQuery::SoftDeletedColumnName, DB::raw('0'));
+                }
+            }
+
             $query[] = '(';
 
             $query[] = 'SELECT';

@@ -518,6 +518,8 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         foreach (getallheaders() as $name => $value) {
             echo "$name: $value<br />";
         }
+
+
     }
 }
 

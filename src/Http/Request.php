@@ -60,9 +60,9 @@ class Request
 
     private function loadAllHeaders()
     {
-        if (!isset($this->headers)) {
+        if (!isset($this->headers) || empty($this->headers)) {
             foreach (getallheaders() as $key => $value) {
-                $this->headers[$key] = $value;
+                $this->headers[strtolower($key)] = $value;
             }
         }
     }
@@ -71,6 +71,7 @@ class Request
     {
         $this->loadAllHeaders();
 
+        $key = strtolower($key);
         if (!isset($key)) {
             return '';
         }

@@ -502,6 +502,23 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
         var_dump($list);
     }
+
+    public function test_nebula_query()
+    {
+        $list = DB::query('SELECT * FROM x_post WHERE id > 0');
+        foreach ($list as $row) {
+            var_dump($row);
+        }
+
+        var_dump($list);
+    }
+
+    public function test_header()
+    {
+        foreach (getallheaders() as $name => $value) {
+            echo "$name: $value<br />";
+        }
+    }
 }
 
  

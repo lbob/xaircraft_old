@@ -15,6 +15,8 @@ class Request
 
     private $params = array();
 
+    private $headers = array();
+
     private static $instance;
 
     private function __construct($params)
@@ -32,21 +34,50 @@ class Request
         return self::$instance;
     }
 
-    public function param($key)
+    public function param($key, $withStringHtmlFilter = true)
     {
         if (array_key_exists($key, $this->params)) {
+            if (!$withStringHtmlFilter) {
+                return $this->params[$key];
+            }
             return $this->getStringWithHtmlFilter($this->params[$key]);
         }
     }
 
-    public function params()
+    public function params($withStringHtmlFilter = true)
     {
         $params = array();
         foreach ($this->params as $key => $value) {
-            $params[$key] = $this->getStringWithHtmlFilter($value);
+            if (!$withStringHtmlFilter) {
+                $params[$key] = $value;
+            } else {
+                $params[$key] = $this->getStringWithHtmlFilter($value);
+            }
         }
 
         return $params;
+    }
+
+    private function loadAllHeaders()
+    {
+        if (!isset($this->headers)) {
+            foreach (getallheaders() as $key => $value) {
+                $this->headers[$key] = $value;
+            }
+        }
+    }
+
+    public function getHeader($key)
+    {
+        $this->loadAllHeaders();
+
+        if (!isset($key)) {
+            return '';
+        }
+
+        if (array_key_exists($key, $this->headers)) {
+            return $this->headers[$key];
+        }
     }
 
     public function isPost()
@@ -73,9 +104,12 @@ class Request
         }
     }
 
-    public function post($key)
+    public function post($key, $withStringHtmlFilter = true)
     {
         if (isset($key) && isset($_POST[$key])) {
+            if (!$withStringHtmlFilter) {
+                return $_POST[$key];
+            }
             return $this->getStringWithHtmlFilter($_POST[$key]);
         }
     }
@@ -92,20 +126,28 @@ class Request
         return (isset($host) ? $host : '') . $_SERVER['REQUEST_URI'];
     }
 
-    public function posts($prefix = null)
+    public function posts($prefix = null, $withStringHtmlFilter = true)
     {
         if (isset($prefix) && is_string($prefix)) {
             $posts = array();
             $items = \Xaircraft\Common\Util::fast_array_key_filter($_POST, $prefix . '_');
             foreach ($items as $key => $value) {
                 $key         = str_replace($prefix . '_', '', $key);
-                $posts[$key] = $this->getStringWithHtmlFilter($value);
+                if (!$withStringHtmlFilter) {
+                    $posts[$key] = $value;
+                } else {
+                    $posts[$key] = $this->getStringWithHtmlFilter($value);
+                }
             }
             return $posts;
         } else {
             $posts = array();
             foreach ($_POST as $key => $value) {
-                $posts[$key] = $this->getStringWithHtmlFilter($value);
+                if (!$withStringHtmlFilter) {
+                    $posts[$key] = $value;
+                } else {
+                    $posts[$key] = $this->getStringWithHtmlFilter($value);
+                }
             }
 
             return $posts;

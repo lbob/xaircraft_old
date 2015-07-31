@@ -414,7 +414,7 @@ class TableQuery implements QueryStringBuilder
 
         //取得分页结果的primaryKey值集合
         $query[] = 'SELECT';
-        $query[] = 'COUNT(' . $primaryKey . ') AS TotalCount';
+        $query[] = 'COUNT(DISTINCT ' . $primaryKey . ') AS TotalCount';
         $query[] = 'FROM';
         $query[] = $this->tableName;
         if (isset($this->joins) && count($this->joins) > 0) {
@@ -449,7 +449,7 @@ class TableQuery implements QueryStringBuilder
         $this->pageIndex = $this->pageIndex > $pageCount && $pageCount > 0 ? $pageCount : $this->pageIndex;
         $query           = array();
         $query[]         = 'SELECT';
-        $query[]         = $primaryKey . ' AS ' . str_replace('.', '_', $primaryKey);
+        $query[]         = 'DISTINCT ' . $primaryKey . ' AS ' . str_replace('.', '_', $primaryKey);
         $query[]         = 'FROM';
         $query[]         = $this->tableName;
         if (isset($this->joins) && count($this->joins) > 0) {
@@ -763,8 +763,7 @@ class TableQuery implements QueryStringBuilder
                     $values[] = "?";
                 }
             } else {
-                $values[] = 'NULL';
-            }
+                $values[] = 'NULL';             }
             $where             = $where . implode(',', $values) . ')';
             $this->wheres[]    = array(count($this->wheres) > 0 ? 'AND' : '', $where);
             $this->whereParams = array_merge($this->whereParams, $ranges);

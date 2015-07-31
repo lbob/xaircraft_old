@@ -521,6 +521,13 @@ class post_controller extends \Xaircraft\Mvc\Controller {
 
 
     }
+
+    public function test_group()
+    {
+        $categoryID = DB::table('category')->insertGetId(array(
+            ''
+        ))->execute();
+    }
 }
 
  

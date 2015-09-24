@@ -14,6 +14,11 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $this->layout('admin');
     }
 
+    public function test_time()
+    {
+        var_dump(strtotime(str_replace(array('年', '月', '日'), array('-','-',''), "2015年9月5日")));
+    }
+
     public function index()
     {
         var_dump(DB::table('post')->pluck('create_at')->execute());

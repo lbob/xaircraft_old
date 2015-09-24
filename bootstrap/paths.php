@@ -16,5 +16,6 @@ return array(
     'autoload'  => __DIR__.'/../app/config/autoload.php',
     'inject'    => __DIR__.'/../app/config/inject.php',
     'command'    => __DIR__.'/../app/config/command.php',
-    'tests'     => __DIR__.'/../app/tests'
+    'tests'     => __DIR__.'/../app/tests',
+    'wechat'    => __DIR__.'/../app/config/wechat.php'
 );

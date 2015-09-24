@@ -528,6 +528,13 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             ''
         ))->execute();
     }
+
+    public function test_like()
+    {
+        $list = DB::table('post')->pluck('`like`')->execute();
+        var_dump(DB::getQueryLog());
+        var_dump($list);
+    }
 }
 
  

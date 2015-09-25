@@ -186,7 +186,7 @@ class Request
 
     private function getStringWithHtmlFilter($str)
     {
-        if (is_null(json_decode($str))) {
+        if (is_string($str) && is_null(json_decode($str))) {
             return htmlspecialchars($str);
         } else {
             return $str;

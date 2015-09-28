@@ -36,6 +36,8 @@ abstract class Corporation {
 
     public abstract function getCorpName();
 
+    public abstract function getCorpSecretConfig();
+
     public function getAccessToken()
     {
         $corpName = $this->getCorpName();
@@ -57,17 +59,21 @@ abstract class Corporation {
 
     private function generateAccessToken()
     {
-        $configs = require App::path('wechat');
-        if (!isset($configs) || empty($configs) || !array_key_exists($this->getCorpName(), $configs)) {
-            throw new \Exception("缺少微信配置信息");
-        }
-        $config = $configs[$this->getCorpName()];
+        $config = $this->getCorpSecretConfig();
 
         if (!isset($config) || empty($config)) {
-            throw new \Exception("缺少微信配置信息：" . $this->getCorpName());
-        }
-        if (!array_key_exists('corpid', $config) || !array_key_exists('corpsecret', $config)) {
-            throw new \Exception("缺少微信配置信息：" . $this->getCorpName());
+            $configs = require App::path('wechat');
+            if (!isset($configs) || empty($configs) || !array_key_exists($this->getCorpName(), $configs)) {
+                throw new \Exception("缺少微信配置信息");
+            }
+            $config = $configs[$this->getCorpName()];
+
+            if (!isset($config) || empty($config)) {
+                throw new \Exception("缺少微信配置信息：" . $this->getCorpName());
+            }
+            if (!array_key_exists('corpid', $config) || !array_key_exists('corpsecret', $config)) {
+                throw new \Exception("缺少微信配置信息：" . $this->getCorpName());
+            }
         }
 
         $this->corpid = $config['corpid'];

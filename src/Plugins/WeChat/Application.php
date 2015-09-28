@@ -43,7 +43,7 @@ abstract class Application {
 
     public final function formatBody(array $body = array())
     {
-        return json_encode($body);
+        return json_encode($body, JSON_UNESCAPED_UNICODE);
     }
 }
 

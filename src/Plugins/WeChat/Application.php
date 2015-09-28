@@ -41,6 +41,12 @@ abstract class Application {
         return Request::post($url, $body, $params);
     }
 
+    public final function request($url, array $params = array())
+    {
+        $params['ACCESS_TOKEN'] = $this->corporation->getAccessToken();
+        return Request::request($url, $params);
+    }
+
     public final function formatBody(array $body = array())
     {
         return json_encode($body, JSON_UNESCAPED_UNICODE);

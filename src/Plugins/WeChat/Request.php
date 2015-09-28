@@ -37,5 +37,10 @@ class Request extends Net {
         }
         return $content;
     }
+
+    public static function request($url, array $params = array())
+    {
+        return parent::get($url, $params);
+    }
 }
 

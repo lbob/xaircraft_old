@@ -39,7 +39,7 @@ abstract class Corporation
 
     public abstract function getCorpSecretConfig();
 
-    public function getAccessToken()
+    public final function getAccessToken()
     {
         $corpName = $this->getCorpName();
         if (!isset($corpName) || $corpName == '') {
@@ -58,7 +58,7 @@ abstract class Corporation
         throw new \Exception("WeChat: 无法获取access_token");
     }
 
-    public function option($key)
+    public final function option($key)
     {
         $configs = require App::path('wechat');
         if (!isset($configs) || empty($configs) || !array_key_exists($this->getCorpName(), $configs)) {

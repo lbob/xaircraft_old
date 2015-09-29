@@ -51,5 +51,10 @@ abstract class Application {
     {
         return json_encode($body, JSON_UNESCAPED_UNICODE);
     }
+
+    public final function option($key)
+    {
+        return $this->corporation->option($key);
+    }
 }
 

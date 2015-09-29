@@ -11,7 +11,8 @@ use Xaircraft\Cache\CacheDriver;
  * @package WeChat
  * @author skyweo created at 2015/9/24 15:23
  */
-abstract class Corporation {
+abstract class Corporation
+{
 
     private $key = 'CORP_KEY_';
 
@@ -57,20 +58,30 @@ abstract class Corporation {
         throw new \Exception("WeChat: 无法获取access_token");
     }
 
+    public function option($key)
+    {
+        $configs = require App::path('wechat');
+        if (!isset($configs) || empty($configs) || !array_key_exists($this->getCorpName(), $configs)) {
+            throw new \Exception("缺少微信配置信息");
+        }
+        $config = $configs[$this->getCorpName()];
+        if (!isset($config) || empty($config)) {
+            throw new \Exception("缺少微信配置信息：" . $this->getCorpName());
+        }
+
+        if (array_key_exists($key, $config)) {
+            return $config[$key];
+        }
+        return null;
+    }
+
     private function generateAccessToken()
     {
         $config = $this->getCorpSecretConfig();
 
         if (!isset($config) || empty($config)) {
-            $configs = require App::path('wechat');
-            if (!isset($configs) || empty($configs) || !array_key_exists($this->getCorpName(), $configs)) {
-                throw new \Exception("缺少微信配置信息");
-            }
-            $config = $configs[$this->getCorpName()];
-
-            if (!isset($config) || empty($config)) {
-                throw new \Exception("缺少微信配置信息：" . $this->getCorpName());
-            }
+            $config['corpid'] = $this->option('corpid');
+            $config['corpsecret'] = $this->option('corpsecret');
             if (!array_key_exists('corpid', $config) || !array_key_exists('corpsecret', $config)) {
                 throw new \Exception("缺少微信配置信息：" . $this->getCorpName());
             }

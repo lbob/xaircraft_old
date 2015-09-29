@@ -1,4 +1,5 @@
 <?php
+use WeChat\DeepBlueAIApp;
 
 /**
  * Class wechat
@@ -9,8 +10,8 @@ class wechat_controller extends \Xaircraft\Mvc\Controller {
 
     public function index()
     {
-        $message = new \WeChat\Message();
-        $message->sendText();
+        $message = new \Xaircraft\Plugins\WeChat\API\Message(\Xaircraft\App::get(DeepBlueAIApp::class));
+        $message->sendText("test", "@all");
     }
 }
 

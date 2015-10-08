@@ -13,6 +13,7 @@ class ColumnFormat {
 
     const DateTime = 'datetime';
     const ShortDateTime = 'shortdatetime';
+    const Date = 'date';
     const String = 'string';
     const Integer = 'integer';
     const Float = 'float';
@@ -26,6 +27,8 @@ class ColumnFormat {
                 return date("Y-m-d H:i:s", $value);
             case self::ShortDateTime:
                 return date("Y年m月d日 H:i", $value);
+            case self::Date:
+                return date("Y年m月d日", $value);
             case self::String:
                 return $value . '';
             case self::Integer:

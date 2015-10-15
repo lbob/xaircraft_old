@@ -13,7 +13,7 @@ class ColumnFormat {
 
     const DateTime = 'datetime';
     const ShortDateTime = 'shortdatetime';
-    const Date = 'date';
+    const Date = 'shortdate';
     const String = 'string';
     const Integer = 'integer';
     const Float = 'float';

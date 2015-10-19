@@ -37,8 +37,6 @@ class TempTableQuery implements QueryStringBuilder {
     public function execute()
     {
         $query = $this->parseQuery();
-        var_dump($query);
-        var_dump($this->params);
         return DB::select($query, $this->params);
     }
 

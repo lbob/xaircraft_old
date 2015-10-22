@@ -318,7 +318,7 @@ class TableQuery implements QueryStringBuilder
                     if (array_key_exists($key, $this->formats)) {
                         $formatValue = $this->formats[$key];
                         if (is_callable($formatValue)) {
-                            $formattedRow[$key] = call_user_func($formatValue, $value);
+                            $formattedRow[$key] = call_user_func($formatValue, $value, $row);
                         } else {
                             $formattedRow[$key] = ColumnFormat::getFormatValue($this->formats[$key], $value);
                         }

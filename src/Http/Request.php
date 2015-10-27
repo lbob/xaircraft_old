@@ -117,7 +117,7 @@ class Request
 
     public function postRawData()
     {
-        return $GLOBALS['HTTP_RAW_POST_DATA'];
+        return file_get_contents('php://input');
     }
 
     public function url()

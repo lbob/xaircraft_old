@@ -115,6 +115,11 @@ class Request
         }
     }
 
+    public function postRawData()
+    {
+        return $GLOBALS['HTTP_RAW_POST_DATA'];
+    }
+
     public function url()
     {
         $namespace = $this->param('namespace');

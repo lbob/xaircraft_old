@@ -4,6 +4,7 @@ namespace Xaircraft\Database;
 use Predis\Connection\ConnectionException;
 use Xaircraft\App;
 use Xaircraft\DB;
+use Xaircraft\Exception\ExceptionHelper;
 use Xaircraft\Log;
 
 
@@ -552,6 +553,7 @@ class TableQuery implements QueryStringBuilder
             }
             $query[] = implode(',', $columns);
             $wheres  = $this->parseWheres();
+            ExceptionHelper::ThrowIfNullOrEmpty($wheres, "UPDATE Query can't run without WHERE Parameters.");
             if (isset($wheres))
                 $query[] = $wheres;
             $params = array_values($this->updates);
@@ -567,6 +569,8 @@ class TableQuery implements QueryStringBuilder
             $query[] = 'UPDATE ' . $this->tableName;
             $query[] = 'SET ' . self::SoftDeletedColumnName . ' = ' . time();
             $wheres  = $this->parseWheres();
+
+            ExceptionHelper::ThrowIfNullOrEmpty($wheres, "DELETE Query can't run without WHERE Parameters.");
             if (isset($wheres))
                 $query[] = $wheres;
             $query = implode(' ', $query);
@@ -574,6 +578,8 @@ class TableQuery implements QueryStringBuilder
         } else {
             $query[] = 'DELETE FROM ' . $this->tableName;
             $wheres  = $this->parseWheres();
+
+            ExceptionHelper::ThrowIfNullOrEmpty($wheres, "DELETE Query can't run without WHERE Parameters.");
             if (isset($wheres))
                 $query[] = $wheres;
             $query = implode(' ', $query);

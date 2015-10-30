@@ -7,7 +7,7 @@
  */
 
 return array(
-    'default' => array(
+    'farm' => array(
         'driver'    => 'mysql',
         'host'      => 'localhost',
         'database'  => 'xaircraft',
@@ -17,7 +17,7 @@ return array(
         'collation' => 'utf8_general_ci',
         'prefix'    => 'x_'
     ),
-    'farm' => array(
+    'default' => array(
         'driver'    => 'mysql',
         'host'      => 'localhost',
         'database'  => 'xair_farm',

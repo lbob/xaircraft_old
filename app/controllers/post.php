@@ -17,6 +17,33 @@ class post_controller extends \Xaircraft\Mvc\Controller {
         $this->layout('admin');
     }
 
+    public function test_entity()
+    {
+        $post = DB::entity('post');
+        $data = array(
+            'title' => 'hello world!!',
+            'content' => 'content'
+        );
+        $post->save($data);
+        $data['title'] = 'hello';
+        $post->save($data);
+        var_dump(DB::getQueryLog());
+    }
+
+    public function test_func()
+    {
+        $this->do_test(function ($param1, $param2) {
+            return 'hello' . $param1 . $param2;
+        });
+    }
+
+    private function do_test($callback)
+    {
+        $result = call_user_func($callback, 0, 1);
+
+        var_dump($result);
+    }
+
     public function test_softdelete()
     {
 //        \Xaircraft\DB::table('post')->insert(array(

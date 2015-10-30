@@ -111,6 +111,7 @@ class Entity {
                     $result = $this->query->insertGetId($this->columns)->execute();
                     if ($result !== false && isset($autoIncrementColumn)) {
                         $this->columns[$autoIncrementColumn] = $this->loadPrototypeFromMeta($autoIncrementColumn, $result);
+                        $this->query->where($autoIncrementColumn, $result);
                     }
                 } else {
                     $result = false;

@@ -112,6 +112,7 @@ class Entity {
                     if ($result !== false && isset($autoIncrementColumn)) {
                         $this->columns[$autoIncrementColumn] = $this->loadPrototypeFromMeta($autoIncrementColumn, $result);
                         $this->query->where($autoIncrementColumn, $result);
+                        $this->shadows = $this->columns;
                     }
                 } else {
                     $result = false;

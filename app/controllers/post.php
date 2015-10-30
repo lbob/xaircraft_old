@@ -25,7 +25,7 @@ class post_controller extends \Xaircraft\Mvc\Controller {
             'content' => 'content'
         );
         $post->save($data);
-        $data['title'] = 'hello';
+        $data['title'] = 'hello world!!';
         $post->save($data);
         var_dump(DB::getQueryLog());
     }

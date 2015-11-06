@@ -161,12 +161,12 @@ abstract class Controller
         }
     }
 
-    protected function layout($layoutName)
+    public function layout($layoutName)
     {
         $this->layoutName = $layoutName;
     }
 
-    protected function disableLayout()
+    public function disableLayout()
     {
         unset($this->layoutName);
     }

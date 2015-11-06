@@ -44,6 +44,11 @@ abstract class Controller
 
     }
 
+    public function onActionExecuted($action)
+    {
+
+    }
+
     public function end()
     {
         $this->isEnded = true;
@@ -146,7 +151,9 @@ abstract class Controller
             return $pageLoadResult;
         }
         if (!$controller->isEnded) {
-            return call_user_func(array($controller, $action)); //返回ActionResult
+            $actionResult = call_user_func(array($controller, $action)); //返回ActionResult
+            $controller->onActionExecuted($action);
+            return $actionResult;
         }
     }
 

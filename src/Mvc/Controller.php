@@ -151,8 +151,12 @@ abstract class Controller
             return $pageLoadResult;
         }
         if (!$controller->isEnded) {
+            /**
+             * @var \Xaircraft\Mvc\Action\ActionResult $actionResult
+             */
             $actionResult = call_user_func(array($controller, $action)); //返回ActionResult
             $controller->onActionExecuted($action);
+            $actionResult->data = $controller->data;
             return $actionResult;
         }
     }

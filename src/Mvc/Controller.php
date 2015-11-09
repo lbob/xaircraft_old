@@ -156,7 +156,9 @@ abstract class Controller
              */
             $actionResult = call_user_func(array($controller, $action)); //返回ActionResult
             $controller->onActionExecuted($action);
-            $actionResult->data = $controller->data;
+            if (isset($controller->data) && !empty($controller->data)) {
+                $actionResult->data = $controller->data;
+            }
             return $actionResult;
         }
     }

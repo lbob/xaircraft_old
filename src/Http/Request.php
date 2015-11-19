@@ -170,7 +170,7 @@ class Request
         if (isset($_FILES)) {
             $files = array();
             foreach ($_FILES as $formKeyword => $filesMeta) {
-                if (isset($key) && !strtolower($keyword) === strtolower($formKeyword)) {
+                if (isset($keyword) && !strtolower($keyword) === strtolower($formKeyword)) {
                     continue;
                 }
                 $isArr = is_array($filesMeta['name']);

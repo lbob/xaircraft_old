@@ -113,16 +113,20 @@ class home_controller extends \Xaircraft\Mvc\Controller {
 
     public function test_insert()
     {
-        $id = DB::table('post')->insertGetId(array(
-            'title' => 'test'
-        ))->execute();
+//        $id = DB::table('post')->insertGetId(array(
+//            'title' => 'test'
+//        ))->execute();
+//
+//        DB::table('post')->where('id - 1', $id - 1)->update(array(
+//            'content' => 'test'
+//        ))->execute();
 
-        DB::table('post')->where('id - 1', $id - 1)->update(array(
-            'content' => 'test'
-        ))->execute();
+        DB::table('post')->where(function (\Xaircraft\Database\WhereQuery $whereQuery) {
+            $whereQuery->where('id', 0)->orWhere('id', 1);
+        })->select()->execute();
 
         var_dump(DB::getQueryLog());
-        var_dump(DB::table('post')->orderBy('id', 'DESC')->select()->execute());
+        //var_dump(DB::table('post')->orderBy('id', 'DESC')->select()->execute());
     }
 
     public function test_base_model()
@@ -264,6 +268,11 @@ class home_controller extends \Xaircraft\Mvc\Controller {
         $areaSize = (doubleval($areaSize) * 100 + (doubleval($areaSize) * 100) / 2) / 100000;
         $total_area_size = $areaSize;
         var_dump($total_area_size);
+    }
+
+    public function test_model()
+    {
+
     }
 }
 

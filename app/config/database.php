@@ -7,20 +7,19 @@
  */
 
 return array(
-    'farm' => array(
+    'default' => array(
         'driver'    => 'mysql',
         'host'      => 'localhost',
-        'database'  => 'xaircraft',
+        'database'  => 'xair_api_doc',
         'username'  => 'root',
         'password'  => '',
         'charset'   => 'utf8',
         'collation' => 'utf8_general_ci',
-        'prefix'    => 'x_'
     ),
-    'default' => array(
+    'agri_data_center' => array(
         'driver'    => 'mysql',
         'host'      => 'localhost',
-        'database'  => 'xair_farm',
+        'database'  => 'agri_data_center',
         'username'  => 'root',
         'password'  => '',
         'charset'   => 'utf8',

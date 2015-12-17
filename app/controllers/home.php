@@ -274,5 +274,17 @@ class home_controller extends \Xaircraft\Mvc\Controller {
     {
 
     }
+
+    public function test_multi_database()
+    {
+        var_dump(\Xaircraft\DB::getDatabaseName());
+        $user = \Xaircraft\DB::entity('user');
+        //var_dump($user);
+
+        \Xaircraft\DB::database('agri_data_center');
+        var_dump(\Xaircraft\DB::getDatabaseName());
+        $user = \Xaircraft\DB::entity('user');
+        //var_dump($user);
+    }
 }
 

@@ -88,10 +88,11 @@ class TableSchema
      */
     public static function load($tableName)
     {
-        if (!isset(self::$instances[$tableName])) {
-            self::$instances[$tableName] = new TableSchema($tableName);
+        $key = DB::getDatabaseName() . $tableName;
+        if (!isset(self::$instances[$key])) {
+            self::$instances[$key] = new TableSchema($tableName);
         }
-        return self::$instances[$tableName];
+        return self::$instances[$key];
     }
 
     public function getTypes()

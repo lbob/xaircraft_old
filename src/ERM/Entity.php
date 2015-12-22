@@ -50,6 +50,9 @@ class Entity {
         if (isset($this->query)) {
             $result = $this->query->execute();
             if (isset($result) && is_array($result) && !empty($result)) {
+                if (count($result) > 1) {
+                    throw new \Exception("More than one row in table query.");
+                }
                 $row = $result[0];
                 foreach ($row as $key => $value) {
                     if (is_string($key)) {
